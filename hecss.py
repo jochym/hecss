@@ -8,6 +8,7 @@ import scipy
 from scipy import stats
 import numpy as np
 from numpy import log, exp
+import ase.units as un
 
 def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None):
     '''
@@ -41,9 +42,9 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     width   - initial width of the position distribution in Angstrom
     maxburn - max number of burn-in steps
 
-    directory - default directory for calculations and generated samples if left as None
+    directory - directory for calculations and generated samples. If left as None,
                 the `calc/{T_goal:.1f}K/` will be used and the generated samples will be 
-                stored in the `smpl/{i:04d}` subdirectoriesself.
+                stored in the `smpl/{i:04d}` subdirectories.
 
     OUTPUT
     ======
@@ -62,7 +63,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     Ep0 = cryst.get_potential_energy()
     
     E_goal = 3*T_goal*un.kB/2
-    Es = sqrt(3/2)*un.kB*T_goal/sqrt(nat)   
+    Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
     
     P = stats.norm.pdf
     Q = stats.norm
@@ -76,6 +77,8 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     
     if directory is None :
         basedir = f'calc/T_{T_goal:.1f}K'
+    else :
+        basedir = directory
 
     cr = ase.Atoms(numbers = cryst.get_atomic_numbers(), 
                    cell=cryst.get_cell(),
@@ -148,8 +151,6 @@ if __name__ == '__main__':
 
     from ase.calculators.vasp import Vasp2, Vasp
     from ase.build import bulk
-    import ase.units as un
-    from numpy import sqrt
     import os, errno
     import sys
 
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     T_goal = 2000
     nat = cryst.get_global_number_of_atoms()
     E_goal = 3*T_goal*un.kB/2
-    Es = sqrt(3/2)*un.kB*T_goal/sqrt(nat)   
+    Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
     
     idx = []
     xs = []
