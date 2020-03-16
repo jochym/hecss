@@ -205,7 +205,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         else :    
             n += 1
             if verb:
-                print(f'Sample:{n:<5d}  conf:{i:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+                print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
                 sys.stdout.flush()
         yield i-1, x, f, e
         
