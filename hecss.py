@@ -23,17 +23,17 @@ def plot_stats(confs, nat, T=300, show=True):
     e = linspace(E_goal - 3*Es, E_goal + 3*Es, 200)
     n = len(es)
     
-    plt.hist(es, bins='auto', density=True, label=f'{n} HECS samples')
+    plt.hist(es, bins='auto', density=True, label=f'{n} samples')
     h = np.histogram(es, bins='auto', density=False)
     de = (h[1][-1]-h[1][0])/len(h[0])
     plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de, 
              yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
-    plt.axvline(E_goal, ls='--', color='C1', label='Target energy');
-    plt.plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal distribution')
+    plt.axvline(E_goal, ls='--', color='C2', label='Target energy');
+    plt.plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal dist.')
     fit = stats.norm.fit(es)
-    plt.plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal distribution')
+    plt.plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal dist.')
     fit = stats.chi2.fit(es, f0=3*nat)
-    plt.plot(e,  stats.chi2.pdf(e, *fit), '--', label='Fitted $\\chi^2$ distribution')
+    plt.plot(e,  stats.chi2.pdf(e, *fit), '--', label='Fitted $\\chi^2$ dist.')
     plt.xlabel('Potential energy (eV/at)')
     plt.ylabel('Probability density')
     plt.xlim(E_goal-3*Es,E_goal+3*Es)
@@ -142,7 +142,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     k = 0
     
     if verb:
-        print(f'Starting burn-in.', end='\r')
+        print(f'Starting burn-in.            ', end='\r')
         sys.stdout.flush()
 
     while True:
@@ -181,7 +181,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         if i==0 :
             k+=1
             if verb:
-                print(f'Burn-in sample: {k} w:{w:.4f} alpha:{alpha:6.4f}', end='\r')
+                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
                 sys.stdout.flush()
             if k>maxburn :
                 return
@@ -189,7 +189,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         else :    
             n += 1
             if verb:
-                print(f'N:{n:5d}  conf:{i:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+                print(f'Sample:{n:<5d}  conf:{i:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
                 sys.stdout.flush()
         yield i-1, x, f, e
         
