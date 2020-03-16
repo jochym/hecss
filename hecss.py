@@ -7,36 +7,50 @@ import ase
 import scipy
 from scipy import stats
 import numpy as np
-from numpy import log, exp
+from numpy import log, exp, sqrt, linspace
+import matplotlib.pyplot as plt 
 import ase.units as un
 
 
-def plot_stats(es, nat, T=300):
+def plot_stats(confs, nat, T=300, show=True):
     
+    if len(confs) < 3:
+        return
+
+    es = np.array([c[3] for c in confs])
     E_goal = 3*T*un.kB/2
     Es = sqrt(3/2)*un.kB*T/sqrt(nat)
     e = linspace(E_goal - 3*Es, E_goal + 3*Es, 200)
     n = len(es)
     
-    hist(es, bins='auto', density=True, label=f'{n} HECS samples')
-    h = histogram(es, bins='auto', density=False)
+    plt.hist(es, bins='auto', density=True, label=f'{n} HECS samples')
+    h = np.histogram(es, bins='auto', density=False)
     de = (h[1][-1]-h[1][0])/len(h[0])
-    errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de, 
+    plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de, 
              yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
-    axvline(E_goal, ls='--', color='C1', label='Target energy');
-    plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal distribution')
+    plt.axvline(E_goal, ls='--', color='C1', label='Target energy');
+    plt.plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal distribution')
     fit = stats.norm.fit(es)
-    plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal distribution')
+    plt.plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal distribution')
     fit = stats.chi2.fit(es, f0=3*nat)
-    plot(e,  stats.chi2.pdf(e, *fit), '--', label='Fitted $\\chi^2$ distribution')
-    xlabel('Potential energy (eV/at)')
-    ylabel('Probability density')
-    xlim(E_goal-3*Es,E_goal+3*Es)
-    legend();    
+    plt.plot(e,  stats.chi2.pdf(e, *fit), '--', label='Fitted $\\chi^2$ distribution')
+    plt.xlabel('Potential energy (eV/at)')
+    plt.ylabel('Probability density')
+    plt.xlim(E_goal-3*Es,E_goal+3*Es)
+    plt.legend()
+    if show :
+        plt.show()    
 
 
+def write_dfset(fn, c, n=0):
+    i, x, f, e = c
+    with open(fn, 'at') as dfset:
+        print(f'#\n# set: {n:04d} config: {i:04d}  energy: {e:8e} eV/at\n#', file=dfset)
+        for ui, fi in zip(x,f):
+            print(*tuple(ui/un.Bohr), *tuple(fi*un.Bohr/un.Ry), file=dfset)
+    
 
-def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None):
+def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None, verb=True):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
     temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters
@@ -72,6 +86,8 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
                 the `calc/{T_goal:.1f}K/` will be used and the generated samples will be 
                 stored in the `smpl/{i:04d}` subdirectories.
 
+    verb    - print verbose progress messages for interactive use
+
     OUTPUT
     ======
     The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
@@ -106,6 +122,11 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     else :
         basedir = directory
 
+    if verb:
+        print(f'Calculating initial config.', end='\r')
+        sys.stdout.flush()
+
+
     cr = ase.Atoms(numbers = cryst.get_atomic_numbers(), 
                    cell=cryst.get_cell(),
                    scaled_positions=cryst.get_scaled_positions(),
@@ -120,8 +141,9 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     a = 0
     k = 0
     
-    print(f'Burn in ({k:2}): w:{w:.4f}', end='\r')
-    sys.stdout.flush()
+    if verb:
+        print(f'Starting burn-in.', end='\r')
+        sys.stdout.flush()
 
     while True:
         x_star = Q.rvs(size=dim, scale=w)
@@ -158,18 +180,18 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
         if i==0 :
             k+=1
-            print(f'Burn in: {k} w:{w:.4f} alpha:{alpha:6.4f}', end='\r')
-            sys.stdout.flush()
+            if verb:
+                print(f'Burn-in sample: {k} w:{w:.4f} alpha:{alpha:6.4f}', end='\r')
+                sys.stdout.flush()
             if k>maxburn :
                 return
             continue
         else :    
             n += 1
-            print(f'{i:5d} a:{100*a/n:5.1f}% w:{w:.4f} alpha:{alpha:6.4f}', end='\r')
-            sys.stdout.flush()
+            if verb:
+                print(f'N:{n:5d}  conf:{i:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+                sys.stdout.flush()
         yield i-1, x, f, e
-
-
         
         
 
