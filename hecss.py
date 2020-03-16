@@ -13,7 +13,16 @@ import ase.units as un
 
 
 def plot_stats(confs, nat, T=300, show=True):
-    
+    '''
+    Plot monitoring histograms for the configuration list in confs.
+    If len(confs)<3 this function is silent.
+
+    confs - configuration list
+    nat   - number of atoms in the structure
+    T     - target temperature in Kelvin
+    show  - call show() fuction at the end (default:True)
+    '''
+
     if len(confs) < 3:
         return
 
@@ -43,11 +52,18 @@ def plot_stats(confs, nat, T=300, show=True):
 
 
 def write_dfset(fn, c, n=0):
+    '''
+    Append displacement-force data from the conf to the fn file.
+    The format is suitable for use as ALAMODE DFSET file.
+    Optionaly you can provide configuration number in n.
+    File need not exist prior to first call. 
+    If it does not it will be created.
+    '''
     i, x, f, e = c
     with open(fn, 'at') as dfset:
         print(f'#\n# set: {n:04d} config: {i:04d}  energy: {e:8e} eV/at\n#', file=dfset)
         for ui, fi in zip(x,f):
-            print(*tuple(ui/un.Bohr), *tuple(fi*un.Bohr/un.Ry), file=dfset)
+            print((6*'%+16e ') % (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), file=dfset)
     
 
 def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None, verb=True):
