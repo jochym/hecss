@@ -20,6 +20,8 @@
 # Import VASP calculator and unit modules
 from ase.calculators.vasp import Vasp2
 from ase import units as un
+from os.path import isfile
+import os
 
 # The sample generator, monitoring display and dfset writer
 from hecss import HECSS, plot_stats, write_dfset
@@ -31,9 +33,7 @@ from IPython.display import clear_output
 # %%
 # Read the structure (previously calculated unit(super) cell)
 # The command argument is specific to the cluster setup
-calc = Vasp2(label='cryst', directory='./sc/', restart=True,
-             command=f'/home/jochym/devel/scripts/run-vasp/run-vasp54' + 
-                     f' -b -N 1 -p 64 -q blade2 -J "hecss"')
+calc = Vasp2(label='cryst', directory='./sc/', restart=True)
 
 # This just makes a copy of atoms object
 # Do not generate supercell here - your atom ordering will be wrong!
@@ -90,6 +90,10 @@ for conf in sampler:
     
     # Check if we have enough samples
     if len(confs) >= N:
+        break
+        
+    if isfile('STOP_HECSS'):
+        os.remove('STOP_HECSS')
         break
 
 # %%
