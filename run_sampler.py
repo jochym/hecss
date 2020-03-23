@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -29,14 +29,15 @@ from matplotlib.pylab import show
 from IPython.display import clear_output
 
 # %%
-# Read the structure (previously calculated unit cell)
+# Read the structure (previously calculated unit(super) cell)
 # The command argument is specific to the cluster setup
-calc = Vasp2(label='cryst', directory='./cryst', restart=True,
+calc = Vasp2(label='cryst', directory='./sc/', restart=True,
              command=f'/home/jochym/devel/scripts/run-vasp/run-vasp54' + 
                      f' -b -N 1 -p 64 -q blade2 -J "hecss"')
 
-# Build the supercell (2x2x2 here)
-cryst = calc.atoms.repeat(2)
+# This just makes a copy of atoms object
+# Do not generate supercell here - your atom ordering will be wrong!
+cryst = calc.atoms.repeat(1)
 
 # %%
 # Setup the calculator - single point energy calculation

@@ -7,7 +7,7 @@ import ase
 import scipy
 from scipy import stats
 import numpy as np
-from numpy import log, exp, sqrt, linspace
+from numpy import log, exp, sqrt, linspace, dot
 import matplotlib.pyplot as plt 
 import ase.units as un
 
@@ -50,6 +50,25 @@ def plot_stats(confs, nat, T=300, show=True):
     if show :
         plt.show()    
 
+def normalize_conf(c, base):
+    cell = base.get_cell()
+    spos = c.get_scaled_positions()
+    bspos = base.get_scaled_positions()
+
+    # Unwrap the displacement relative to base
+    sdx = spos - bspos
+    sht = (sdx < -0.5)*1 - (sdx > 0.5)*1
+    sdx += sht
+
+    # Check if fractional displacements are below 1/3
+    assert (abs(sdx) < 1/3).all()
+
+    # Calculate unwrapped spos
+    spos = bspos + sdx
+
+    # Return carthesian positions, fractional positions
+    return dot(spos,cell.T), spos
+
 
 def write_dfset(fn, c, n=0):
     '''
@@ -61,9 +80,11 @@ def write_dfset(fn, c, n=0):
     '''
     i, x, f, e = c
     with open(fn, 'at') as dfset:
-        print(f'#\n# set: {n:04d} config: {i:04d}  energy: {e:8e} eV/at\n#', file=dfset)
+        print(f'# set: {n:04d} config: {i:04d}  energy: {e:8e} eV/at', file=dfset)
         for ui, fi in zip(x,f):
-            print((6*'%+16e ') % (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), file=dfset)
+            print((3*'%15.7f ' + '     ' + 3*'%15.8e ') % 
+                        (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), 
+                        file=dfset)
     
 
 def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None, verb=True):
@@ -116,6 +137,10 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
     '''    
 
+    if verb:
+        print(f'Calculating initial config.', end='\r')
+        sys.stdout.flush()
+
     nat = cryst.get_global_number_of_atoms()
     dim = (nat, 3)
     Ep0 = cryst.get_potential_energy()
@@ -137,11 +162,6 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         basedir = f'calc/T_{T_goal:.1f}K'
     else :
         basedir = directory
-
-    if verb:
-        print(f'Calculating initial config.', end='\r')
-        sys.stdout.flush()
-
 
     cr = ase.Atoms(numbers = cryst.get_atomic_numbers(), 
                    cell=cryst.get_cell(),
