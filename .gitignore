@@ -1,6 +1,7 @@
 .ipynb_checkpoints
 *~
 run_sampler.ipynb
+monitor_calc.ipynb
 .vscode
 calc
 phon
