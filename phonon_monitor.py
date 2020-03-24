@@ -57,8 +57,11 @@ def run_alamode(d='phon', o=1, n=None, c2=10):
     anph = subprocess.run(anph_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def get_dfset_len(fn='phon/DFSET'):
-    with open(fn) as dfset:
-        return len([l for l in dfset if 'set:' in l])
+    try :
+        with open(fn) as dfset:
+            return len([l for l in dfset if 'set:' in l])
+    except FileNotFoundError:
+            return 0
 
 
 def show_dc_conv(bl, directory='phon'):
