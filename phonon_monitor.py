@@ -115,7 +115,7 @@ def monitor_phonons(directory='phon', order=2, cutoff=10):
            sleep(15) 
            print('.', end='')
            sys.stdout.flush()
-           print('done.', end='')
+        print('done.', end='')
     print('Calculating the plots.',)
     sys.stdout.flush()
     clear_output(wait=True)
