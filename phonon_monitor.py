@@ -43,7 +43,7 @@ def plot_bands(fn, units=THz, decorate=True, lbl=None, **kwargs):
 
 def run_alamode(d='phon', o=1, n=None, c2=10):
     fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p cryst -n ../sc/CONTCAR -o {o} --c2 {c2} -d {n}'.split()
-    phon_cmd = '/home/jochym/Projects/alamode-tools/devel/make-gen.py phon -p cryst -n ../sc/CONTCAR -b 2 -k 3C_SiC.path'.split()
+    phon_cmd = '/home/jochym/Projects/alamode-tools/devel/make-gen.py phon -p cryst -n ../sc/CONTCAR -b 2 -k cryst.path'.split()
     alm_cmd = '/home/jochym/public/bin/alm fit.in'.split()
     anph_cmd = '/home/jochym/public/bin/anphon phon.in'.split()
     
