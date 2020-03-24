@@ -107,6 +107,14 @@ def monitor_phonons(directory='phon', order=2, cutoff=10):
     bnd_lst = build_bnd_lst()
     prev_N = 0
     
+    if get_dfset_len(f'{directory}/DFSET') < 1:
+        print('Waiting for the first sample.', end='')
+        while get_dfset_len(f'{directory}/DFSET') < 1:
+           sleep(15) 
+           print('.', end='')
+        print('', end='\r')
+        clear_output(wait=True)
+
     with open(f'{directory}/cryst.bands') as f:
         p_lbl = f.readline().split()[1:]
         p_pnt = [float(v) for v in f.readline().split()[1:]]
