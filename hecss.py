@@ -217,7 +217,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         if i==0 :
             k+=1
             if verb:
-                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}  dE:{abs(e_star-E_goal)/(2*Es):6.2f} sigma', end='\r')
                 sys.stdout.flush()
             if k>maxburn :
                 return
