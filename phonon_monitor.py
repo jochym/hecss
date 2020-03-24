@@ -115,9 +115,10 @@ def monitor_phonons(directory='phon', order=2, cutoff=10):
            sleep(15) 
            print('.', end='')
            sys.stdout.flush()
-        print('done. Calculating the plots.', end='')
-        sys.stdout.flush()
-        clear_output(wait=True)
+           print('done.', end='')
+    print('Calculating the plots.',)
+    sys.stdout.flush()
+    clear_output(wait=True)
 
     with open(f'{directory}/cryst.bands') as f:
         p_lbl = f.readline().split()[1:]
