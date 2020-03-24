@@ -6,6 +6,7 @@ from time import sleep
 from matplotlib import pyplot
 from matplotlib.pyplot import plot, figure, subplot, legend, show, sca, semilogx
 from matplotlib.pyplot import xlabel, ylabel, xticks, xlim, ylim, axhline, axvline
+import sys
 
 THz = 1e12 * un._hplanck * un.J # THz in eV
 
@@ -109,10 +110,13 @@ def monitor_phonons(directory='phon', order=2, cutoff=10):
     
     if get_dfset_len(f'{directory}/DFSET') < 1:
         print('Waiting for the first sample.', end='')
+        sys.stdout.flush()
         while get_dfset_len(f'{directory}/DFSET') < 1:
            sleep(15) 
            print('.', end='')
-        print('', end='\r')
+           sys.stdout.flush()
+        print('done. Calculating the plots.', end='')
+        sys.stdout.flush()
         clear_output(wait=True)
 
     with open(f'{directory}/cryst.bands') as f:
