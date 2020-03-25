@@ -39,6 +39,15 @@ calc = Vasp2(label='cryst', directory='./sc/', restart=True)
 # Do not generate supercell here - your atom ordering will be wrong!
 cryst = calc.atoms.repeat(1)
 
+# %% [markdown]
+# If you have magmoms in your system you need to use following 
+# temporary fix for a bug in magmom handling in Vasp2 calculator:
+# ```python
+# if 'magmom' in calc.list_float_params:
+#     calc.list_float_params['magmom'] = cryst.get_initial_magnetic_moments()
+# ```
+# Just copy the above code to a new cell here and execute it.
+
 # %%
 # Setup the calculator - single point energy calculation
 # The details will change here from case to case
