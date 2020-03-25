@@ -182,6 +182,13 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         sys.stdout.flush()
 
     while True:
+        if verb:
+            if i==0:
+                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
+            else :
+                print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+            sys.stdout.flush()
+
         x_star = Q.rvs(size=dim, scale=w)
 
         cr.set_positions(cryst.get_positions()+x_star)
@@ -216,17 +223,13 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
         if i==0 :
             k+=1
-            if verb:
-                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}  dE:{abs(e_star-E_goal)/(2*Es):6.2f} sigma', end='\r')
-                sys.stdout.flush()
             if k>maxburn :
+                print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
+                      f'You probably need to change initial width parameter to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                 return
             continue
         else :    
             n += 1
-            if verb:
-                print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
-                sys.stdout.flush()
         yield i-1, x, f, e
         
         
