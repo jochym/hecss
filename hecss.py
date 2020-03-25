@@ -37,7 +37,7 @@ def plot_stats(confs, nat, T=300, show=True):
     de = (h[1][-1]-h[1][0])/len(h[0])
     plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de, 
              yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
-    plt.axvline(E_goal, ls='--', color='C2', label='Target energy');
+    plt.axvline(E_goal, ls='--', color='C2', label='Target energy')
     plt.plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal dist.')
     fit = stats.norm.fit(es)
     plt.plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal dist.')
@@ -176,6 +176,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     
     a = 0
     k = 0
+
     
     if verb:
         print(f'Starting burn-in.            ', end='\r')
@@ -183,10 +184,11 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
     while True:
         if verb:
+            print(70*' ', end='\r')
             if i==0:
-                print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4f}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
+                print(f'Burn-in sample:{k}  ', end='')
             else :
-                print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4f}', end='\r')
+                print(f'Sample:{n:<5d}   ', end='')
             sys.stdout.flush()
 
         x_star = Q.rvs(size=dim, scale=w)
@@ -220,6 +222,13 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
             else :
                 i += 1
                 a += 1
+
+        if verb:
+            if i==0:
+                print(f'w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
+            else :
+                print(f'conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4e}', end='\r')
+            sys.stdout.flush()
 
         if i==0 :
             k+=1
