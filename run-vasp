@@ -1,4 +1,4 @@
 #!/bin/bash
 
-/home/jochym/devel/scripts/run-vasp/run-vasp54 -b -N 1 -p 64 -q blade2 $*
+/home/jochym/devel/scripts/run-vasp/run-vasp54 -b -N 1 -p 64 -q blade $*
 
