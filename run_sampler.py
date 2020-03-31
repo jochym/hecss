@@ -24,7 +24,7 @@ from os.path import isfile
 import os
 
 # The sample generator, monitoring display and dfset writer
-from hecss import HECSS, plot_stats, write_dfset
+from hecss import HECSS, write_dfset
 
 # clear_output function for nice monitoring display
 from matplotlib.pylab import show
@@ -52,8 +52,7 @@ cryst = calc.atoms.repeat(1)
 # Setup the calculator - single point energy calculation
 # The details will change here from case to case
 calc.set(directory='calc')
-calc.set(command=f'/home/jochym/devel/scripts/run-vasp/run-vasp54' + 
-                 f' -b -N 1 -p 64 -q blade2 -J "hecss"')
+calc.set(command='/home/jochym/Projects/hecss/run-vasp -J "3C-SiC-h"')
 calc.set(nsw=0)
 cryst.set_calculator(calc)
 
@@ -75,7 +74,7 @@ nat = cryst.get_global_number_of_atoms()
 # %%
 # Space for results and desired number of samples
 confs = []
-dfsetfn = f'phon/DFSET'
+dfsetfn = f'phon/DFSET_T{T_goal:.1f}K'
 N = 4
 
 # %%
@@ -92,9 +91,6 @@ for conf in sampler:
     confs.append(conf)    
     write_dfset(dfsetfn, conf, len(confs))
     
-    # Show monitoring plot 
-    # If number of configs is <3 this does nothing
-    plot_stats(confs, nat, T_goal)
     clear_output(wait=True)
     
     # Check if we have enough samples
@@ -107,6 +103,6 @@ for conf in sampler:
 
 # %%
 # Need more samples. Increase N and run the loop above again.
-N = 32
+N = 512
 
 # %%
