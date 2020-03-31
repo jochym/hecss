@@ -20,31 +20,40 @@ def plot_band_set(bnd, units=THz, lbl=None, **kwargs):
         plot(bnd[0], un.invcm * b / units, color=plt[0].get_color(), **kwa)
     
 
-def plot_bands(fn, units=THz, decorate=True, lbl=None, **kwargs):
-    bnd = loadtxt(fn).T
-    
-    with open(fn) as f:
-        p_lbl = f.readline().split()[1:]
-        p_pnt = [float(v) for v in f.readline().split()[1:]]
-    p_lbl = [l if l!='G' else '$\\Gamma$' for l in p_lbl]
-    
-    if lbl is None:
-        lbl=fn
+def plot_bands(bnd, kpnts, units=THz, decorate=True, lbl=None, **kwargs):
     plot_band_set(bnd, units, lbl, **kwargs)
     
     if decorate:
-        xticks(p_pnt, p_lbl)
-        xlim(p_pnt[0], p_pnt[-1])
+        xticks(list(kpnts.values()), list(kpnts.keys()))
+        xlim(min(kpnts.values()), max(kpnts.values()))
         axhline(0,ls=':', lw=1, alpha=0.5)
-        for p in p_pnt[1:-1]:
+        for p in list(kpnts.values())[1:-1]:
             axvline(p, ls=':', lw=1, alpha=0.5)
         xlabel('Wave vector')
         ylabel('Frequency (THz)')
 
 
-def run_alamode(d='phon', prefix='cryst', kpath='cryst', o=1, n=0, c2=10, born=None):
-    fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p {prefix} -n ../sc/CONTCAR -o {o} --c2 {c2} -d {n}'.split()
-    b = '' if born is None else f'-b {born}'
+def plot_bands_file(fn, units=THz, decorate=True, lbl=None, **kwargs):
+    bnd = loadtxt(fn).T
+    
+    with open(fn) as f:
+        p_lbl = [l if l!='G' else '$\\Gamma$' for l in f.readline().split()[1:]]
+        p_pnt = [float(v) for v in f.readline().split()[1:]]
+    kpnts = {k:v for k,v in zip(p_lbl, p_pnt)}
+    
+    if lbl is None:
+        lbl=fn
+
+    plot_bands(bnd, kpnts, units, decorate, lbl, **kwargs)    
+
+
+def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', o=1, n=0, c2=10, born=None, charge=None):
+    fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p {prefix} -n ../sc/CONTCAR -f {dfset} -o {o} --c2 {c2} -d {n}'.split()
+    b = ''
+    if charge is None:
+        charge = prefix
+    if born is not None:
+        b = f'-b {born} -c {charge}'
     phon_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py phon -p {prefix} -n ../sc/CONTCAR {b} -k {kpath}.path'.split()
     alm_cmd = f'/home/jochym/public/bin/alm {prefix}_fit.in'.split()
     anph_cmd = f'/home/jochym/public/bin/anphon {prefix}_phon.in'.split()
@@ -57,7 +66,7 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', o=1, n=0, c2=10, born=N
 
     alm = subprocess.run(alm_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     anph = subprocess.run(anph_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return fit, phon, alm, anph
+    return all([r.returncode==0 for r in  (fit, phon, alm, anph)]), fit, phon, alm, anph
 
 def get_dfset_len(fn='phon/DFSET'):
     try :
@@ -67,9 +76,9 @@ def get_dfset_len(fn='phon/DFSET'):
             return 0
 
 
-def show_dc_conv(bl, directory='phon', dfset='DFSET', prefix='cryst'):
-    prev_n = get_dfset_len(f'{directory}/{dfset}')
-    plot_bands(f'{directory}/{prefix}.bands', lbl=f'{prev_n}', color='C3')
+def show_dc_conv(bl, kpnts):
+    prev_n = sorted(bl.keys())[-1]
+    plot_bands(bl[prev_n], kpnts, lbl=f'{prev_n}', color='C3')
     alpha = 1
     for n in reversed(sorted(bl.keys())):
         if n > prev_n*0.5 :
@@ -79,11 +88,11 @@ def show_dc_conv(bl, directory='phon', dfset='DFSET', prefix='cryst'):
         prev_n = n
     legend()
 
-def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', order=1, cutoff=10):
+def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast', order=1, cutoff=10, born=None, charge=None):
     N = get_dfset_len(f'{directory}/{dfset}')
     bl = {}
     for n in range(1,N+1):
-        run_alamode(d=directory, o=order, n=n, c2=cutoff)
+        run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, o=order, n=n, c2=cutoff, born=born, charge=charge)
         bl[n]=loadtxt(f'{directory}/{prefix}.bands').T      
     return bl
 
@@ -91,7 +100,7 @@ def build_omega(bl, kpnts):
     omega={}
     eps=1e-3
     for k,v in kpnts.items():
-        omega[k] = array([[n] + list(bnd[1:,abs(bnd[0]-v)<eps][:,0]) for n, bnd in bl.items()]).T
+        omega[k] = array([[n] + list(bnd[1:,abs(bnd[0]-v)<eps][:,0]) for n, bnd in sorted(bl.items())]).T
         omega[k][1:] = omega[k][1:,-1][:,None] - omega[k][1:]
     return omega
 
@@ -104,15 +113,30 @@ def plot_omega(omega):
         plot(o[0], (un.invcm * o[2:].T)/THz, '.', color=p[0].get_color())
     legend()
     rng = 0.5*un.invcm * array([o[1:].reshape(-1) for o in omega.values()]).std()/THz
-    ylim(-rng, rng)
+    if rng > 1e-3:
+        ylim(-rng, rng)
     axhline(0, ls=':', lw=1)
     ylabel('Frequency convergence (THz)')
     xlabel('Number of samples')    
 
 
-def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', order=1, cutoff=10, born=None):
-    bnd_lst = build_bnd_lst()
-    prev_N = 0
+def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', order=1, cutoff=10, born=None, charge=None):
+
+    def update_fig(fig, bnd_lst, kpnts):
+        if fig is not None:
+            plt.close(fig)
+        fig = figure(figsize=(14,5))
+        (dcplt, omplt) = fig.subplots(1, 2)
+        sca(dcplt)
+        show_dc_conv(bnd_lst, kpnts)
+        sca(omplt)
+        if N>1:
+            plot_omega(build_omega(bnd_lst, kpnts))
+        show()
+        clear_output(wait=True)
+        return fig
+
+    bnd_lst = {}
     
     if get_dfset_len(f'{directory}/{dfset}') < 1:
         print('Waiting for the first sample.', end='')
@@ -126,30 +150,45 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', order=1, cu
     sys.stdout.flush()
     clear_output(wait=True)
 
+    N = get_dfset_len(f'{directory}/{dfset}')
+    run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, o=order, n=N, c2=cutoff, born=born, charge=charge)
+    bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
+    prev_N = N
+
     with open(f'{directory}/{prefix}.bands') as f:
-        p_lbl = f.readline().split()[1:]
+        p_lbl = [v if v!='G' else '$\\Gamma$' for v in f.readline().split()[1:]]
         p_pnt = [float(v) for v in f.readline().split()[1:]]
     kpnts = {k:v for k,v in zip(p_lbl, p_pnt)}
-    fig = None
+
+    fig = update_fig(None, bnd_lst, kpnts)
+
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
-        if N > prev_N :
-            run_alamode(d=directory, o=order, n=N, c2=cutoff, born=born)
-            bnd_lst[N]=loadtxt(f'{directory}/{prefix}.bands').T
-            if fig is not None:
-                plt.close(fig)
-            fig = figure(figsize=(14,5))
-            (dcplt, omplt) = fig.subplots(1, 2)
-            sca(dcplt)
-            show_dc_conv(bnd_lst, directory)
-            sca(omplt)
-            if N>1:
-                plot_omega(build_omega(bnd_lst, kpnts))
-            show()
-            clear_output(wait=True)
-            prev_N = N
+        if N > prev_N:
+            r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, o=order, n=N, c2=cutoff, born=born, charge=charge)
+            if r[0]:
+                bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
+                fig = update_fig(fig, bnd_lst, kpnts)
+                prev_N = N
         else :
-            sleep(15)
+            SN = N//2
+            all_done = True
+            while SN > 0:
+                for NN in range(1,N,SN):
+                    if NN not in bnd_lst:
+                        all_done = False
+                        r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, 
+                                        o=order, n=NN, c2=cutoff, born=born, charge=charge)
+                        if r[0]:
+                            bnd_lst[NN] = loadtxt(f'{directory}/{prefix}.bands').T
+                            fig = update_fig(fig, bnd_lst, kpnts)
+                    if get_dfset_len(f'{directory}/{dfset}') > prev_N:
+                        SN = 0
+                        all_done = False
+                        break
+                SN = SN//2
+            if all_done:
+                sleep(30)
 
 
 def plot_stats(T=300, base_dir='phon', dfsetfn='DFSET', sqrN=False, show=True):
