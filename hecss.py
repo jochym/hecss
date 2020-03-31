@@ -101,7 +101,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         if i==0:
             print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
         else :
-            print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4e}' + (r*'.'), end='\r')
+            print(f'Sample:{i-1:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean(wl):.4f}  alpha:{alpha:6g} ' + (r*'x'), end='\r')
         sys.stdout.flush()
 
 
@@ -122,7 +122,8 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     w = width
     w_prev = w
     x = Q.rvs(size=dim, scale=w)
-    
+    wl = []
+
     i = 0
     n = 0
     
@@ -149,6 +150,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     a = 0
     k = 0
     r = 0
+    alpha = 0
 
     
     if verb:
@@ -156,7 +158,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         sys.stdout.flush()
 
     while True:
-        if verb and n>0:
+        if verb and (n>0 or k>0):
             smpl_print(r)
 
         x_star = Q.rvs(size=dim, scale=w)
@@ -178,16 +180,6 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
         w_prev = w
         w *= 1-2*(scipy.special.expit((e_star-E_goal)/Es)-0.5)*delta
-        
-        if i==0 :
-            k+=1
-            if k>maxburn :
-                print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
-                      f'You probably need to change initial width parameter to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
-                return
-            continue
-        else :    
-            n += 1
 
         if np.random.rand() < alpha:
             x = x_star
@@ -196,17 +188,27 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
             if i==0 and abs(e_star-E_goal) > 2*Es :
                 # At the burn-in stage and still further then 2 sigma from target
                 # Let us keep searching for correct w
+                k += 1
+                if k>maxburn :
+                    print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
+                      f'You probably need to change initial width parameter to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
+                    return
                 continue
             else :
+                # We are at sampling stage or just found the proper w
+                # Either way: switch to the next sample directory (i)
+                # and zero the rejection counter
+                wl.append(w)
                 i += 1
-                a += 1
+                n += 1
+                r = 0
         else:
             # Sample rejected - nothing to yield. Try again
             r += 1
+            n += 1
             continue
 
         if verb:
-            r = 0
             smpl_print(r)
 
         yield i-1, x, f, e
