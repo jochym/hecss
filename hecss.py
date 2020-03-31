@@ -8,47 +8,7 @@ import scipy
 from scipy import stats
 import numpy as np
 from numpy import log, exp, sqrt, linspace, dot
-import matplotlib.pyplot as plt 
 import ase.units as un
-
-
-def plot_stats(confs, nat, T=300, show=True):
-    '''
-    Plot monitoring histograms for the configuration list in confs.
-    If len(confs)<3 this function is silent.
-
-    confs - configuration list
-    nat   - number of atoms in the structure
-    T     - target temperature in Kelvin
-    show  - call show() fuction at the end (default:True)
-    '''
-
-    if len(confs) < 3:
-        return
-
-    es = np.array([c[3] for c in confs])
-    E_goal = 3*T*un.kB/2
-    Es = sqrt(3/2)*un.kB*T/sqrt(nat)
-    e = linspace(E_goal - 3*Es, E_goal + 3*Es, 200)
-    n = len(es)
-    
-    plt.hist(es, bins='auto', density=True, label=f'{n} samples')
-    h = np.histogram(es, bins='auto', density=False)
-    de = (h[1][-1]-h[1][0])/len(h[0])
-    plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de, 
-             yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
-    plt.axvline(E_goal, ls='--', color='C2', label='Target energy')
-    plt.plot(e,  stats.norm.pdf(e, E_goal, Es), '--', label='Target normal dist.')
-    fit = stats.norm.fit(es)
-    plt.plot(e,  stats.norm.pdf(e, *fit), '--', label='Fitted normal dist.')
-    fit = stats.chi2.fit(es, f0=3*nat)
-    plt.plot(e,  stats.chi2.pdf(e, *fit), '--', label='Fitted $\\chi^2$ dist.')
-    plt.xlabel('Potential energy (eV/at)')
-    plt.ylabel('Probability density')
-    plt.xlim(E_goal-3*Es,E_goal+3*Es)
-    plt.legend()
-    if show :
-        plt.show()    
 
 def normalize_conf(c, base):
     cell = base.get_cell()
@@ -137,8 +97,16 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
 
     '''    
 
+    def smpl_print(r=0):
+        if i==0:
+            print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
+        else :
+            print(f'Sample:{n:<5d}  conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4e}' + (r*'.'), end='\r')
+        sys.stdout.flush()
+
+
     if verb:
-        print(f'Calculating initial config.', end='\r')
+        print(f'Calculating base structure.    ', end='\r')
         sys.stdout.flush()
 
     nat = cryst.get_global_number_of_atoms()
@@ -168,6 +136,10 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
                    scaled_positions=cryst.get_scaled_positions(),
                    pbc=True, calculator=calc)
     
+    if verb:
+        print(f'Calculating initial sample.    ', end='\r')
+        sys.stdout.flush()
+
     cr.set_positions(cryst.get_positions()+x)
     cr.calc.set(directory=f'{basedir}/smpl/{i:04d}')
     
@@ -176,6 +148,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     
     a = 0
     k = 0
+    r = 0
 
     
     if verb:
@@ -183,13 +156,8 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         sys.stdout.flush()
 
     while True:
-        if verb:
-            print(70*' ', end='\r')
-            if i==0:
-                print(f'Burn-in sample:{k}  ', end='')
-            else :
-                print(f'Sample:{n:<5d}   ', end='')
-            sys.stdout.flush()
+        if verb and n>0:
+            smpl_print(r)
 
         x_star = Q.rvs(size=dim, scale=w)
 
@@ -211,25 +179,6 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         w_prev = w
         w *= 1-2*(scipy.special.expit((e_star-E_goal)/Es)-0.5)*delta
         
-        if np.random.rand() < alpha:
-            x = x_star
-            e = e_star
-            f = f_star
-            if i==0 and abs(e_star-E_goal) > 2*Es :
-                # At the burn-in stage and still further then 2 sigma from target
-                # Let us keep searching for correct w
-                pass
-            else :
-                i += 1
-                a += 1
-
-        if verb:
-            if i==0:
-                print(f'w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/(2*Es):+6.2f} sigma', end='\r')
-            else :
-                print(f'conf:{i-1:04d}  a:{100*a/n:5.1f}%  w:{w:.4f}  alpha:{alpha:6.4e}', end='\r')
-            sys.stdout.flush()
-
         if i==0 :
             k+=1
             if k>maxburn :
@@ -239,6 +188,27 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
             continue
         else :    
             n += 1
+
+        if np.random.rand() < alpha:
+            x = x_star
+            e = e_star
+            f = f_star
+            if i==0 and abs(e_star-E_goal) > 2*Es :
+                # At the burn-in stage and still further then 2 sigma from target
+                # Let us keep searching for correct w
+                continue
+            else :
+                i += 1
+                a += 1
+        else:
+            # Sample rejected - nothing to yield. Try again
+            r += 1
+            continue
+
+        if verb:
+            r = 0
+            smpl_print(r)
+
         yield i-1, x, f, e
         
         
