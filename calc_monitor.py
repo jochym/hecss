@@ -49,8 +49,8 @@ def plot_bands_file(fn, units=THz, decorate=True, lbl=None, **kwargs):
     plot_bands(bnd, kpnts, units, decorate, lbl, **kwargs)    
 
 
-def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', o=1, n=0, c2=10, born=None, charge=None):
-    fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p {prefix} -n ../sc/CONTCAR -f {dfset} -o {o} --c2 {c2} -d {n}'.split()
+def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../sc/CONTCAR', o=1, n=0, c2=10, born=None, charge=None):
+    fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p {prefix} -n {sc} -f {dfset} -o {o} --c2 {c2} -d {n}'.split()
     b = ''
     if charge is None:
         charge = prefix
@@ -68,6 +68,13 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', o=1, n=0
 
     alm = subprocess.run(alm_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     anph = subprocess.run(anph_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    for p, l in zip((fit, phon, alm, anph), ('fit', 'phon', 'alm', 'anphon')):
+        with open(f'{prefix}_{l}.log', 'wt') as lf:
+            lf.write(p.stdout)
+        with open(f'{prefix}_{l}.err', 'wt') as lf:
+            lf.write(p.stderr)
+
     return all([r.returncode==0 for r in  (fit, phon, alm, anph)]), fit, phon, alm, anph
 
 def get_dfset_len(fn='phon/DFSET'):
