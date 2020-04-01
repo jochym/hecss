@@ -4,9 +4,7 @@ run_sampler.ipynb
 monitor_stats.ipynb
 monitor_phonons.ipynb
 .vscode
-calc
-phon
-cryst
-sc
+example/calc
 __pycache__
 TEST
+BAK
