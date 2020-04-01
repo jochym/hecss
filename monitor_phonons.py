@@ -17,7 +17,12 @@
 # ### Calculation monitoring notebook
 
 # %%
-from phonon_monitor import monitor_phonons
-monitor_phonons('phon', order=2, cutoff=10)
+import calc_monitor as cm
+
+# %%
+T=600
+cm.monitor_phonons(directory='example/phon/', dfset=f'DFSET_T{T:.1f}K', 
+                   kpath='3C_SiC', charge='3C_SiC', 
+                   order=2, cutoff=10, born=2)
 
 # %%
