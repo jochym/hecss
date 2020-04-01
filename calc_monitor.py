@@ -22,12 +22,14 @@ def plot_band_set(bnd, units=THz, lbl=None, **kwargs):
 
 def plot_bands(bnd, kpnts, units=THz, decorate=True, lbl=None, **kwargs):
     plot_band_set(bnd, units, lbl, **kwargs)
+
+    lbls, pnts = kpnts
     
     if decorate:
-        xticks(list(kpnts.values()), list(kpnts.keys()))
-        xlim(min(kpnts.values()), max(kpnts.values()))
+        xticks(pnts, lbls)
+        xlim(min(pnts), max(pnts))
         axhline(0,ls=':', lw=1, alpha=0.5)
-        for p in list(kpnts.values())[1:-1]:
+        for p in sorted(pnts)[1:-1]:
             axvline(p, ls=':', lw=1, alpha=0.5)
         xlabel('Wave vector')
         ylabel('Frequency (THz)')
@@ -39,7 +41,7 @@ def plot_bands_file(fn, units=THz, decorate=True, lbl=None, **kwargs):
     with open(fn) as f:
         p_lbl = [l if l!='G' else '$\\Gamma$' for l in f.readline().split()[1:]]
         p_pnt = [float(v) for v in f.readline().split()[1:]]
-    kpnts = {k:v for k,v in zip(p_lbl, p_pnt)}
+    kpnts = (p_lbl, p_pnt)
     
     if lbl is None:
         lbl=fn
@@ -99,7 +101,8 @@ def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast'
 def build_omega(bl, kpnts):
     omega={}
     eps=1e-3
-    for k,v in kpnts.items():
+    kp_dict = {k:v for k,v in zip(*kpnts)}
+    for k,v in kp_dict.items():
         omega[k] = array([[n] + list(bnd[1:,abs(bnd[0]-v)<eps][:,0]) for n, bnd in sorted(bl.items())]).T
         omega[k][1:] = omega[k][1:,-1][:,None] - omega[k][1:]
     return omega
@@ -158,7 +161,7 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
     with open(f'{directory}/{prefix}.bands') as f:
         p_lbl = [v if v!='G' else '$\\Gamma$' for v in f.readline().split()[1:]]
         p_pnt = [float(v) for v in f.readline().split()[1:]]
-    kpnts = {k:v for k,v in zip(p_lbl, p_pnt)}
+    kpnts = (p_lbl, p_pnt)
 
     fig = update_fig(None, bnd_lst, kpnts)
 
