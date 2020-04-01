@@ -72,10 +72,10 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../s
     for p, l in zip((fit, phon, alm, anph), ('fit', 'phon', 'alm', 'anphon')):
         if p.stdout is not None:
             with open(f'{prefix}_{l}.log', 'wt') as lf:
-                lf.write(p.stdout.encode())
+                lf.write(p.stdout.decode())
         if p.stderr is not None:
             with open(f'{prefix}_{l}.err', 'wt') as lf:
-                lf.write(p.stderr.encode())
+                lf.write(p.stderr.decode())
 
     return all([r.returncode==0 for r in  (fit, phon, alm, anph)]), fit, phon, alm, anph
 
