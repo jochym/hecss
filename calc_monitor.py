@@ -70,10 +70,12 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../s
     anph = subprocess.run(anph_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     for p, l in zip((fit, phon, alm, anph), ('fit', 'phon', 'alm', 'anphon')):
-        with open(f'{prefix}_{l}.log', 'wt') as lf:
-            lf.write(p.stdout)
-        with open(f'{prefix}_{l}.err', 'wt') as lf:
-            lf.write(p.stderr)
+        if p.stdout is not None:
+            with open(f'{prefix}_{l}.log', 'wt') as lf:
+                lf.write(p.stdout)
+        if p.stderr is not None:
+            with open(f'{prefix}_{l}.err', 'wt') as lf:
+                lf.write(p.stderr)
 
     return all([r.returncode==0 for r in  (fit, phon, alm, anph)]), fit, phon, alm, anph
 
