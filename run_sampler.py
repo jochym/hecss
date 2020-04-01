@@ -27,13 +27,15 @@ import os
 from hecss import HECSS, write_dfset
 
 # clear_output function for nice monitoring display
-from matplotlib.pylab import show
 from IPython.display import clear_output
 
 # %%
+# Directory in which our project resides
+base_dir = 'example'
+
 # Read the structure (previously calculated unit(super) cell)
 # The command argument is specific to the cluster setup
-calc = Vasp2(label='cryst', directory='./sc/', restart=True)
+calc = Vasp2(label='cryst', directory=f'{base_dir}/sc/', restart=True)
 
 # This just makes a copy of atoms object
 # Do not generate supercell here - your atom ordering will be wrong!
@@ -51,8 +53,9 @@ cryst = calc.atoms.repeat(1)
 # %%
 # Setup the calculator - single point energy calculation
 # The details will change here from case to case
-calc.set(directory='calc')
-calc.set(command='/home/jochym/Projects/hecss/run-vasp -J "3C-SiC-h"')
+# We are using run-vasp from the current directory!
+calc.set(directory=f'{base_dir}/calc')
+calc.set(command=f'{os.getcwd()}/run-vasp -J "3C-SiC-h"')
 calc.set(nsw=0)
 cryst.set_calculator(calc)
 
@@ -74,12 +77,13 @@ nat = cryst.get_global_number_of_atoms()
 # %%
 # Space for results and desired number of samples
 confs = []
-dfsetfn = f'phon/DFSET_T{T_goal:.1f}K'
+dfsetfn = f'{base_dir}/phon/DFSET_T{T_goal:.1f}K'
+calc_dir = f'{base_dir}/calc/T{T_goal:.1f}K/'
 N = 4
 
 # %%
 # Build the sampler
-sampler = HECSS(cryst, calc, T_goal, width=0.041)
+sampler = HECSS(cryst, calc, T_goal, width=0.045, directory=calc_dir)
 
 # %%
 # Iterate over samples (conf == i, x, f, e) collect the configurations
@@ -96,13 +100,14 @@ for conf in sampler:
     # Check if we have enough samples
     if len(confs) >= N:
         break
-        
-    if isfile('STOP_HECSS'):
-        os.remove('STOP_HECSS')
+    
+    # Check for the manual stop file in calc_dir
+    if isfile(f'{calc_dir}/STOP_HECSS'):
+        os.remove(f'{calc_dir}/STOP_HECSS')
         break
 
 # %%
 # Need more samples. Increase N and run the loop above again.
-N = 512
+N = 64
 
 # %%
