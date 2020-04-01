@@ -73,7 +73,7 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../s
         if p.stdout is not None:
             with open(f'{d}/{prefix}_{l}.log', 'wt') as lf:
                 lf.write(p.stdout.decode())
-        if p.stderr is not None:
+        if p.stderr is not None and len(p.stderr) > 0:
             with open(f'{d}/{prefix}_{l}.err', 'wt') as lf:
                 lf.write(p.stderr.decode())
 
