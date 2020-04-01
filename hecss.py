@@ -6,6 +6,7 @@ import sys
 import ase
 import scipy
 from scipy import stats
+from scipy.special import expit
 import numpy as np
 from numpy import log, exp, sqrt, linspace, dot
 import ase.units as un
@@ -147,7 +148,6 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     e = (cr.get_potential_energy()-Ep0)/nat
     f = cr.get_forces()
     
-    a = 0
     k = 0
     r = 0
     alpha = 0
@@ -179,7 +179,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         alpha *= exp(q_x + q_star_x_star - q_star_x - q_x_star)
 
         w_prev = w
-        w *= 1-2*(scipy.special.expit((e_star-E_goal)/Es)-0.5)*delta*(10 if i==0 else 1)
+        w *= 1-2*(expit((e_star-E_goal)/Es)-0.5)*delta*(10 if i==0 else 1)
 
         if np.random.rand() < alpha:
             x = x_star
