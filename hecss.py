@@ -179,7 +179,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         alpha *= exp(q_x + q_star_x_star - q_star_x - q_x_star)
 
         w_prev = w
-        w *= 1-2*(scipy.special.expit((e_star-E_goal)/Es)-0.5)*delta
+        w *= 1-2*(scipy.special.expit((e_star-E_goal)/Es)-0.5)*delta*(10 if i==0 else 1)
 
         if np.random.rand() < alpha:
             x = x_star
