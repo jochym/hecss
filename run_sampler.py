@@ -35,7 +35,7 @@ base_dir = 'example'
 
 # Read the structure (previously calculated unit(super) cell)
 # The command argument is specific to the cluster setup
-calc = Vasp2(label='cryst', directory=f'{base_dir}/cryst/', restart=True)
+calc = Vasp2(label='cryst', directory=f'{base_dir}/sc/', restart=True)
 
 # This just makes a copy of atoms object
 # Do not generate supercell here - your atom ordering will be wrong!
@@ -71,7 +71,7 @@ cryst.set_calculator(calc)
 
 # %%
 # Setup the calculation parameters: Temperature and number of atoms
-T_goal = 300
+T_goal = 600
 nat = cryst.get_global_number_of_atoms()
 
 # %%
@@ -108,6 +108,6 @@ for conf in sampler:
 
 # %%
 # Need more samples. Increase N and run the loop above again.
-N = 64
+N = 32
 
 # %%

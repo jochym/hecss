@@ -14,15 +14,15 @@
 # ---
 
 # %% [markdown]
-# ### Calculation monitoring notebook
+# ### Phonon convergence monitoring notebook
 
 # %%
-import calc_monitor as cm
+from hecss import monitor_phonons
 
 # %%
 T=600
-cm.monitor_phonons(directory='example/phon/', dfset=f'DFSET_T{T:.1f}K', 
+monitor_phonons(directory='example/phon/', dfset=f'DFSET_T{T:.1f}K', 
                    kpath='3C_SiC', charge='3C_SiC', 
-                   order=2, cutoff=10, born=2)
+                   order=1, cutoff=10, born=2)
 
 # %%
