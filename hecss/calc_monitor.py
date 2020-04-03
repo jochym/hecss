@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # This file is a part of HECSS project
 # Copyright (C) 2020 by Paweł T. Jochym <jochym@gmail.com>

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # HECSS
 # Copyright (C) 2020 by Paweł T. Jochym <jochym@gmail.com>
