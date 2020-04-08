@@ -20,9 +20,11 @@
 from hecss import monitor_phonons
 
 # %%
-T=600
+T=900
 monitor_phonons(directory='example/phon/', dfset=f'DFSET_T{T:.1f}K', 
                    kpath='3C_SiC', charge='3C_SiC', 
-                   order=1, cutoff=10, born=2)
+                   order=2, cutoff=10, born=2)
+
+# %%
 
 # %%

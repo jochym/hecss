@@ -17,7 +17,7 @@
 from hecss import monitor_stats, plot_stats
 
 # %%
-T = 600
+T = 900
 monitor_stats(T=T, directory='example/phon', dfset=f'DFSET_T{T:.1f}K')
 
 # %%

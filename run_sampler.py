@@ -71,7 +71,7 @@ cryst.set_calculator(calc)
 
 # %%
 # Setup the calculation parameters: Temperature and number of atoms
-T_goal = 600
+T_goal = 900
 nat = cryst.get_global_number_of_atoms()
 
 # %%
@@ -79,7 +79,7 @@ nat = cryst.get_global_number_of_atoms()
 confs = []
 dfsetfn = f'{base_dir}/phon/DFSET_T{T_goal:.1f}K'
 calc_dir = f'{base_dir}/calc/T{T_goal:.1f}K/'
-N = 4
+N = 256
 
 # %%
 # Build the sampler
@@ -108,6 +108,6 @@ for conf in sampler:
 
 # %%
 # Need more samples. Increase N and run the loop above again.
-N = 32
+N = 256
 
 # %%
