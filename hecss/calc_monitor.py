@@ -143,7 +143,9 @@ def plot_omega(omega):
             l = '$\\Gamma$'
         p = plot(o[0], (un.invcm * o[1])/THz, '.', label=l)
         plot(o[0], (un.invcm * o[2:].T)/THz, '.', color=p[0].get_color())
+    
     legend()
+    plt.gca().set_xscale('function', functions=(lambda x: x**(1/2), lambda x: x**2))
     rng = 0.5*un.invcm * array([o[1:].reshape(-1) for o in omega.values()]).std()/THz
     if rng > 1e-3:
         ylim(-rng, rng)
