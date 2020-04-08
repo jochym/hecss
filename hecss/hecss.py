@@ -65,7 +65,8 @@ def write_dfset(fn, c, n=0):
                         file=dfset)
     
 
-def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2, directory=None, verb=True):
+def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2, 
+            directory=None, reuse_base=None, verb=True):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
     temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters
@@ -105,6 +106,13 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2, dir
                 the `calc/{T_goal:.1f}K/` will be used and the generated samples will be 
                 stored in the `smpl/{i:04d}` subdirectories.
 
+    reuse_base - None or the base calc directory for the ground state config
+                 if None the base will be recalculated at the start of the run
+                 if directory name - the energy from this dir will be reused as 
+                 ground state energy for the calculation.
+                 Be careful to have the same VASP setup in calc and reuse_base,
+                 otherwise the ground state energy and distribution wil be wrong.
+
     verb    - print verbose progress messages for interactive use
 
     OUTPUT
@@ -133,7 +141,12 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2, dir
 
     nat = cryst.get_global_number_of_atoms()
     dim = (nat, 3)
-    Ep0 = cryst.get_potential_energy()
+
+    if reuse_base is not None :
+        calc0 = ase.calculators.vasp.Vasp2(label='base', directory=reuse_base, restart=True)
+        Ep0 = calc0.get_potential_energy()
+    else :
+        Ep0 = cryst.get_potential_energy()
     
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
