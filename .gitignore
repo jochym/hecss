@@ -6,5 +6,6 @@ monitor_phonons.ipynb
 .vscode
 example/calc
 __pycache__
+*.pyc
 TEST
 BAK
