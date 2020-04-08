@@ -154,9 +154,10 @@ def plot_omega(omega):
     xlabel('Number of samples')    
 
 
-def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', order=1, cutoff=10, born=None, charge=None):
+def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', 
+                    order=1, cutoff=10, born=None, charge=None, k_list=None):
 
-    def update_fig(fig, bnd_lst, kpnts):
+    def update_fig(fig, bnd_lst, kpnts, k_lst):
         if fig is not None:
             plt.close(fig)
         fig = figure(figsize=(14,5))
@@ -165,7 +166,12 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
         show_dc_conv(bnd_lst, kpnts)
         sca(omplt)
         if N>1:
-            plot_omega(build_omega(bnd_lst, kpnts))
+            if k_lst is None:
+                plot_omega(build_omega(bnd_lst, kpnts))
+            else :
+                plot_omega(build_omega(bnd_lst, 
+                                        ([l for l in kpnts[0] if l in k_lst], 
+                                         [v for l, v in zip(*kpnts) if l in k_lst])))
         show()
         clear_output(wait=True)
         return fig
@@ -194,7 +200,7 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
         p_pnt = [float(v) for v in f.readline().split()[1:]]
     kpnts = (p_lbl, p_pnt)
 
-    fig = update_fig(None, bnd_lst, kpnts)
+    fig = update_fig(None, bnd_lst, kpnts, k_list)
 
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
@@ -202,7 +208,7 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
             r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, o=order, n=N, c2=cutoff, born=born, charge=charge)
             if r[0]:
                 bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
-                fig = update_fig(fig, bnd_lst, kpnts)
+                fig = update_fig(fig, bnd_lst, kpnts, k_list)
                 prev_N = N
         else :
             SN = N//2
@@ -215,7 +221,7 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
                                         o=order, n=NN, c2=cutoff, born=born, charge=charge)
                         if r[0]:
                             bnd_lst[NN] = loadtxt(f'{directory}/{prefix}.bands').T
-                            fig = update_fig(fig, bnd_lst, kpnts)
+                            fig = update_fig(fig, bnd_lst, kpnts, k_list)
                     if get_dfset_len(f'{directory}/{dfset}') > prev_N:
                         SN = 0
                         all_done = False
