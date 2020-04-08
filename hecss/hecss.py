@@ -65,7 +65,7 @@ def write_dfset(fn, c, n=0):
                         file=dfset)
     
 
-def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=None, verb=True):
+def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2, directory=None, verb=True):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
     temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters
@@ -96,6 +96,10 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
     delta   - speed of the adaptation - maximal change of the prior width in one step
     width   - initial width of the position distribution in Angstrom
     maxburn - max number of burn-in steps
+    sigma   - width in energy sigmas of the prior energy distribution.
+              This should be approx 2 (default), if your posteriors seem too narrow
+              make it bigger, if too wide make it smaller (1-3 range in general).
+              Too large a number makes the acceptance ratio lower.
 
     directory - directory for calculations and generated samples. If left as None,
                 the `calc/{T_goal:.1f}K/` will be used and the generated samples will be 
@@ -196,7 +200,7 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, directory=No
         alpha *= exp(q_x + q_star_x_star - q_star_x - q_x_star)
 
         w_prev = w
-        w *= 1-2*(expit((e_star-E_goal)/Es/2)-0.5)*delta*(10 if i==0 else 1)
+        w *= 1-2*(expit((e_star-E_goal)/Es/sigma)-0.5)*delta*(10 if i==0 else 1)
 
         if np.random.rand() < alpha:
             x = x_star
