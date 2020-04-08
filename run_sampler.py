@@ -31,8 +31,17 @@ from IPython.display import clear_output
 
 # %%
 # Directory in which our project resides
-base_dir = 'example'
+base_dir = '..'
 
+# %%
+# Desired number of samples
+N = 4
+
+# %%
+# Temperature (K)
+T = 3000
+
+# %%
 # Read the structure (previously calculated unit(super) cell)
 # The command argument is specific to the cluster setup
 calc = Vasp2(label='cryst', directory=f'{base_dir}/sc/', restart=True)
@@ -70,20 +79,17 @@ cryst.set_calculator(calc)
 # ```
 
 # %%
-# Setup the calculation parameters: Temperature and number of atoms
-T_goal = 900
+# Number of atoms
 nat = cryst.get_global_number_of_atoms()
 
-# %%
-# Space for results and desired number of samples
+# Space for results
 confs = []
-dfsetfn = f'{base_dir}/phon/DFSET_T{T_goal:.1f}K'
-calc_dir = f'{base_dir}/calc/T{T_goal:.1f}K/'
-N = 256
+dfsetfn = f'{base_dir}/phon/DFSET_T{T:.1f}K'
+calc_dir = f'{base_dir}/calc/T{T:.1f}K/'
 
 # %%
 # Build the sampler
-sampler = HECSS(cryst, calc, T_goal, width=0.045, directory=calc_dir)
+sampler = HECSS(cryst, calc, T, width=0.045, directory=calc_dir)
 
 # %%
 # Iterate over samples (conf == i, x, f, e) collect the configurations
@@ -108,6 +114,6 @@ for conf in sampler:
 
 # %%
 # Need more samples. Increase N and run the loop above again.
-N = 256
+N = 32
 
 # %%
