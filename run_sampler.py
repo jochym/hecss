@@ -34,12 +34,15 @@ from IPython.display import clear_output
 base_dir = '..'
 
 # %%
-# Desired number of samples
+# Desired number of samples.
+# Here 4 is minimal in 3C-SiC 
+# to get somewhat decent cubic phonons 
+# with 10 Bohr cutoff.
 N = 4
 
 # %%
 # Temperature (K)
-T = 3000
+T = 300
 
 # %%
 # Read the structure (previously calculated unit(super) cell)
@@ -64,7 +67,7 @@ cryst = calc.atoms.repeat(1)
 # The details will change here from case to case
 # We are using run-vasp from the current directory!
 calc.set(directory=f'{base_dir}/calc')
-calc.set(command=f'{os.getcwd()}/run-vasp -J "3C-SiC-h"')
+calc.set(command=f'{os.getcwd()}/run-vasp -J "hecss-3C-SiC"')
 calc.set(nsw=0)
 cryst.set_calculator(calc)
 
@@ -79,9 +82,6 @@ cryst.set_calculator(calc)
 # ```
 
 # %%
-# Number of atoms
-nat = cryst.get_global_number_of_atoms()
-
 # Space for results
 confs = []
 dfsetfn = f'{base_dir}/phon/DFSET_T{T:.1f}K'
@@ -89,7 +89,10 @@ calc_dir = f'{base_dir}/calc/T{T:.1f}K/'
 
 # %%
 # Build the sampler
-sampler = HECSS(cryst, calc, T, width=0.045, directory=calc_dir)
+sampler = HECSS(cryst, calc, T, width=0.1, directory=calc_dir,
+                # sigma=3,  # Use if the energy distribution comes out too narrow
+                # reuse_base=f'{base_dir}/calc/' # Use if you want to reuse the base calc
+               )
 
 # %%
 # Iterate over samples (conf == i, x, f, e) collect the configurations

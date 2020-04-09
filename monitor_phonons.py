@@ -20,11 +20,11 @@
 from hecss import monitor_phonons
 
 # %%
-T=600
+T = 300
 monitor_phonons(directory='../phon/', dfset=f'DFSET_T{T:.1f}K', 
                    kpath='3C_SiC', charge='3C_SiC', 
-                   order=1, cutoff=10, born=2)
-
-# %%
-
-# %%
+                   order=1, # Change to 2 if you want to monitor cubic potential
+                   cutoff=10, # Interaction range in Bohr. Do not increase too much.
+                   born=2, # Change to None to deactivate Born effective charges calculation
+                   k_list=None # Change to string with points (e.g. 'KX') to plot selected points
+               )
