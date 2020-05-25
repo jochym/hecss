@@ -19,12 +19,12 @@
 
 
 from ase import units as un
-from numpy import sqrt, loadtxt, array, linspace, histogram
+from numpy import sqrt, loadtxt, array, linspace, histogram, median
 from IPython.display import clear_output
 import subprocess
 from time import sleep
 from matplotlib import pyplot as plt
-from matplotlib.pyplot import plot, figure, subplot, legend, show, sca, semilogx
+from matplotlib.pyplot import plot, figure, subplot, legend, show, sca, semilogx, semilogy
 from matplotlib.pyplot import xlabel, ylabel, xticks, xlim, ylim, axhline, axvline
 from scipy import stats
 import sys
@@ -107,24 +107,34 @@ def get_dfset_len(fn='phon/DFSET'):
             return 0
 
 
-def show_dc_conv(bl, kpnts):
+def show_dc_conv(bl, kpnts, max_plots=4):
     prev_n = sorted(bl.keys())[-1]
     plot_bands(bl[prev_n], kpnts, lbl=f'{prev_n}', color='C3')
+    y_lims = ylim()
     alpha = 1
+    plotted = 1
     for n in reversed(sorted(bl.keys())):
-        if n > prev_n*0.5 :
+        if n > prev_n*0.75 :
             continue
-        alpha *= 0.66
+        alpha *= 0.8
         plot_band_set(bl[n], lbl=f'{n}', alpha=alpha, color='C0', ls='--', lw=1)
+        plotted += 1
         prev_n = n
+        if plotted > max_plots :
+            break
+    ylim(y_lims)
     legend()
 
-def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast', order=1, cutoff=10, born=None, charge=None):
+def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast', order=1, cutoff=10, born=None, charge=None, verbose=False):
     N = get_dfset_len(f'{directory}/{dfset}')
     bl = {}
     for n in range(1,N+1):
+        if verbose :
+            print(f'Using first {n:3} samples', end='\r')
         run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, o=order, n=n, c2=cutoff, born=born, charge=charge)
-        bl[n]=loadtxt(f'{directory}/{prefix}.bands').T      
+        bl[n]=loadtxt(f'{directory}/{prefix}.bands').T 
+    if verbose :
+        print()
     return bl
 
 def build_omega(bl, kpnts):
@@ -138,24 +148,25 @@ def build_omega(bl, kpnts):
 
 def plot_omega(omega):
     for k, o in omega.items():
+        if len(o[0])<2 :
+            return
         l = k
         if k == 'G':
             l = '$\\Gamma$'
-        p = plot(o[0], (un.invcm * o[1])/THz, '.', label=l)
-        plot(o[0], (un.invcm * o[2:].T)/THz, '.', color=p[0].get_color())
+        semilogy(o[0, :-1], (un.invcm * o[1:,:-1].std(axis=0))/THz, '-', label=l)
     
     legend()
     plt.gca().set_xscale('function', functions=(lambda x: x**(1/2), lambda x: x**2))
-    rng = 0.5*un.invcm * array([o[1:].reshape(-1) for o in omega.values()]).std()/THz
+    rng = 10*un.invcm*median([o[1:].std(axis=0) for o in omega.values()])/THz
     if rng > 1e-3:
-        ylim(-rng, rng)
-    axhline(0, ls=':', lw=1)
+        ylim(None, rng)
+    #axhline(0, ls=':', lw=1)
     ylabel('Frequency convergence (THz)')
     xlabel('Number of samples')    
 
 
 def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', 
-                    order=1, cutoff=10, born=None, charge=None, k_list=None):
+                    order=1, cutoff=10, born=None, charge=None, k_list=None, fig_out=None):
 
     def update_fig(fig, bnd_lst, kpnts, k_lst):
         if fig is not None:
@@ -201,7 +212,9 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
     kpnts = (p_lbl, p_pnt)
 
     fig = update_fig(None, bnd_lst, kpnts, k_list)
-
+    if fig_out is not None :
+        fig_out.append(fig)
+        
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
         if N > prev_N:
@@ -210,11 +223,13 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
                 bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
                 fig = update_fig(fig, bnd_lst, kpnts, k_list)
                 prev_N = N
+                if fig_out is not None :
+                    fig_out[-1]=fig
         else :
             SN = N//2
             all_done = True
             while SN > 0:
-                for NN in range(1,N,SN):
+                for NN in range(N, 1, -SN):
                     if NN not in bnd_lst:
                         all_done = False
                         r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, 
@@ -222,6 +237,8 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
                         if r[0]:
                             bnd_lst[NN] = loadtxt(f'{directory}/{prefix}.bands').T
                             fig = update_fig(fig, bnd_lst, kpnts, k_list)
+                            if fig_out is not None :
+                                fig_out[-1]=fig
                     if get_dfset_len(f'{directory}/{dfset}') > prev_N:
                         SN = 0
                         all_done = False
