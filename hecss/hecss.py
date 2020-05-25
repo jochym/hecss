@@ -45,7 +45,7 @@ def normalize_conf(c, base):
     spos = bspos + sdx
 
     # Return carthesian positions, fractional positions
-    return dot(spos,cell.T), spos
+    return dot(spos,cell), spos
 
 
 def write_dfset(fn, c, n=0):
