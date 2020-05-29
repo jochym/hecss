@@ -248,7 +248,7 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
                 sleep(30)
 
 
-def plot_stats(T=300, base_dir='phon', dfsetfn='DFSET', sqrN=False, show=True):
+def plot_stats(T=300, base_dir='phon', dfsetfn='DFSET', sqrN=False, show=True, plotchi2=False):
     '''
     Plot monitoring histograms for the configuration list in confs.
     If len(confs)<3 this function is silent.
@@ -303,8 +303,9 @@ def plot_stats(T=300, base_dir='phon', dfsetfn='DFSET', sqrN=False, show=True):
     plt.plot(e, pdf, '--', color='C1', label='Target normal dist.')
     fit = stats.norm.fit(es)
     plt.plot(e,  stats.norm.pdf(e, *fit), '--', color='C3', label='Fitted normal dist.', zorder=10)
-    fit = stats.chi2.fit(es, f0=3*nat)
-    plt.plot(e,  stats.chi2.pdf(e, *fit), '--', color='C4', label='Fitted $\\chi^2$ dist.', zorder=10)
+    if plotchi2 :
+        fit = stats.chi2.fit(es, f0=3*nat)
+        plt.plot(e,  stats.chi2.pdf(e, *fit), '--', color='C4', label='Fitted $\\chi^2$ dist.', zorder=10)
     plt.xlabel('Potential energy (eV/at)')
     plt.ylabel('Probability density')
     plt.xlim(E_goal-3*Es,E_goal+3*Es)
@@ -312,7 +313,7 @@ def plot_stats(T=300, base_dir='phon', dfsetfn='DFSET', sqrN=False, show=True):
     if show :
         plt.show()
 
-def monitor_stats(T=300, directory='phon', dfset='DFSET'):
+def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False):
     
     prev_N = get_dfset_len(f'{directory}/{dfset}')-1
 
@@ -331,7 +332,7 @@ def monitor_stats(T=300, directory='phon', dfset='DFSET'):
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
         if N > prev_N :
-            plot_stats(T=T, base_dir=directory, dfsetfn=dfset)
+            plot_stats(T=T, base_dir=directory, dfsetfn=dfset, plotchi2=plotchi2)
             show()
             clear_output(wait=True)
             prev_N = N
