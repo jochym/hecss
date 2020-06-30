@@ -1,6 +1,6 @@
 # HECSS
+> High Efficiency Configuration Space Sampler
 
-## High Efficiency Configuration Space Sampler
 
 This is a Markow-Chain Metropolis-Hastings configuration space sampler.
 
