@@ -14,7 +14,7 @@ entries:
       url: /core
     - output: web,pdf
       title: Title
-      url: /run_sampler
+      url: /monitor
     output: web
     title: hecss
   output: web
