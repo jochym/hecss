@@ -2,9 +2,15 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"normalize_conf": "00_core.ipynb"}
+index = {"normalize_conf": "00_core.ipynb",
+         "write_dfset": "00_core.ipynb",
+         "HECSS": "00_core.ipynb",
+         "monitor_phonons": "01_monitor.ipynb",
+         "plot_stats": "01_monitor.ipynb",
+         "monitor_stats": "01_monitor.ipynb"}
 
-modules = ["core.py"]
+modules = ["core.py",
+           "monitor.py"]
 
 doc_url = "//hecss/"
 

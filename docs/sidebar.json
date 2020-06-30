@@ -1,7 +1,8 @@
 {
   "hecss": {
     "Overview": "/",
-    "HECSS": "/core",
-    "Title": "/monitor"
+    "Core": "/core",
+    "Monitor": "/monitor",
+    "CLI": "/cli"
   }
 }

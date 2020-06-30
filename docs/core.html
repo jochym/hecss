@@ -1,12 +1,12 @@
 ---
 
-title: HECSS
+title: Core
 
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "The ."
-description: "The ."
+summary: "The core functionality of the HECSS module is provided by the `HECSS` factory function,"
+description: "The core functionality of the HECSS module is provided by the `HECSS` factory function,"
 ---
 <!--
 
@@ -23,6 +23,30 @@ description: "The ."
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">ase</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">dot</span>
+<span class="kn">import</span> <span class="nn">ase.units</span> <span class="k">as</span> <span class="nn">un</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -86,7 +110,7 @@ at dxutils package.</p>
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
 
-<span class="n">b</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s1">&#39;4C&#39;</span><span class="p">,</span> <span class="n">scaled_positions</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> 
+<span class="n">b</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s1">&#39;8C&#39;</span><span class="p">,</span> <span class="n">scaled_positions</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> 
                                    <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
@@ -129,6 +153,116 @@ at dxutils package.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="write_dfset" class="doc_header"><code>write_dfset</code><a href="https://gitlab.com/jochym/hecss/tree/nbdev/hecss/core.py#L51" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>write_dfset</code>(<strong><code>fn</code></strong>, <strong><code>c</code></strong>, <strong><code>n</code></strong>=<em><code>0</code></em>)</p>
+</blockquote>
+<p>Append displacement-force data from the conf to the fn file.
+The format is suitable for use as ALAMODE DFSET file.
+Optionaly you can provide configuration number in n.
+File need not exist prior to first call.
+If it does not it will be created.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="HECSS" class="doc_header"><code>HECSS</code><a href="https://gitlab.com/jochym/hecss/tree/nbdev/hecss/core.py#L70" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HECSS</code>(<strong><code>cryst</code></strong>, <strong><code>calc</code></strong>, <strong><code>T_goal</code></strong>, <strong><code>delta</code></strong>=<em><code>0.05</code></em>, <strong><code>width</code></strong>=<em><code>0.033</code></em>, <strong><code>maxburn</code></strong>=<em><code>20</code></em>, <strong><code>sigma</code></strong>=<em><code>2</code></em>, <strong><code>directory</code></strong>=<em><code>None</code></em>, <strong><code>reuse_base</code></strong>=<em><code>None</code></em>, <strong><code>verb</code></strong>=<em><code>True</code></em>)</p>
+</blockquote>
+<p>Run HECS sampler on the system <code>cryst</code> using calculator <code>calc</code> at target
+temperature <code>T_goal</code>. The <code>delta</code>, <code>width</code>, <code>maxburn</code> and <code>directory</code> parameters
+determine detailed aspects of the algorithm.</p>
+<p>This is a generator and cannot be used as regular function.
+It is intended to be used as a source of the sequence of
+configurations in the <code>for</code> loop and must be closed after
+finishing the iteration. On the other hand, the iteration
+may be continued if additional samples are required.
+The state is preserved until the .close() method is called.</p>
+
+<pre><code>sampler = HECSS(cryst, calc, T)
+for i, x, f, e in sampler:
+    process_sample(i, x, f, e)
+    if i &gt; N :
+        break
+sampler.close()</code></pre>
+<h1 id="INPUT">INPUT<a class="anchor-link" href="#INPUT"> </a></h1><p>cryst   - ASE structure to sample
+calc    - ASE calculator to use for potential energy evaluations
+T_goal  - Target temperature in Kelvin</p>
+<p>delta   - speed of the adaptation - maximal change of the prior width in one step
+width   - initial width of the position distribution in Angstrom
+maxburn - max number of burn-in steps
+sigma   - width in energy sigmas of the prior energy distribution.
+          This should be approx 2 (default), if your posteriors seem too narrow
+          make it bigger, if too wide make it smaller (1-3 range in general).
+          Too large a number makes the acceptance ratio lower.</p>
+<p>directory - directory for calculations and generated samples. If left as None,
+            the <code>calc/{T_goal:.1f}K/</code> will be used and the generated samples will be
+            stored in the <code>smpl/{i:04d}</code> subdirectories.</p>
+<p>reuse_base - None or the base calc directory for the ground state config
+             if None the base will be recalculated at the start of the run
+             if directory name - the energy from this dir will be reused as
+             ground state energy for the calculation.
+             Be careful to have the same VASP setup in calc and reuse_base,
+             otherwise the ground state energy and distribution wil be wrong.</p>
+<p>verb    - print verbose progress messages for interactive use</p>
+<h1 id="OUTPUT">OUTPUT<a class="anchor-link" href="#OUTPUT"> </a></h1><p>The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
+(index, displacement, forces, energy):
+index        - integer numbering the samples in the <code>smpl</code> subdirectory. The index may
+               repeat if the sample must be repeated in the sequence.
+displacement - set of atomic displacements (in A) in the sample (numpy array)
+forces       - set of forces (in eV/A) generated by the displacement
+energy       - potential energy of the configuration</p>
+
+</div>
+
+</div>
+
 </div>
 </div>
 

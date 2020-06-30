@@ -10,11 +10,14 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: HECSS
+      title: Core
       url: /core
     - output: web,pdf
-      title: Title
+      title: Monitor
       url: /monitor
+    - output: web,pdf
+      title: CLI
+      url: /cli
     output: web
     title: hecss
   output: web
