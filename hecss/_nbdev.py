@@ -5,6 +5,9 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 index = {"normalize_conf": "00_core.ipynb",
          "write_dfset": "00_core.ipynb",
          "HECSS": "00_core.ipynb",
+         "THz": "01_monitor.ipynb",
+         "plot_bands": "01_monitor.ipynb",
+         "plot_bands_file": "01_monitor.ipynb",
          "monitor_phonons": "01_monitor.ipynb",
          "plot_stats": "01_monitor.ipynb",
          "monitor_stats": "01_monitor.ipynb"}
