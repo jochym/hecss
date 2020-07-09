@@ -29,13 +29,14 @@ description: "High Efficiency Configuration Space Sampler"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is a Markow-Chain Metropolis-Hastings configuration space sampler.</p>
+<p>HECSS is a Markow-Chain, Metropolis-Hastings configuration space sampler. 
+The theoretical foundation of the code are presented in the section <code>Background</code> below.</p>
 <p>The main sampler is in the <code>hecss.py</code> module. The calculation monitoring
 functions are in the <code>calc_monitor.py</code> module. The examples are in:</p>
 <ul>
 <li><code>run_sampler.py</code> - jupyter notebook with full sampler run example</li>
-<li><code>monitor_stats.py</code> - sampling statistics notebook</li>
-<li><code>monitor_phonons.py</code> - phonon convergence monitoring notebook</li>
+<li><a href="/hecss/monitor#monitor_stats.py"><code>monitor_stats.py</code></a> - sampling statistics notebook</li>
+<li><a href="/hecss/monitor#monitor_phonons.py"><code>monitor_phonons.py</code></a> - phonon convergence monitoring notebook</li>
 <li><code>example</code> - directory with input data files with 3C-SiC 2x2x2 supercell</li>
 </ul>
 <p>The notebooks should be opened with <code>open as -&gt; notebook</code> in JupyterLab.</p>
@@ -87,6 +88,32 @@ and keep notebooks controlling the calculations in the <code>WORK</code> directo
 <h2 id="Usage">Usage<a class="anchor-link" href="#Usage"> </a></h2><p>Start by copying files from <code>example</code> subdirectory into <code>WORK</code> and following
 the tutorial included there by opening <code>run_sampler.py</code> as Notebook.</p>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Background">Background<a class="anchor-link" href="#Background"> </a></h1><p>The physical background of  HECSS is presented in [Jochym, Łażewski] which should be cited in every work using this code. 
+Here is just a short overview of the foundations of the approach used in the code.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Role-of-configurations-in-lattice-dynamics-calculations">Role of configurations in lattice dynamics calculations<a class="anchor-link" href="#Role-of-configurations-in-lattice-dynamics-calculations"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Molecular-dynamics">Molecular dynamics<a class="anchor-link" href="#Molecular-dynamics"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Equipartition-theorem">Equipartition theorem<a class="anchor-link" href="#Equipartition-theorem"> </a></h2>
 </div>
 </div>
 </div>

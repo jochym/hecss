@@ -133,6 +133,34 @@ at dxutils package.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-4-2c72d7f26b4c&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">     17</span> 
+<span class="ansi-green-intense-fg ansi-bold">     18</span> <span class="ansi-red-fg"># Check if the reversal worked</span>
+<span class="ansi-green-fg">---&gt; 19</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">assert</span> allclose<span class="ansi-blue-fg">(</span>unwrapped<span class="ansi-blue-fg">,</span> normalize_conf<span class="ansi-blue-fg">(</span>c<span class="ansi-blue-fg">,</span>b<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/Projects/hecss/nbdev/hecss/core.py</span> in <span class="ansi-cyan-fg">normalize_conf</span><span class="ansi-blue-fg">(c, base)</span>
+<span class="ansi-green-intense-fg ansi-bold">     45</span> 
+<span class="ansi-green-intense-fg ansi-bold">     46</span>     <span class="ansi-red-fg"># Return carthesian positions, fractional positions</span>
+<span class="ansi-green-fg">---&gt; 47</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> dot<span class="ansi-blue-fg">(</span>spos<span class="ansi-blue-fg">,</span>cell<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> spos
+<span class="ansi-green-intense-fg ansi-bold">     48</span> 
+<span class="ansi-green-intense-fg ansi-bold">     49</span> <span class="ansi-red-fg"># Cell</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;dot&#39; is not defined</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 

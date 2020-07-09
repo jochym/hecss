@@ -2,7 +2,8 @@
 > High Efficiency Configuration Space Sampler
 
 
-This is a Markow-Chain Metropolis-Hastings configuration space sampler.
+HECSS is a Markow-Chain, Metropolis-Hastings configuration space sampler. 
+The theoretical foundation of the code are presented in the section `Background` below.
 
 The main sampler is in the `hecss.py` module. The calculation monitoring
 functions are in the `calc_monitor.py` module. The examples are in:
@@ -54,3 +55,16 @@ from within `hecss` directory. This will pull all released updates for the packa
 
 Start by copying files from `example` subdirectory into `WORK` and following
 the tutorial included there by opening `run_sampler.py` as Notebook.
+
+# Background
+
+The physical background of  HECSS is presented in [Jochym, Łażewski] which should be cited in every work using this code. 
+Here is just a short overview of the foundations of the approach used in the code.
+
+## Role of configurations in lattice dynamics calculations
+
+
+
+## Molecular dynamics
+
+## Equipartition theorem

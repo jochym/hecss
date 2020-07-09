@@ -3,6 +3,7 @@
     "Overview": "/",
     "Core": "/core",
     "Monitor": "/monitor",
-    "CLI": "/cli"
+    "CLI": "/cli",
+    "Title": "/run_sampler"
   }
 }

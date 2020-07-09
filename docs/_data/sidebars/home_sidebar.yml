@@ -18,6 +18,9 @@ entries:
     - output: web,pdf
       title: CLI
       url: /cli
+    - output: web,pdf
+      title: Title
+      url: /run_sampler
     output: web
     title: hecss
   output: web
