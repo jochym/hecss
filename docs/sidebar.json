@@ -4,6 +4,7 @@
     "Core": "/core",
     "Monitor": "/monitor",
     "CLI": "/cli",
-    "Title": "/run_sampler"
+    "LAMMPS Tutorial": "/LAMMPS_Tutorial",
+    "VASP Tutorial": "/VASP_Tutorial"
   }
 }

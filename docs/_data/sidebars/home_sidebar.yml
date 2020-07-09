@@ -19,8 +19,11 @@ entries:
       title: CLI
       url: /cli
     - output: web,pdf
-      title: Title
-      url: /run_sampler
+      title: LAMMPS Tutorial
+      url: /LAMMPS_Tutorial
+    - output: web,pdf
+      title: VASP Tutorial
+      url: /VASP_Tutorial
     output: web
     title: hecss
   output: web
