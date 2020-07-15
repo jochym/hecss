@@ -3,6 +3,16 @@
 __all__ = ['normalize_conf', 'write_dfset', 'HECSS']
 
 # Cell
+import sys
+import ase
+import scipy
+from scipy import stats
+from scipy.special import expit
+import numpy as np
+from numpy import log, exp, sqrt, linspace, dot
+import ase.units as un
+
+# Cell
 def normalize_conf(c, base):
     '''
     Normalize the configuration `c` relative to the basic structure `base`.

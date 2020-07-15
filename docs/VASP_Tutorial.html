@@ -34,7 +34,8 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ase.calculators.vasp</span> <span class="kn">import</span> <span class="n">Vasp2</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import VASP calculator and unit modules</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.vasp</span> <span class="kn">import</span> <span class="n">Vasp2</span>
 <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">un</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -60,7 +61,8 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">base_dir</span> <span class="o">=</span> <span class="s1">&#39;..&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Directory in which our project resides</span>
+<span class="n">base_dir</span> <span class="o">=</span> <span class="s1">&#39;example&#39;</span>
 </pre></div>
 
     </div>
@@ -77,7 +79,8 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Here 4 is minimal in 3C-SiC </span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Desired number of samples.</span>
+<span class="c1"># Here 4 is minimal in 3C-SiC </span>
 <span class="c1"># to get somewhat decent cubic phonons </span>
 <span class="c1"># with 10 Bohr cutoff.</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">4</span>
@@ -97,7 +100,8 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">300</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Temperature (K)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">300</span>
 </pre></div>
 
     </div>
@@ -114,8 +118,9 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># The command argument is specific to the cluster setup</span>
-<span class="n">calc</span> <span class="o">=</span> <span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;cryst&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/sc/&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read the structure (previously calculated unit(super) cell)</span>
+<span class="c1"># The command argument is specific to the cluster setup</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;cryst&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/sc_1x1x1/&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># This just makes a copy of atoms object</span>
 <span class="c1"># Do not generate supercell here - your atom ordering will be wrong!</span>
@@ -148,7 +153,8 @@ temporary fix for a bug in magmom handling in Vasp2 calculator:</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># The details will change here from case to case</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Setup the calculator - single point energy calculation</span>
+<span class="c1"># The details will change here from case to case</span>
 <span class="c1"># We are using run-vasp from the current directory!</span>
 <span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/calc&#39;</span><span class="p">)</span>
 <span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="si">}</span><span class="s1">/run-vasp -J &quot;hecss-3C-SiC&quot;&#39;</span><span class="p">)</span>
@@ -183,7 +189,8 @@ DFT calculations. Here is an example:</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">confs</span> <span class="o">=</span> <span class="p">[]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Space for results</span>
+<span class="n">confs</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">dfsetfn</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/phon/DFSET_T</span><span class="si">{</span><span class="n">T</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">K&#39;</span>
 <span class="n">calc_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/calc/T</span><span class="si">{</span><span class="n">T</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">K/&#39;</span>
 </pre></div>
@@ -202,7 +209,8 @@ DFT calculations. Here is an example:</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">calc_dir</span><span class="p">,</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Build the sampler</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">calc_dir</span><span class="p">,</span>
                 <span class="c1"># sigma=3,  # Use if the energy distribution comes out too narrow</span>
                 <span class="c1"># reuse_base=f&#39;{base_dir}/calc/&#39; # Use if you want to reuse the base calc</span>
                <span class="p">)</span>
@@ -222,7 +230,8 @@ DFT calculations. Here is an example:</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># and write displacement-force data to the dfsetfn file</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Iterate over samples (conf == i, x, f, e) collect the configurations</span>
+<span class="c1"># and write displacement-force data to the dfsetfn file</span>
 <span class="c1"># You can continue the iteration by manually increasing N and just</span>
 <span class="c1"># re-running this loop. It will continue from the last computed sample.</span>
 <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">sampler</span><span class="p">:</span>
@@ -246,6 +255,19 @@ DFT calculations. Here is an example:</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sample:0003  a: 57.1%  w:0.0336  &lt;w&gt;:0.0336  alpha:1.32596  </pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -256,7 +278,8 @@ DFT calculations. Here is an example:</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">32</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Need more samples. Increase N and run the loop above again.</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">32</span>
 </pre></div>
 
     </div>
