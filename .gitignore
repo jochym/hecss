@@ -3,8 +3,8 @@
 monitor_stats.ipynb
 monitor_phonons.ipynb
 .vscode
-example/calc
-example/phon/DFSET_*
+example/*/calc
+example/*/phon/DFSET_*
 __pycache__
 *.pyc
 TEST
