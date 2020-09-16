@@ -8,8 +8,8 @@ This directory contains all files required to test and learn HECSS.
 ### VASP_3C-SiC
 
 This directory is for learning/testing with VASP, which is more complicated and requires non-free VASP calculator and proper setup.
-- sc_1x1x1 - crystalographic unit cell for quick tests
-- sc_2x2x2 - 2x2x2 supercell for better quality, but slower, tests
+- 1x1x1 - crystalographic unit cell for quick tests
+- 2x2x2 - 2x2x2 supercell for better quality, but slower, tests
 - phon - directory for phonon calculations (contains path and born files)
 
 #### Usage

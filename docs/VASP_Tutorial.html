@@ -2,11 +2,13 @@
 
 title: VASP Tutorial
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 
 
+nb_path: "04_VASP_Tutorial.ipynb"
 ---
 <!--
 
@@ -20,6 +22,13 @@ sidebar: home_sidebar
 
 <div class="container" id="notebook-container">
         
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -61,8 +70,42 @@ sidebar: home_sidebar
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">supercell</span> <span class="o">=</span> <span class="s1">&#39;1x1x1&#39;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">supercell</span> <span class="o">=</span> <span class="s1">&#39;2x2x2&#39;</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Directory in which our project resides</span>
-<span class="n">base_dir</span> <span class="o">=</span> <span class="s1">&#39;example&#39;</span>
+<span class="n">base_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;example/VASP_3C-SiC/</span><span class="si">{</span><span class="n">supercell</span><span class="si">}</span><span class="s1">/&#39;</span>
 </pre></div>
 
     </div>
@@ -120,7 +163,7 @@ sidebar: home_sidebar
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read the structure (previously calculated unit(super) cell)</span>
 <span class="c1"># The command argument is specific to the cluster setup</span>
-<span class="n">calc</span> <span class="o">=</span> <span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;cryst&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/sc_2x2x2/&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;cryst&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/sc_</span><span class="si">{</span><span class="n">supercell</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># This just makes a copy of atoms object</span>
 <span class="c1"># Do not generate supercell here - your atom ordering will be wrong!</span>
@@ -157,7 +200,7 @@ temporary fix for a bug in magmom handling in Vasp2 calculator:</p>
 <span class="c1"># The details will change here from case to case</span>
 <span class="c1"># We are using run-vasp from the current directory!</span>
 <span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/calc&#39;</span><span class="p">)</span>
-<span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="si">}</span><span class="s1">/run-vasp -q blade2 -J &quot;hecss-3C-SiC&quot;&#39;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="si">}</span><span class="s1">/run-vasp -J &quot;hecss-3C-SiC-</span><span class="si">{</span><span class="n">supercell</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 <span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">nsw</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">cryst</span><span class="o">.</span><span class="n">set_calculator</span><span class="p">(</span><span class="n">calc</span><span class="p">)</span>
 </pre></div>
@@ -290,7 +333,7 @@ DFT calculations. Here is an example:</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Sample:0004  a: 25.0%  w:1.0421  &lt;w&gt;:1.0411  alpha: 5.008e-01 xxx</pre>
+<pre>Sample:1622  a: 87.4%  w:1.1210  &lt;w&gt;:1.1298  alpha: 1.063e+00 </pre>
 </div>
 </div>
 
@@ -308,7 +351,7 @@ DFT calculations. Here is an example:</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Need more samples. Increase N and run the loop above again.</span>
-<span class="n">N</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">2000</span>
 </pre></div>
 
     </div>
