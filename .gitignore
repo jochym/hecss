@@ -5,6 +5,7 @@ monitor_phonons.ipynb
 .vscode
 example/*/*/calc
 example/*/*/phon/DFSET_*
+example/*/*/phon/cryst*.*
 __pycache__
 *.pyc
 TEST

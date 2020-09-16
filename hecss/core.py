@@ -93,6 +93,8 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     may be continued if additional samples are required.
     The state is preserved until the .close() method is called.
 
+    ### Example
+    Assuming `N` is a number of requested samples.
     ```
     sampler = HECSS(cryst, calc, T)
     for i, x, f, e in sampler:

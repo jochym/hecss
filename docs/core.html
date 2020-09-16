@@ -193,6 +193,7 @@ configurations in the <code>for</code> loop and must be closed after
 finishing the iteration. On the other hand, the iteration
 may be continued if additional samples are required.
 The state is preserved until the .close() method is called.</p>
+<h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3><p>Assuming <code>N</code> is a number of requested samples.</p>
 
 <pre><code>sampler = HECSS(cryst, calc, T)
 for i, x, f, e in sampler:
