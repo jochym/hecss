@@ -31,12 +31,18 @@ pages:
   inherit:
     default: false
   image: ruby:2.7
+  variables:
+    JEKYLL_ENV: production
+    LC_ALL: C.UTF-8
   stage: deploy  
   before_script: 
+    - gem install bundler
+    - bundle install
   script:
   - cd docs
-  - bundle install
   - bundle exec jekyll build -d ../public
   artifacts:
     paths:
     - public
+  only:
+    - nbdev
