@@ -44,5 +44,3 @@ pages:
   artifacts:
     paths:
     - public
-  only:
-    - nbdev
