@@ -42,6 +42,7 @@ pages:
   script:
     - pwd
     - bundle exec jekyll build -d ../public
+    - ls -lR ../public
   artifacts:
     paths:
       - public
