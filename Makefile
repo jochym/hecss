@@ -11,6 +11,7 @@ docs_serve: docs
 
 docs: $(SRC)
 	nbdev_build_docs
+	sed -i -e 's/\.html\"/\/\"/g' docs/sidebar.json 
 	touch docs
 
 test:
