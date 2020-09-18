@@ -36,7 +36,6 @@ pages:
     LC_ALL: C.UTF-8
   stage: deploy  
   before_script:
-    - source "https://rubygems.org"
     - gem "jekyll" 
     - gem install bundler
     - bundle install
