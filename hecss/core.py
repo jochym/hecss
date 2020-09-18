@@ -83,8 +83,8 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
             priors=None, posts=None, width_list=None):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
-    temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters
-    determine detailed aspects of the algorithm.
+    temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory`
+    parameters determine detailed aspects of the algorithm.
 
     This is a generator and cannot be used as regular function.
     It is intended to be used as a source of the sequence of
@@ -93,33 +93,35 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     may be continued if additional samples are required.
     The state is preserved until the .close() method is called.
 
-
     INPUT
     -----
     cryst        : ASE structure to sample
     calc         : ASE calculator to use for potential energy evaluations
-    - T_goal       : Target temperature in Kelvin
-    - width        : initial width of the position distribution, relative
-                        to the heurestic value defined inside function
-    - maxburn      : max number of burn-in steps
-    - N            : Number of iterations. If None (default) the generator will never terminate.
-    - w_search     : Run search for initial w. If false start from whatever is passed as width.
-    - delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-    - directory    : (only for VASP calculator) directory for calculations and generated samples .
+    T_goal       : Target temperature in Kelvin
+    width        : initial width of the position distribution, relative
+                   to the heurestic value defined inside function
+    maxburn      : max number of burn-in steps
+    N            : Number of iterations. If None (default) the generator
+                   will never terminate.
+    w_search     : Run search for initial w. If false start from whatever
+                   is passed as width.
+    delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
+    directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
-    - reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
+    reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
                    state config. If None the base will be recalculated at the start of the run.
                    If directory name - the energy from this dir will be reused as ground state
                    energy for the calculation. Be careful to have the same VASP setup in calc
-                   and reuse_base, otherwise the ground state energy and distribution will be wrong.
-    - verb         : print verbose progress messages for interactive use
+                   and reuse_base, otherwise the ground state energy and distribution
+                   will be wrong.
+    verb         : print verbose progress messages for interactive use
 
     **Output parameters**
 
-    - priors     : Output parameter. If not None, store in passed list the sequence of priors.
-    - posts      : Output parameter. If not None, store in passed list the sequence of posteriors.
-    - width_list : Output parameter. If not None, store in passed list the sequence of widths.
+    priors       : Output parameter. If not None, store in passed list the sequence of priors.
+    posts        : Output parameter. If not None, store in passed list the sequence of posteriors.
+    width_list   : Output parameter. If not None, store in passed list the sequence of widths.
 
     OUTPUT
     ------

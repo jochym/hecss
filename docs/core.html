@@ -191,8 +191,8 @@ If it does not it will be created.</code></pre>
 </blockquote>
 
 <pre><code>Run HECS sampler on the system `cryst` using calculator `calc` at target
-temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters
-determine detailed aspects of the algorithm.
+temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory`
+parameters determine detailed aspects of the algorithm.
 
 This is a generator and cannot be used as regular function.
 It is intended to be used as a source of the sequence of
@@ -201,33 +201,35 @@ finishing the iteration. On the other hand, the iteration
 may be continued if additional samples are required.
 The state is preserved until the .close() method is called.
 
-
 INPUT
 -----
 cryst        : ASE structure to sample
 calc         : ASE calculator to use for potential energy evaluations
-- T_goal       : Target temperature in Kelvin
-- width        : initial width of the position distribution, relative
-                    to the heurestic value defined inside function
-- maxburn      : max number of burn-in steps
-- N            : Number of iterations. If None (default) the generator will never terminate.
-- w_search     : Run search for initial w. If false start from whatever is passed as width.
-- delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-- directory    : (only for VASP calculator) directory for calculations and generated samples .
+T_goal       : Target temperature in Kelvin
+width        : initial width of the position distribution, relative
+               to the heurestic value defined inside function
+maxburn      : max number of burn-in steps
+N            : Number of iterations. If None (default) the generator
+               will never terminate.
+w_search     : Run search for initial w. If false start from whatever
+               is passed as width.
+delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
+directory    : (only for VASP calculator) directory for calculations and generated samples.
                If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                samples will be stored in the `smpl/{i:04d}` subdirectories.
-- reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
+reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
                state config. If None the base will be recalculated at the start of the run.
                If directory name - the energy from this dir will be reused as ground state
                energy for the calculation. Be careful to have the same VASP setup in calc
-               and reuse_base, otherwise the ground state energy and distribution will be wrong.
-- verb         : print verbose progress messages for interactive use
+               and reuse_base, otherwise the ground state energy and distribution
+               will be wrong.
+verb         : print verbose progress messages for interactive use
 
 **Output parameters**
 
-- priors     : Output parameter. If not None, store in passed list the sequence of priors.
-- posts      : Output parameter. If not None, store in passed list the sequence of posteriors.
-- width_list : Output parameter. If not None, store in passed list the sequence of widths.
+priors       : Output parameter. If not None, store in passed list the sequence of priors.
+posts        : Output parameter. If not None, store in passed list the sequence of posteriors.
+width_list   : Output parameter. If not None, store in passed list the sequence of widths.
 
 OUTPUT
 ------
@@ -253,7 +255,7 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example">Example<a class="anchor-link" href="#Example"> </a></h2><p>A general usage scheme runs the sampler in the for loop as an iterator providing series of samples.</p>
+<h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3><p>A general usage scheme runs the sampler in the for loop as an iterator providing series of samples.</p>
 <ul>
 <li><code>N</code>: number of requested samples, </li>
 <li><code>cryst</code> : structure to be calculated,</li>
@@ -262,16 +264,17 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </ul>
 <p>Loop variables:</p>
 <ul>
-<li><code>i</code> : sample number</li>
+<li><code>n</code> : sample number</li>
+<li><code>i</code> : sample configuration index (may not change between samples)</li>
 <li><code>x</code> : displacement vector</li>
 <li><code>f</code> : forces</li>
 <li><code>e</code> : potential energy</li>
 </ul>
 <p>The main loop should be structured like this:</p>
 <div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sampler</span><span class="p">:</span>
-    <span class="n">process_sample</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="p">:</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sampler</span><span class="p">:</span>
+    <span class="n">process_sample</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="p">:</span>
         <span class="k">break</span>
 <span class="n">sampler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
