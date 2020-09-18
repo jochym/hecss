@@ -1,5 +1,5 @@
 default: 
-  image: python:3.7 
+  image: python:3.8 
   before_script:
   - pip install nbdev jupyter
   - pip install -e .
@@ -30,7 +30,7 @@ run tests:
 pages:
   inherit:
     default: false
-  image: ruby:2.7
+  image: ruby:latest
   variables:
     JEKYLL_ENV: production
     LC_ALL: C.UTF-8
