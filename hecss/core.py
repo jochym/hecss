@@ -93,29 +93,14 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     may be continued if additional samples are required.
     The state is preserved until the .close() method is called.
 
-    **Example**
-
-    Assuming `N` is a number of requested samples.
-
-    ```
-    sampler = HECSS(cryst, calc, T)
-    for i, x, f, e in sampler:
-        process_sample(i, x, f, e)
-        if i > N :
-            break
-    sampler.close()
-    ```
 
     INPUT
     -----
 
-    cryst        : ASE structure to sample
-
-    calc         : ASE calculator to use for potential energy evaluations
-
-    T_goal       : Target temperature in Kelvin
-
-    width        : initial width of the position distribution,
+    - cryst        : ASE structure to sample
+    - calc         : ASE calculator to use for potential energy evaluations
+    - T_goal       : Target temperature in Kelvin
+    - width        : initial width of the position distribution,
                   relative to the heurestic value defined inside function
 
     maxburn      : max number of burn-in steps

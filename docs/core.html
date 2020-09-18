@@ -193,20 +193,14 @@ configurations in the <code>for</code> loop and must be closed after
 finishing the iteration. On the other hand, the iteration
 may be continued if additional samples are required.
 The state is preserved until the .close() method is called.</p>
-<p><strong>Example</strong></p>
-<p>Assuming <code>N</code> is a number of requested samples.</p>
-
-<pre><code>sampler = HECSS(cryst, calc, T)
-for i, x, f, e in sampler:
-    process_sample(i, x, f, e)
-    if i &gt; N :
-        break
-sampler.close()</code></pre>
-<h2 id="INPUT">INPUT<a class="anchor-link" href="#INPUT"> </a></h2><p>cryst        : ASE structure to sample</p>
-<p>calc         : ASE calculator to use for potential energy evaluations</p>
-<p>T_goal       : Target temperature in Kelvin</p>
-<p>width        : initial width of the position distribution,
-              relative to the heurestic value defined inside function</p>
+<h2 id="INPUT">INPUT<a class="anchor-link" href="#INPUT"> </a></h2><ul>
+<li>cryst        : ASE structure to sample</li>
+<li>calc         : ASE calculator to use for potential energy evaluations</li>
+<li>T_goal       : Target temperature in Kelvin</li>
+<li>width        : initial width of the position distribution,
+<pre><code>        relative to the heurestic value defined inside function</code></pre>
+</li>
+</ul>
 <p>maxburn      : max number of burn-in steps</p>
 <p>N            : Number of iterations. If None (default) the generator will never terminate.</p>
 <p>w_search     : Run search for initial w. If false start from whatever is passed as width.</p>
@@ -243,6 +237,34 @@ sampler.close()</code></pre>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Example">Example<a class="anchor-link" href="#Example"> </a></h2><p>A general usage scheme runs the sampler in the for loop as an iterator providing series of samples.</p>
+<ul>
+<li><code>N</code>: number of requested samples, </li>
+<li><code>cryst</code> : structure to be calculated,</li>
+<li><code>calc</code> : ASE calculator</li>
+<li><code>T</code>: target temperature in Kelvin.</li>
+</ul>
+<p>Loop variables:</p>
+<ul>
+<li><code>i</code> : sample number</li>
+<li><code>x</code> : displacement vector</li>
+<li><code>f</code> : forces</li>
+<li><code>e</code> : potential energy</li>
+</ul>
+<p>The main loop should be structured like this:</p>
+<div class="highlight"><pre><span></span><span class="n">sampler</span> <span class="o">=</span> <span class="n">HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sampler</span><span class="p">:</span>
+    <span class="n">process_sample</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="p">:</span>
+        <span class="k">break</span>
+<span class="n">sampler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
 </div>
  
 
