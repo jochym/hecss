@@ -96,12 +96,11 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
 
     INPUT
     -----
-
-    - cryst        : ASE structure to sample
-    - calc         : ASE calculator to use for potential energy evaluations
+    cryst        : ASE structure to sample
+    calc         : ASE calculator to use for potential energy evaluations
     - T_goal       : Target temperature in Kelvin
-    - width        : initial width of the position distribution,
-                  relative to the heurestic value defined inside function
+    - width        : initial width of the position distribution, relative
+                        to the heurestic value defined inside function
     - maxburn      : max number of burn-in steps
     - N            : Number of iterations. If None (default) the generator will never terminate.
     - w_search     : Run search for initial w. If false start from whatever is passed as width.
@@ -124,7 +123,6 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
 
     OUTPUT
     ------
-
     The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
     (number, index, displacement, forces, energy):
 
