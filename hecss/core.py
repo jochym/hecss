@@ -74,7 +74,6 @@ def write_dfset(fn, c):
                         (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)),
                         file=dfset)
 
-
 # Cell
 
 def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
