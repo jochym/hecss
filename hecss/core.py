@@ -74,6 +74,7 @@ def write_dfset(fn, c):
                         (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)),
                         file=dfset)
 
+
 # Cell
 
 def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
@@ -103,7 +104,7 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     sampler.close()
     ```
 
-    ### INPUT
+    #### INPUT
 
     cryst        - ASE structure to sample
     calc         - ASE calculator to use for potential energy evaluations
@@ -127,13 +128,13 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
 
     verb         - print verbose progress messages for interactive use
 
-    #### Output parameters
+    ##### Output parameters
 
     priors       - Output parameter. If not None, store in passed list the sequence of priors.
     posts        - Output parameter. If not None, store in passed list the sequence of posteriors.
     width_list   - Output parameter. If not None, store in passed list the sequence of widths.
 
-    ### OUTPUT
+    #### OUTPUT
 
     The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
     (number, index, displacement, forces, energy):
