@@ -193,7 +193,8 @@ configurations in the <code>for</code> loop and must be closed after
 finishing the iteration. On the other hand, the iteration
 may be continued if additional samples are required.
 The state is preserved until the .close() method is called.</p>
-<h3 id="Example">Example<a class="anchor-link" href="#Example"> </a></h3><p>Assuming <code>N</code> is a number of requested samples.</p>
+<p><strong>Example</strong></p>
+<p>Assuming <code>N</code> is a number of requested samples.</p>
 
 <pre><code>sampler = HECSS(cryst, calc, T)
 for i, x, f, e in sampler:
@@ -201,25 +202,35 @@ for i, x, f, e in sampler:
     if i &gt; N :
         break
 sampler.close()</code></pre>
-<h4 id="INPUT">INPUT<a class="anchor-link" href="#INPUT"> </a></h4><p>cryst        - ASE structure to sample
-calc         - ASE calculator to use for potential energy evaluations
-T_goal       - Target temperature in Kelvin
-width        - initial width of the position distribution,
-               relative to the heurestic value defined inside function
-maxburn      - max number of burn-in steps
-N            - Number of iterations. If None (default) the generator will never terminate.
-w_search     - Run search for initial w. If false start from whatever is passed as width.
-delta_sample - Prior width adaptation rate. The default is sufficient in most cases.</p>
-<p>directory    - (only for VASP calculator) directory for calculations and generated samples .
-               If left as None, the <code>calc/{T_goal:.1f}K/</code> will be used and the generated
-               samples will be stored in the <code>smpl/{i:04d}</code> subdirectories.</p>
-<p>reuse_base   - (only for VASP calculator) None or the base calc directory for the ground
-               state config. If None the base will be recalculated at the start of the run.
-               If directory name - the energy from this dir will be reused as ground state
-               energy for the calculation. Be careful to have the same VASP setup in calc
-               and reuse_base, otherwise the ground state energy and distribution will be wrong.</p>
-<p>verb         - print verbose progress messages for interactive use</p>
-<h5 id="Output-parameters">Output parameters<a class="anchor-link" href="#Output-parameters"> </a></h5><p>priors       - Output parameter. If not None, store in passed list the sequence of priors.
+<h4 id="INPUT">INPUT<a class="anchor-link" href="#INPUT"> </a></h4><ul>
+<li>cryst        - ASE structure to sample</li>
+<li>calc         - ASE calculator to use for potential energy evaluations</li>
+<li>T_goal       - Target temperature in Kelvin</li>
+<li>width        - initial width of the position distribution,
+<pre><code>         relative to the heurestic value defined inside function</code></pre>
+</li>
+<li>maxburn      - max number of burn-in steps</li>
+<li>N            - Number of iterations. If None (default) the generator will never terminate.</li>
+<li>w_search     - Run search for initial w. If false start from whatever is passed as width.</li>
+<li><p>delta_sample - Prior width adaptation rate. The default is sufficient in most cases.</p>
+</li>
+<li><p>directory    - (only for VASP calculator) directory for calculations and generated samples .</p>
+
+<pre><code>         If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
+         samples will be stored in the `smpl/{i:04d}` subdirectories.</code></pre>
+</li>
+<li><p>reuse_base   - (only for VASP calculator) None or the base calc directory for the ground</p>
+
+<pre><code>         state config. If None the base will be recalculated at the start of the run.
+         If directory name - the energy from this dir will be reused as ground state
+         energy for the calculation. Be careful to have the same VASP setup in calc
+         and reuse_base, otherwise the ground state energy and distribution will be wrong.</code></pre>
+</li>
+<li><p>verb         - print verbose progress messages for interactive use</p>
+</li>
+</ul>
+<p><strong>Output parameters</strong></p>
+<p>priors       - Output parameter. If not None, store in passed list the sequence of priors.
 posts        - Output parameter. If not None, store in passed list the sequence of posteriors.
 width_list   - Output parameter. If not None, store in passed list the sequence of widths.</p>
 <h4 id="OUTPUT">OUTPUT<a class="anchor-link" href="#OUTPUT"> </a></h4><p>The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
