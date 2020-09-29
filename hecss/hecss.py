@@ -240,12 +240,12 @@ def HECSS(cryst, calc, T_goal, delta=0.05, width=0.033, maxburn=20, sigma=2,
             # Sample rejected - nothing to yield. Try again
             r += 1
             n += 1
-            continue
+            #continue
 
         if verb:
             smpl_print(r)
 
-        yield i-1, x, f, e
+        yield n, i-1, x, f, e
         
         
 
