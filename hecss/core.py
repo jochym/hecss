@@ -57,7 +57,6 @@ def normalize_conf(c, base):
     return dot(spos,cell), spos
 
 # Cell
-
 def write_dfset(fn, c):
     '''
     Append displacement-force data from the conf to the fn file.
@@ -76,7 +75,6 @@ def write_dfset(fn, c):
 
 
 # Cell
-
 def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
             N=None, w_search = True, delta_sample=0.01,
             directory=None, reuse_base=None, verb=True,
@@ -138,10 +136,11 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     '''
 
     def smpl_print(r=0):
+        max_r = 15
         if i==0:
             print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
         else :
-            print(f'Sample:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]):.4f}  alpha:{alpha:10.3e} ' + (r*'x'), end='\r')
+            print(f'Sample:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}  alpha:{alpha:10.3e} ' + (min(r,max_r)*'x') + (max_r-min(r,max_r))*' ', end='\r')
         sys.stdout.flush()
 
 
@@ -217,7 +216,7 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
         print(f'Starting burn-in.            ', end='\r')
         sys.stdout.flush()
 
-    while N is None or n <= N:
+    while N is None or n < N:
         if verb and (n>0 or k>0):
             smpl_print(r)
 
@@ -248,10 +247,13 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
                 k += 1
                 if k>maxburn :
                     print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
-                        f'You probably need to change initial width parameter (current:{w}) to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
+                        f'You probably need to change initial width parameter (current:{w})' +
+                        f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                     return
                 # Continue searching for proper w
                 continue
+
+        priors.append((n, i, x_star, f_star, e_star))
 
         if i==0 :
             # We are in w-search mode and just found a proper w
@@ -264,8 +266,6 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
         else :
             # Sampling mode
             alpha = P(e_star, E_goal, Es) / P(e, E_goal, Es)
-
-            priors.append((n, i-1, x_star, f_star, e_star))
 
             if len(priors) > 3 :
                 # There is no sense in fitting priors to normal dist if we have just 2-3 samples
