@@ -1,5 +1,5 @@
 default: 
-  image: python:3.8 
+  image: python:3.7
   before_script:
   - pip install nbdev jupyter
   - pip install -e .
@@ -30,21 +30,15 @@ run tests:
 pages:
   inherit:
     default: false
-  image: ruby:latest
-  variables:
-    JEKYLL_ENV: production
-    LC_ALL: C.UTF-8
+  image: ruby:2.7
   stage: deploy  
-  before_script:
-    - cd docs
-    - gem install bundler
-    - bundle install
+  before_script: 
   script:
-    - pwd
-    - bundle exec jekyll build -d ../public
-    - ls -lR ../public
+  - cd docs
+  - bundle install
+  - bundle exec jekyll build -d ../public
   artifacts:
     paths:
-      - public
-  only:
-    - nbdev
+    - public
+
+ 

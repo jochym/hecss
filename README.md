@@ -2,6 +2,11 @@
 > High Efficiency Configuration Space Sampler
 
 
+```python
+#nbdev_hide
+from hecss.core import *
+```
+
 HECSS is a Markow-Chain, Metropolis-Hastings configuration space sampler. 
 The theoretical foundation of the code are presented in the section `Background` below.
 

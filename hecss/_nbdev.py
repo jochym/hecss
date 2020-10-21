@@ -2,25 +2,9 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"normalize_conf": "00_core.ipynb",
-         "write_dfset": "00_core.ipynb",
-         "HECSS": "00_core.ipynb",
-         "THz": "01_monitor.ipynb",
-         "plot_band_set": "01_monitor.ipynb",
-         "plot_bands": "01_monitor.ipynb",
-         "plot_bands_file": "01_monitor.ipynb",
-         "run_alamode": "01_monitor.ipynb",
-         "get_dfset_len": "01_monitor.ipynb",
-         "show_dc_conv": "01_monitor.ipynb",
-         "build_bnd_lst": "01_monitor.ipynb",
-         "build_omega": "01_monitor.ipynb",
-         "plot_omega": "01_monitor.ipynb",
-         "monitor_phonons": "01_monitor.ipynb",
-         "plot_stats": "01_monitor.ipynb",
-         "monitor_stats": "01_monitor.ipynb"}
+index = {}
 
-modules = ["core.py",
-           "monitor.py"]
+modules = []
 
 doc_url = "//hecss/"
 

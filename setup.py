@@ -15,7 +15,6 @@ setup_cfg = {o:cfg[o] for o in cfg_keys}
 
 licenses = {
     'apache2': ('Apache Software License 2.0','OSI Approved :: Apache Software License'),
-    'GPL3': ('GNU General Public License ver. 3', 'OSI Approved :: GPL3'),
 }
 statuses = [ '1 - Planning', '2 - Pre-Alpha', '3 - Alpha',
     '4 - Beta', '5 - Production/Stable', '6 - Mature', '7 - Inactive' ]
@@ -34,11 +33,10 @@ setuptools.setup(
         'License :: ' + lic[1],
         'Natural Language :: ' + cfg['language'].title(),
     ] + ['Programming Language :: Python :: '+o for o in py_versions[py_versions.index(min_python):]],
-    url = cfg['git_url'],
+    url = cfg['git_url'], 
     packages = setuptools.find_packages(),
     include_package_data = True,
     install_requires = requirements,
-    dependency_links = cfg.get('dep_links','').split(),
     python_requires  = '>=' + cfg['min_python'],
     long_description = open('README.md').read(),
     long_description_content_type = 'text/markdown',

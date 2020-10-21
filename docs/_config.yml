@@ -1,9 +1,9 @@
-repository: jochym/hecss
+repository: thomas.capelle/nbdev_template
 output: web
-topnav_title: hecss
-site_title: hecss
-company_name: Paweł T. Jochym
-description: High Efficiency Configuration Space Sampler
+topnav_title: nbdev_template
+site_title: nbdev_template
+company_name: SteadySun
+description: A description of your project
 # Set to false to disable KaTeX math
 use_math: true
 # Add Google analytics id if you have one and want to use it here

@@ -2,7 +2,7 @@ topnav:
 - title: Topnav
   items:
     - title: gitlab
-      external_url: https://gitlab.com/jochym/hecss/tree/nbdev/
+      external_url: https://gitlab.com/thomas.capelle/nbdev_template/tree/master/
 
 #Topnav dropdowns
 topnav_dropdowns:

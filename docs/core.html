@@ -39,6 +39,16 @@ nb_path: "00_core.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -46,6 +56,16 @@ nb_path: "00_core.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nbdev.showdoc</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -53,44 +73,79 @@ nb_path: "00_core.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
 
-<div class="output_wrapper">
-<div class="output">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">ase</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">dot</span>
+<span class="kn">import</span> <span class="nn">ase.units</span> <span class="k">as</span> <span class="nn">un</span>
+</pre></div>
 
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="normalize_conf" class="doc_header"><code>normalize_conf</code><a href="https://gitlab.com/jochym/hecss/tree/nbdev/hecss/core.py#L16" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>normalize_conf</code>(<strong><code>c</code></strong>, <strong><code>base</code></strong>)</p>
-</blockquote>
-
-<pre><code>Normalize the configuration `c` relative to the basic structure `base`.
-Normalization is performed by "nuwrapping" the displacements of atoms
-when they cross the periodic boundary conditions in such a way that the
-atoms are not "jumping" from one side of the cell to the other.
-
-E.g. if the atom at r=(0,0,0) goes to the relative position (-0.01, 0, 0)
-it is "wrapped" by PBC to the r=(0.99, 0, 0). Thus if we naiively calculate
-the displacement we will get a large positive displacement (0.99 of the cell
-vector) instead of a small negative one.
-
-This function reverses that process making the positions suitable for
-differentiation. The positions may be part of a continous trajectory or
-just independent configurations. This makes it impossible for described
-procedure to work if the displacements are above 1/2 of the unit cell.
-For sefety this implementation is limited to displacements &lt; 1/3 of the
-unit cell. If any coordinate changes by more then 1/3 the function
-will rise an AssertionError exception.
-
-This implementation is not suitable for tracking positions in the system
-with systematic drift (e.g. long MD trajectory with non-perfect momentum
-conservation). For stronger implementation suitable for such cases look
-at dxutils package.</code></pre>
-
+    </div>
+</div>
 </div>
 
 </div>
+    {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">normalize_conf</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Normalize the configuration `c` relative to the basic structure `base`.</span>
+<span class="sd">    Normalization is performed by &quot;nuwrapping&quot; the displacements of atoms</span>
+<span class="sd">    when they cross the periodic boundary conditions in such a way that the</span>
+<span class="sd">    atoms are not &quot;jumping&quot; from one side of the cell to the other. </span>
+<span class="sd">    </span>
+<span class="sd">    E.g. if the atom at r=(0,0,0) goes to the relative position (-0.01, 0, 0)</span>
+<span class="sd">    it is &quot;wrapped&quot; by PBC to the r=(0.99, 0, 0). Thus if we naiively calculate</span>
+<span class="sd">    the displacement we will get a large positive displacement (0.99 of the cell </span>
+<span class="sd">    vector) instead of a small negative one. </span>
+<span class="sd">    </span>
+<span class="sd">    This function reverses that process making the positions suitable for </span>
+<span class="sd">    differentiation. The positions may be part of a continous trajectory or</span>
+<span class="sd">    just independent configurations. This makes it impossible for described </span>
+<span class="sd">    procedure to work if the displacements are above 1/2 of the unit cell.</span>
+<span class="sd">    For sefety this implementation is limited to displacements &lt; 1/3 of the </span>
+<span class="sd">    unit cell. If any coordinate changes by more then 1/3 the function</span>
+<span class="sd">    will rise an AssertionError exception.</span>
+<span class="sd">    </span>
+<span class="sd">    This implementation is not suitable for tracking positions in the system</span>
+<span class="sd">    with systematic drift (e.g. long MD trajectory with non-perfect momentum</span>
+<span class="sd">    conservation). For stronger implementation suitable for such cases look</span>
+<span class="sd">    at dxutils package.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_cell</span><span class="p">()</span>
+    <span class="n">spos</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get_scaled_positions</span><span class="p">()</span>
+    <span class="n">bspos</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">get_scaled_positions</span><span class="p">()</span>
+
+    <span class="c1"># Unwrap the displacement relative to base</span>
+    <span class="n">sdx</span> <span class="o">=</span> <span class="n">spos</span> <span class="o">-</span> <span class="n">bspos</span>
+    <span class="n">sht</span> <span class="o">=</span> <span class="p">(</span><span class="n">sdx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">sdx</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span>
+    <span class="n">sdx</span> <span class="o">+=</span> <span class="n">sht</span>
+
+    <span class="c1"># Check if fractional displacements are below 1/3</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sdx</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Calculate unwrapped spos</span>
+    <span class="n">spos</span> <span class="o">=</span> <span class="n">bspos</span> <span class="o">+</span> <span class="n">sdx</span>
+
+    <span class="c1"># Return carthesian positions, fractional positions</span>
+    <span class="k">return</span> <span class="n">dot</span><span class="p">(</span><span class="n">spos</span><span class="p">,</span><span class="n">cell</span><span class="p">),</span> <span class="n">spos</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 
@@ -135,34 +190,28 @@ at dxutils package.</code></pre>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
 
-</div>
-    {% endraw %}
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">write_dfset</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Append displacement-force data from the conf to the fn file.</span>
+<span class="sd">    The format is suitable for use as ALAMODE DFSET file.</span>
+<span class="sd">    Optionaly you can provide configuration number in n.</span>
+<span class="sd">    File need not exist prior to first call. </span>
+<span class="sd">    If it does not it will be created.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">c</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;at&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dfset</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;# set: </span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1"> config: </span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">  energy: </span><span class="si">{</span><span class="n">e</span><span class="si">:</span><span class="s1">8e</span><span class="si">}</span><span class="s1"> eV/at&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">dfset</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ui</span><span class="p">,</span> <span class="n">fi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">((</span><span class="mi">3</span><span class="o">*</span><span class="s1">&#39;</span><span class="si">%15.7f</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="s1">&#39;     &#39;</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="s1">&#39;</span><span class="si">%15.8e</span><span class="s1"> &#39;</span><span class="p">)</span> <span class="o">%</span> 
+                        <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">ui</span><span class="o">/</span><span class="n">un</span><span class="o">.</span><span class="n">Bohr</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fi</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">Bohr</span><span class="o">/</span><span class="n">un</span><span class="o">.</span><span class="n">Ry</span><span class="p">)),</span> 
+                        <span class="n">file</span><span class="o">=</span><span class="n">dfset</span><span class="p">)</span>
+</pre></div>
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="write_dfset" class="doc_header"><code>write_dfset</code><a href="https://gitlab.com/jochym/hecss/tree/nbdev/hecss/core.py#L61" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>write_dfset</code>(<strong><code>fn</code></strong>, <strong><code>c</code></strong>)</p>
-</blockquote>
-
-<pre><code>Append displacement-force data from the conf to the fn file.
-The format is suitable for use as ALAMODE DFSET file.
-Optionaly you can provide configuration number in n.
-File need not exist prior to first call.
-If it does not it will be created.</code></pre>
-
-</div>
-
-</div>
-
+    </div>
 </div>
 </div>
 
@@ -172,81 +221,233 @@ If it does not it will be created.</code></pre>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
 
-</div>
-    {% endraw %}
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T_goal</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxburn</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> 
+            <span class="n">N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w_search</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">delta_sample</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+            <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reuse_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+            <span class="n">priors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">posts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Run HECS sampler on the system `cryst` using calculator `calc` at target</span>
+<span class="sd">    temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` </span>
+<span class="sd">    parameters determine detailed aspects of the algorithm.</span>
 
-    {% raw %}
+<span class="sd">    This is a generator and cannot be used as regular function. </span>
+<span class="sd">    It is intended to be used as a source of the sequence of </span>
+<span class="sd">    configurations in the `for` loop and must be closed after </span>
+<span class="sd">    finishing the iteration. On the other hand, the iteration </span>
+<span class="sd">    may be continued if additional samples are required. </span>
+<span class="sd">    The state is preserved until the .close() method is called.</span>
+<span class="sd">    </span>
+<span class="sd">    INPUT</span>
+<span class="sd">    -----</span>
+<span class="sd">    cryst        : ASE structure to sample</span>
+<span class="sd">    calc         : ASE calculator to use for potential energy evaluations</span>
+<span class="sd">    T_goal       : Target temperature in Kelvin</span>
+<span class="sd">    width        : initial width of the position distribution, relative </span>
+<span class="sd">                   to the heurestic value defined inside function                  </span>
+<span class="sd">    maxburn      : max number of burn-in steps</span>
+<span class="sd">    N            : Number of iterations. If None (default) the generator </span>
+<span class="sd">                   will never terminate.</span>
+<span class="sd">    w_search     : Run search for initial w. If false start from whatever </span>
+<span class="sd">                   is passed as width.</span>
+<span class="sd">    delta_sample : Prior width adaptation rate. The default is sufficient in most cases.</span>
+<span class="sd">    directory    : (only for VASP calculator) directory for calculations and generated samples. </span>
+<span class="sd">                   If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated </span>
+<span class="sd">                   samples will be stored in the `smpl/{i:04d}` subdirectories.</span>
+<span class="sd">    reuse_base   : (only for VASP calculator) None or the base calc directory for the ground </span>
+<span class="sd">                   state config. If None the base will be recalculated at the start of the run.</span>
+<span class="sd">                   If directory name - the energy from this dir will be reused as ground state </span>
+<span class="sd">                   energy for the calculation. Be careful to have the same VASP setup in calc </span>
+<span class="sd">                   and reuse_base, otherwise the ground state energy and distribution </span>
+<span class="sd">                   will be wrong.</span>
+<span class="sd">    verb         : print verbose progress messages for interactive use</span>
+<span class="sd">    </span>
+<span class="sd">    **Output parameters**</span>
+<span class="sd">    </span>
+<span class="sd">    priors       : Output parameter. If not None, store in passed list the sequence of priors.</span>
+<span class="sd">    posts        : Output parameter. If not None, store in passed list the sequence of posteriors.</span>
+<span class="sd">    width_list   : Output parameter. If not None, store in passed list the sequence of widths.</span>
+
+<span class="sd">    OUTPUT</span>
+<span class="sd">    ------</span>
+<span class="sd">    The generator yields samples from the thermodynamic distribution at T=T_goal as tuples</span>
+<span class="sd">    (number, index, displacement, forces, energy):</span>
+<span class="sd">    </span>
+<span class="sd">    - number       : sample number, always increasing</span>
+<span class="sd">    - index        : integer numbering the samples in the `smpl` subdirectory. The index may</span>
+<span class="sd">                   repeat if the sample must be repeated in the sequence. </span>
+<span class="sd">    - displacement : set of atomic displacements (in A) in the sample (numpy array)</span>
+<span class="sd">    - forces       : set of forces (in eV/A) generated by the displacement</span>
+<span class="sd">    - energy       : potential energy of the configuration</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>    
+
+    <span class="k">def</span> <span class="nf">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Burn-in sample:</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">  w:</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  alpha:</span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s1">6.4e</span><span class="si">}</span><span class="s1">  dE:</span><span class="si">{</span><span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">/</span><span class="n">Es</span><span class="si">:</span><span class="s1">+6.2f</span><span class="si">}</span><span class="s1"> sigma&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sample:</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">  a:</span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="n">n</span><span class="si">:</span><span class="s1">5.1f</span><span class="si">}</span><span class="s1">%  w:</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  &lt;w&gt;:</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">wl</span><span class="p">])</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  alpha:</span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s1">10.3e</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="s1">&#39;x&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calculating base structure.    &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">nat</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_global_number_of_atoms</span><span class="p">()</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">nat</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reuse_base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">calc0</span> <span class="o">=</span> <span class="n">ase</span><span class="o">.</span><span class="n">calculators</span><span class="o">.</span><span class="n">vasp</span><span class="o">.</span><span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">reuse_base</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Ep0</span> <span class="o">=</span> <span class="n">calc0</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">Ep0</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
     
-<div class="cell border-box-sizing code_cell rendered">
+    <span class="n">E_goal</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">T_goal</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">kB</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">Es</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">kB</span><span class="o">*</span><span class="n">T_goal</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nat</span><span class="p">)</span>   
+    
+    <span class="n">P</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span>
+    
+    <span class="c1"># This comes from the fitting to 3C-SiC case</span>
+    <span class="n">w_scale</span> <span class="o">=</span> <span class="mf">1.667e-3</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_goal</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1">#(T_goal**0.47)</span>
+    
+    <span class="n">w</span> <span class="o">=</span> <span class="n">width</span>
+    <span class="n">w_prev</span> <span class="o">=</span> <span class="n">w</span>
 
-<div class="output_wrapper">
-<div class="output">
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">w</span> <span class="o">*</span> <span class="n">w_scale</span>  <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">width_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">wl</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">wl</span> <span class="o">=</span> <span class="n">width_list</span>
 
-<div class="output_area">
+    <span class="k">if</span> <span class="n">priors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">priors</span> <span class="o">=</span> <span class="p">[]</span>
 
+    <span class="k">if</span> <span class="n">posts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">posts</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="HECSS" class="doc_header"><code>HECSS</code><a href="https://gitlab.com/jochym/hecss/tree/nbdev/hecss/core.py#L80" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>HECSS</code>(<strong><code>cryst</code></strong>, <strong><code>calc</code></strong>, <strong><code>T_goal</code></strong>, <strong><code>width</code></strong>=<em><code>1</code></em>, <strong><code>maxburn</code></strong>=<em><code>20</code></em>, <strong><code>N</code></strong>=<em><code>None</code></em>, <strong><code>w_search</code></strong>=<em><code>True</code></em>, <strong><code>delta_sample</code></strong>=<em><code>0.01</code></em>, <strong><code>directory</code></strong>=<em><code>None</code></em>, <strong><code>reuse_base</code></strong>=<em><code>None</code></em>, <strong><code>verb</code></strong>=<em><code>True</code></em>, <strong><code>priors</code></strong>=<em><code>None</code></em>, <strong><code>posts</code></strong>=<em><code>None</code></em>, <strong><code>width_list</code></strong>=<em><code>None</code></em>)</p>
-</blockquote>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">basedir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;calc/T_</span><span class="si">{</span><span class="n">T_goal</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">K&#39;</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">basedir</span> <span class="o">=</span> <span class="n">directory</span>
 
-<pre><code>Run HECS sampler on the system `cryst` using calculator `calc` at target
-temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory`
-parameters determine detailed aspects of the algorithm.
+    <span class="n">cr</span> <span class="o">=</span> <span class="n">ase</span><span class="o">.</span><span class="n">Atoms</span><span class="p">(</span><span class="n">numbers</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_atomic_numbers</span><span class="p">(),</span> 
+                   <span class="n">cell</span><span class="o">=</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(),</span>
+                   <span class="n">scaled_positions</span><span class="o">=</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_scaled_positions</span><span class="p">(),</span>
+                   <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="n">calc</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calculating initial sample.    &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-This is a generator and cannot be used as regular function.
-It is intended to be used as a source of the sequence of
-configurations in the `for` loop and must be closed after
-finishing the iteration. On the other hand, the iteration
-may be continued if additional samples are required.
-The state is preserved until the .close() method is called.
+    <span class="n">cr</span><span class="o">.</span><span class="n">set_positions</span><span class="p">(</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span><span class="o">+</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">try</span> <span class="p">:</span>
+        <span class="n">cr</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s1">/smpl/</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="p">:</span>
+        <span class="k">pass</span>
+    
+    <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span><span class="o">-</span><span class="n">Ep0</span><span class="p">)</span><span class="o">/</span><span class="n">nat</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_forces</span><span class="p">()</span>
+    
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Starting burn-in.            &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-INPUT
------
-cryst        : ASE structure to sample
-calc         : ASE calculator to use for potential energy evaluations
-T_goal       : Target temperature in Kelvin
-width        : initial width of the position distribution, relative
-               to the heurestic value defined inside function
-maxburn      : max number of burn-in steps
-N            : Number of iterations. If None (default) the generator
-               will never terminate.
-w_search     : Run search for initial w. If false start from whatever
-               is passed as width.
-delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-directory    : (only for VASP calculator) directory for calculations and generated samples.
-               If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
-               samples will be stored in the `smpl/{i:04d}` subdirectories.
-reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
-               state config. If None the base will be recalculated at the start of the run.
-               If directory name - the energy from this dir will be reused as ground state
-               energy for the calculation. Be careful to have the same VASP setup in calc
-               and reuse_base, otherwise the ground state energy and distribution
-               will be wrong.
-verb         : print verbose progress messages for interactive use
+    <span class="k">while</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">N</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verb</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 
-**Output parameters**
+        <span class="n">x_star</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">w</span> <span class="o">*</span> <span class="n">w_scale</span> <span class="p">)</span>
 
-priors       : Output parameter. If not None, store in passed list the sequence of priors.
-posts        : Output parameter. If not None, store in passed list the sequence of posteriors.
-width_list   : Output parameter. If not None, store in passed list the sequence of widths.
+        <span class="n">cr</span><span class="o">.</span><span class="n">set_positions</span><span class="p">(</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span><span class="o">+</span><span class="n">x_star</span><span class="p">)</span>
+        <span class="k">try</span> <span class="p">:</span>
+            <span class="n">cr</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s1">/smpl/</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="p">:</span>
+            <span class="k">pass</span>
 
-OUTPUT
-------
-The generator yields samples from the thermodynamic distribution at T=T_goal as tuples
-(number, index, displacement, forces, energy):
+        <span class="n">e_star</span> <span class="o">=</span> <span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span><span class="o">-</span><span class="n">Ep0</span><span class="p">)</span><span class="o">/</span><span class="n">nat</span>
+        <span class="n">f_star</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_forces</span><span class="p">()</span>
+        
+        <span class="n">wl</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">,</span><span class="n">e_star</span><span class="p">))</span>
 
-- number       : sample number, always increasing
-- index        : integer numbering the samples in the `smpl` subdirectory. The index may
-               repeat if the sample must be repeated in the sequence.
-- displacement : set of atomic displacements (in A) in the sample (numpy array)
-- forces       : set of forces (in eV/A) generated by the displacement
-- energy       : potential energy of the configuration</code></pre>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">delta_sample</span>
+        <span class="n">w_prev</span> <span class="o">=</span> <span class="n">w</span>
 
-</div>
+        <span class="k">if</span> <span class="n">w_search</span> <span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">expit</span><span class="p">((</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">/</span><span class="n">Es</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">Es</span> <span class="p">:</span>
+                <span class="c1"># We are in w-search mode but still far from E_goal</span>
+                <span class="c1"># Continue</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">k</span><span class="o">&gt;</span><span class="n">maxburn</span> <span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Error: reached maxburn (</span><span class="si">{</span><span class="n">maxburn</span><span class="si">}</span><span class="s1">) without finding target energy.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span>
+                        <span class="sa">f</span><span class="s1">&#39;You probably need to change initial width parameter (current:</span><span class="si">{</span><span class="n">w</span><span class="si">}</span><span class="s1">) to a </span><span class="si">{</span><span class="s2">&quot;higher&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;lower&quot;</span><span class="si">}</span><span class="s1"> value.&#39;</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="c1"># Continue searching for proper w</span>
+                <span class="k">continue</span>
 
-</div>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="c1"># We are in w-search mode and just found a proper w</span>
+            <span class="c1"># switch to sampling mode by making sure the sample is accepted</span>
+            <span class="c1"># 2 is larger than any result of np.random.rand()</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="mi">2</span> 
+            <span class="c1"># clean up the w table</span>
+            <span class="n">wl</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">prior_len</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># Sampling mode</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">e_star</span><span class="p">,</span> <span class="n">E_goal</span><span class="p">,</span> <span class="n">Es</span><span class="p">)</span> <span class="o">/</span> <span class="n">P</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">E_goal</span><span class="p">,</span> <span class="n">Es</span><span class="p">)</span>
+            
+            <span class="n">priors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x_star</span><span class="p">,</span> <span class="n">f_star</span><span class="p">,</span> <span class="n">e_star</span><span class="p">))</span>
 
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">priors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="p">:</span>
+                <span class="c1"># There is no sense in fitting priors to normal dist if we have just 2-3 samples</span>
+                <span class="c1"># The 4 samples is still rather low but seems to work well enough</span>
+                <span class="k">if</span>  <span class="nb">len</span><span class="p">(</span><span class="n">priors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.1</span><span class="o">*</span><span class="n">prior_len</span><span class="p">:</span>
+                    <span class="c1"># Re-fit the prior only if we get 10% more samples</span>
+                    <span class="n">pfit</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">priors</span><span class="p">])</span>
+                    <span class="n">prior_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">priors</span><span class="p">)</span>
+                
+                <span class="c1"># Take into account estimated transition probability</span>
+                <span class="n">alpha</span> <span class="o">*=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="n">pfit</span><span class="p">)</span><span class="o">/</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">e_star</span><span class="p">,</span> <span class="o">*</span><span class="n">pfit</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x_star</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">e_star</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f_star</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Sample rejected - stay put</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+            <span class="n">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">posts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="n">posts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+        <span class="k">yield</span> <span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 
@@ -282,6 +483,203 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">old_HECSS</span><span class="p">(</span><span class="n">cryst</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">T_goal</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.033</span><span class="p">,</span> <span class="n">maxburn</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+            <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reuse_base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Run HECS sampler on the system `cryst` using calculator `calc` at target</span>
+<span class="sd">    temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` parameters</span>
+<span class="sd">    determine detailed aspects of the algorithm.</span>
+
+<span class="sd">    This is a generator and cannot be used as regular function. </span>
+<span class="sd">    It is intended to be used as a source of the sequence of </span>
+<span class="sd">    configurations in the `for` loop and must be closed after </span>
+<span class="sd">    finishing the iteration. On the other hand, the iteration </span>
+<span class="sd">    may be continued if additional samples are required. </span>
+<span class="sd">    The state is preserved until the .close() method is called.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    sampler = HECSS(cryst, calc, T)</span>
+<span class="sd">    for i, x, f, e in sampler:</span>
+<span class="sd">        process_sample(i, x, f, e)</span>
+<span class="sd">        if i &gt; N :</span>
+<span class="sd">            break</span>
+<span class="sd">    sampler.close()</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    INPUT</span>
+<span class="sd">    </span>
+<span class="sd">    cryst   - ASE structure to sample</span>
+<span class="sd">    calc    - ASE calculator to use for potential energy evaluations</span>
+<span class="sd">    T_goal  - Target temperature in Kelvin</span>
+
+<span class="sd">    delta   - speed of the adaptation - maximal change of the prior width in one step</span>
+<span class="sd">    width   - initial width of the position distribution in Angstrom</span>
+<span class="sd">    maxburn - max number of burn-in steps</span>
+<span class="sd">    sigma   - width in energy sigmas of the prior energy distribution.</span>
+<span class="sd">              This should be approx 2 (default), if your posteriors seem too narrow</span>
+<span class="sd">              make it bigger, if too wide make it smaller (1-3 range in general).</span>
+<span class="sd">              Too large a number makes the acceptance ratio lower.</span>
+
+<span class="sd">    directory - directory for calculations and generated samples. If left as None,</span>
+<span class="sd">                the `calc/{T_goal:.1f}K/` will be used and the generated samples will be </span>
+<span class="sd">                stored in the `smpl/{i:04d}` subdirectories.</span>
+
+<span class="sd">    reuse_base - None or the base calc directory for the ground state config</span>
+<span class="sd">                 if None the base will be recalculated at the start of the run</span>
+<span class="sd">                 if directory name - the energy from this dir will be reused as </span>
+<span class="sd">                 ground state energy for the calculation.</span>
+<span class="sd">                 Be careful to have the same VASP setup in calc and reuse_base,</span>
+<span class="sd">                 otherwise the ground state energy and distribution wil be wrong.</span>
+
+<span class="sd">    verb    - print verbose progress messages for interactive use</span>
+
+<span class="sd">    OUTPUT</span>
+<span class="sd">    </span>
+<span class="sd">    The generator yields samples from the thermodynamic distribution at T=T_goal as tuples</span>
+<span class="sd">    (index, displacement, forces, energy):</span>
+<span class="sd">    index        - integer numbering the samples in the `smpl` subdirectory. The index may</span>
+<span class="sd">                   repeat if the sample must be repeated in the sequence. </span>
+<span class="sd">    displacement - set of atomic displacements (in A) in the sample (numpy array)</span>
+<span class="sd">    forces       - set of forces (in eV/A) generated by the displacement</span>
+<span class="sd">    energy       - potential energy of the configuration</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>    
+
+    <span class="k">def</span> <span class="nf">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Burn-in sample:</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">  w:</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  alpha:</span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s1">6.4e</span><span class="si">}</span><span class="s1">  dE:</span><span class="si">{</span><span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">Es</span><span class="p">)</span><span class="si">:</span><span class="s1">+6.2f</span><span class="si">}</span><span class="s1"> sigma&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sample:</span><span class="si">{</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">  a:</span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="n">n</span><span class="si">:</span><span class="s1">5.1f</span><span class="si">}</span><span class="s1">%  w:</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  &lt;w&gt;:</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">wl</span><span class="p">)</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">  alpha:</span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s1">6g</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="s1">&#39;x&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calculating base structure.    &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">nat</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_global_number_of_atoms</span><span class="p">()</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">nat</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reuse_base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">calc0</span> <span class="o">=</span> <span class="n">ase</span><span class="o">.</span><span class="n">calculators</span><span class="o">.</span><span class="n">vasp</span><span class="o">.</span><span class="n">Vasp2</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">reuse_base</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Ep0</span> <span class="o">=</span> <span class="n">calc0</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">Ep0</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+    
+    <span class="n">E_goal</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">T_goal</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">kB</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">Es</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">un</span><span class="o">.</span><span class="n">kB</span><span class="o">*</span><span class="n">T_goal</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nat</span><span class="p">)</span>   
+    
+    <span class="n">P</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span>
+    
+    <span class="n">w</span> <span class="o">=</span> <span class="n">width</span>
+    <span class="n">w_prev</span> <span class="o">=</span> <span class="n">w</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+    <span class="n">wl</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">basedir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;calc/T_</span><span class="si">{</span><span class="n">T_goal</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">K&#39;</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">basedir</span> <span class="o">=</span> <span class="n">directory</span>
+
+    <span class="n">cr</span> <span class="o">=</span> <span class="n">ase</span><span class="o">.</span><span class="n">Atoms</span><span class="p">(</span><span class="n">numbers</span> <span class="o">=</span> <span class="n">cryst</span><span class="o">.</span><span class="n">get_atomic_numbers</span><span class="p">(),</span> 
+                   <span class="n">cell</span><span class="o">=</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(),</span>
+                   <span class="n">scaled_positions</span><span class="o">=</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_scaled_positions</span><span class="p">(),</span>
+                   <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="n">calc</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calculating initial sample.    &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">cr</span><span class="o">.</span><span class="n">set_positions</span><span class="p">(</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span><span class="o">+</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">cr</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s1">/smpl/</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span><span class="o">-</span><span class="n">Ep0</span><span class="p">)</span><span class="o">/</span><span class="n">nat</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_forces</span><span class="p">()</span>
+    
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span>
+
+    
+    <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Starting burn-in.            &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verb</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="n">x_star</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+
+        <span class="n">cr</span><span class="o">.</span><span class="n">set_positions</span><span class="p">(</span><span class="n">cryst</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span><span class="o">+</span><span class="n">x_star</span><span class="p">)</span>
+        <span class="n">cr</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s1">/smpl/</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">e_star</span> <span class="o">=</span> <span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span><span class="o">-</span><span class="n">Ep0</span><span class="p">)</span><span class="o">/</span><span class="n">nat</span>
+        <span class="n">f_star</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">get_forces</span><span class="p">()</span>
+        
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">e_star</span><span class="p">,</span> <span class="n">E_goal</span><span class="p">,</span> <span class="n">Es</span><span class="p">)</span> <span class="o">/</span> <span class="n">P</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">E_goal</span><span class="p">,</span> <span class="n">Es</span><span class="p">)</span>
+        
+        <span class="n">q_x</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w_prev</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_star_x_star</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_star</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_star_x</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_x_star</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_star</span><span class="p">,</span> <span class="n">w_prev</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="n">alpha</span> <span class="o">*=</span> <span class="n">exp</span><span class="p">(</span><span class="n">q_x</span> <span class="o">+</span> <span class="n">q_star_x_star</span> <span class="o">-</span> <span class="n">q_star_x</span> <span class="o">-</span> <span class="n">q_x_star</span><span class="p">)</span>
+
+        <span class="n">w_prev</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="n">w</span> <span class="o">*=</span> <span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">expit</span><span class="p">((</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">/</span><span class="n">Es</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="mi">10</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x_star</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">e_star</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f_star</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">Es</span> <span class="p">:</span>
+                <span class="c1"># At the burn-in stage and still further then 2 sigma from target</span>
+                <span class="c1"># Let us keep searching for correct w</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">k</span><span class="o">&gt;</span><span class="n">maxburn</span> <span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Error: reached maxburn (</span><span class="si">{</span><span class="n">maxburn</span><span class="si">}</span><span class="s1">) without finding target energy.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span>
+                      <span class="sa">f</span><span class="s1">&#39;You probably need to change initial width parameter to a </span><span class="si">{</span><span class="s2">&quot;higher&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">e_star</span><span class="o">-</span><span class="n">E_goal</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;lower&quot;</span><span class="si">}</span><span class="s1"> value.&#39;</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="k">continue</span>
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="c1"># We are at sampling stage or just found the proper w</span>
+                <span class="c1"># Either way: switch to the next sample directory (i)</span>
+                <span class="c1"># and zero the rejection counter</span>
+                <span class="n">wl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Sample rejected - nothing to yield. Try again</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">verb</span><span class="p">:</span>
+            <span class="n">smpl_print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 </div>
  
 
