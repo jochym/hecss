@@ -1,7 +1,8 @@
 default: 
   image: python:3.7
   before_script:
-  - pip install nbdev jupyter asap3 numpy
+  - pip install numpy
+  - pip install nbdev jupyter asap3
   - pip install -e .
 
 read_notebooks:
