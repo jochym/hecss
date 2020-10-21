@@ -50,7 +50,9 @@ One can see that some additional mechanism is required to adjust probability dis
 
 The general form of the equipartition theorem says that a generalized virial for any phase space coordinate (i.e. generalized coordinate or momentum) is proportional to temperature when it is averaged over the whole ensemble: 
 
-$\left\langle x_m \frac{\partial H}{\partial x_n}\right\rangle = \delta_{mn}k_B T.$
+$$
+\left\langle x_m \frac{\partial H}{\partial x_n}\right\rangle = \delta_{mn}k_B T.
+$$
 
 If we assume ergodicity of the system, the ensemble average may be replaced with time average.
 For momenta this leads to the average kinetic energy per degree of freedom being equal to $k_B T/2$ and provides the kinetic definition of temperature. However, the relation holds also for derivatives of Hamiltonian with respect to positions. Considering relation for some atomic displacement $q$ from the equilibrium configuration, and assuming the potential energy depends only on position, we can write position-dependent part of the Hamiltonian (i.e the potential energy $E_p(q)$) as a Taylor's expansion with respect to the atomic displacement $q$ from the equilibrium configuration:
