@@ -16,6 +16,7 @@ index = {"normalize_conf": "00_core.ipynb",
          "build_omega": "01_monitor.ipynb",
          "plot_omega": "01_monitor.ipynb",
          "monitor_phonons": "01_monitor.ipynb",
+         "load_dfset": "01_monitor.ipynb",
          "plot_stats": "01_monitor.ipynb",
          "monitor_stats": "01_monitor.ipynb"}
 

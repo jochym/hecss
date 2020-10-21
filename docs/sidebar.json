@@ -1,6 +1,12 @@
 {
-  "nbdev_template": {
+  "hecss": {
     "Overview": "/",
-    "module name here": "/core"
+    "Core": "core.html",
+    "Monitor": "monitor.html",
+    "CLI": "cli.html",
+    "LAMMPS Tutorial": "LAMMPS_Tutorial.html",
+    "VASP Tutorial": "VASP_Tutorial.html",
+    "Sampling statistics monitoring": "monitor_stats.html",
+    "Phonon convergence monitoring": "monitor_phonons.html"
   }
 }
