@@ -102,7 +102,7 @@ sampler = HECSS(cryst, calc, T, width=0.1, directory=calc_dir,
 for conf in sampler:
     # Collect results
     confs.append(conf)    
-    write_dfset(dfsetfn, conf, len(confs))
+    write_dfset(dfsetfn, conf[1:], len(confs))
     
     clear_output(wait=True)
     
