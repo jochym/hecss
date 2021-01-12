@@ -101,8 +101,9 @@ sampler = HECSS(cryst, calc, T, width=0.1, directory=calc_dir,
 # re-running this loop. It will continue from the last computed sample.
 for conf in sampler:
     # Collect results
-    confs.append(conf)    
-    write_dfset(dfsetfn, conf[1:], len(confs))
+    if conf[1] >= 0 :
+        confs.append(conf)    
+        write_dfset(dfsetfn, conf[1:], len(confs))
     
     clear_output(wait=True)
     
