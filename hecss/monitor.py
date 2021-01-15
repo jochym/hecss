@@ -250,7 +250,7 @@ def load_dfset(base_dir='phon', dfsetfn='DFSET'):
     '''
     Load contents of the DFSET flie and return dfset array
     '''
-
+    N = get_dfset_len(f'{base_dir}/{dfsetfn}')
     dfset = loadtxt(f'{base_dir}/{dfsetfn}').reshape(N,-1,6)
     nat=dfset.shape[1]
 
@@ -262,9 +262,10 @@ def load_dfset(base_dir='phon', dfsetfn='DFSET'):
             if 'set:' not in l:
                 continue
             s, _, c, _, e = l.split()[2:7]
-            sets.append(s)
-            confs.append(c)
-            es.append(float(e))
+            s = int(s)
+            c = int(c)
+            e = float(e)
+            confs.append((s,c, dfset[s-1,:,0:3], dfset[s-1,:,3:], e))
 
     return confs
 
@@ -285,7 +286,6 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     #E0 = Vasp2(restart=base_dir+'/../calc/').get_potential_energy()
     #es = [(Vasp2(restart=d).get_potential_energy()-E0)/nat
     #          for d in sorted(glob(base_dir+'/../calc/T_600.0K/smpl/0*/'))]
-
 
     es = array([_[-1] for _ in confs])
 
