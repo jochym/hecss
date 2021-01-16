@@ -140,12 +140,12 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
         if i==0:
             print(f'Burn-in sample:{k}  w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
         else :
-            print(f'Sample:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}  alpha:{alpha:10.3e} ' + (min(r,max_r)*'x') + (max_r-min(r,max_r))*' ', end='\r')
+            print(f'Sample:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}  alpha:{alpha:10.3e} ' + (min(r,max_r)*'x') + (max_r-min(r,max_r))*' ', end='\n')
         sys.stdout.flush()
 
 
     if verb:
-        print(f'Calculating base structure.    ', end='\r')
+        print(f'Calculating base structure.    ', end='\n')
         sys.stdout.flush()
 
     nat = cryst.get_global_number_of_atoms()
@@ -196,7 +196,7 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
                    pbc=True, calculator=calc)
 
     if verb:
-        print(f'Calculating initial sample.    ', end='\r')
+        print(f'Calculating initial sample.    ', end='\n')
         sys.stdout.flush()
 
     cr.set_positions(cryst.get_positions()+x)
@@ -213,7 +213,7 @@ def HECSS(cryst, calc, T_goal, width=1, maxburn=20,
     alpha = 0
 
     if verb:
-        print(f'Starting burn-in.            ', end='\r')
+        print(f'Starting burn-in.            ', end='\n')
         sys.stdout.flush()
 
     while N is None or n < N:

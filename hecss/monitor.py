@@ -123,7 +123,7 @@ def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast'
     bl = {}
     for n in range(1,N+1):
         if verbose :
-            print(f'Using first {n:3} samples', end='\r')
+            print(f'Using first {n:3} samples', end='\n')
         run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, sc=sc,
                     o=order, n=n, c2=cutoff, born=born, charge=charge)
         bl[n]=loadtxt(f'{directory}/{prefix}.bands').T
