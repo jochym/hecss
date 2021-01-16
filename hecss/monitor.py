@@ -123,7 +123,7 @@ def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast'
     bl = {}
     for n in range(1,N+1):
         if verbose :
-            print(f'Using first {n:3} samples', end='\n')
+            print(f'Using first {n:3} samples', end='\r')
         run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, sc=sc,
                     o=order, n=n, c2=cutoff, born=born, charge=charge)
         bl[n]=loadtxt(f'{directory}/{prefix}.bands').T
@@ -343,7 +343,7 @@ def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False):
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
         if N > prev_N :
-            plot_stats(T=T, base_dir=directory, dfsetfn=dfset, plotchi2=plotchi2)
+            plot_stats(load_dfset(base_dir=directory, dfsetfn=dfset), T=T, plotchi2=plotchi2)
             show()
             clear_output(wait=True)
             prev_N = N
