@@ -319,13 +319,17 @@ class HECSS:
         self.pbar = tqdm(total=N)
         self.pbar.disable = not pbar
         self.N=0
+        self.T=T_goal
         self.sampler = HECSS_Sampler(cryst, calc, T_goal,
                                      width=width, maxburn=maxburn,
                                      w_search=w_search,
                                      delta_sample=delta_sample,
-                                     pbar=self.pbar)
+                                     pbar=self.pbar,
+                                     directory=directory,
+                                     reuse_base=reuse_base, verb=verb,
+                                     priors=priors, posts=posts, width_list=width_list)
 
-    def generate(self, N=1, sentinel=None):
+    def generate(self, N=1, sentinel=None, **kwargs):
         '''
         Generate and return the list of N samples provided
         by the `HECSS_Sampler` generator in `self.sampler`.
@@ -344,10 +348,10 @@ class HECSS:
         smpls = []
         for smpl in self.sampler:
             smpls.append(smpl)
+            if sentinel is not None and sentinel(smpl, smpls, **kwargs):
+                break
             if len(smpls) >= N:
                 #self.pbar.close()
-                break
-            if sentinel is not None and sentinel(smpl):
                 break
         self.N += len(smpls)
         return smpls
