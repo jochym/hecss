@@ -2,13 +2,11 @@
 > High Efficiency Configuration Space Sampler
 
 
-HECSS is a Markow chain Monte-Carlo Metropolis-Hastings configuration space sampler. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The theoretical foundation of the code are presented in the section `Background` below.
+HECSS is a Markow chain Monte-Carlo Metropolis-Hastings configuration space sampler. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The theoretical foundation of the code are presented in the section [Background](https://jochym.gitlab.io/hecss/Background) in the [Documentation](https://jochym.gitlab.io/hecss/). More detailed examples are included in the [LAMMPS](https://jochym.gitlab.io/hecss/LAMMPS_Tutorial) and [VASP](https://jochym.gitlab.io/hecss/VASP_Tutorial) tutorials.
 
 ## A very short example
 
 Minimal example using LAMMPS potential from the asap3 package and OpenKIM database. Here we will sample the thermodynamic distribution of 3C-SiC crystal at 300K. We start by importing required modules, define the crystal and energy/forces calculator, run the sampler and finally plot the energy distribution. 
-
-More detailed examples are included in the `LAMMPS_Tutorial` and `VASP_Tutorial`.
 
 ```python
 from ase.build import bulk
