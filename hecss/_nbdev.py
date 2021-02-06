@@ -2,24 +2,24 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"normalize_conf": "00_core.ipynb",
-         "write_dfset": "00_core.ipynb",
-         "HECSS_Sampler": "00_core.ipynb",
-         "HECSS": "00_core.ipynb",
-         "THz": "01_monitor.ipynb",
-         "plot_band_set": "01_monitor.ipynb",
-         "plot_bands": "01_monitor.ipynb",
-         "plot_bands_file": "01_monitor.ipynb",
-         "run_alamode": "01_monitor.ipynb",
-         "get_dfset_len": "01_monitor.ipynb",
-         "show_dc_conv": "01_monitor.ipynb",
-         "build_bnd_lst": "01_monitor.ipynb",
-         "build_omega": "01_monitor.ipynb",
-         "plot_omega": "01_monitor.ipynb",
-         "monitor_phonons": "01_monitor.ipynb",
-         "load_dfset": "01_monitor.ipynb",
-         "plot_stats": "01_monitor.ipynb",
-         "monitor_stats": "01_monitor.ipynb"}
+index = {"normalize_conf": "02_core.ipynb",
+         "write_dfset": "02_core.ipynb",
+         "HECSS_Sampler": "02_core.ipynb",
+         "HECSS": "02_core.ipynb",
+         "THz": "04_monitor.ipynb",
+         "plot_band_set": "04_monitor.ipynb",
+         "plot_bands": "04_monitor.ipynb",
+         "plot_bands_file": "04_monitor.ipynb",
+         "run_alamode": "04_monitor.ipynb",
+         "get_dfset_len": "04_monitor.ipynb",
+         "show_dc_conv": "04_monitor.ipynb",
+         "build_bnd_lst": "04_monitor.ipynb",
+         "build_omega": "04_monitor.ipynb",
+         "plot_omega": "04_monitor.ipynb",
+         "monitor_phonons": "04_monitor.ipynb",
+         "load_dfset": "04_monitor.ipynb",
+         "plot_stats": "04_monitor.ipynb",
+         "monitor_stats": "04_monitor.ipynb"}
 
 modules = ["core.py",
            "monitor.py"]
