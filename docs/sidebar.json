@@ -1,12 +1,13 @@
 {
   "hecss": {
     "Overview": "/",
-    "Core": "core.html",
-    "Monitor": "monitor.html",
-    "CLI": "cli.html",
-    "LAMMPS Tutorial": "LAMMPS_Tutorial.html",
-    "VASP Tutorial": "VASP_Tutorial.html",
-    "Sampling statistics monitoring": "monitor_stats.html",
-    "Phonon convergence monitoring": "monitor_phonons.html"
+    "Background": "/Background",
+    "LAMMPS Tutorial": "/LAMMPS_Tutorial",
+    "VASP Tutorial": "/VASP_Tutorial",
+    "Core": "/core",
+    "CLI": "/cli",
+    "Monitor": "/monitor",
+    "Sampling statistics monitoring": "/monitor_stats",
+    "Phonon convergence monitoring": "/monitor_phonons"
   }
 }
