@@ -324,7 +324,7 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
         plt.show()
 
 # Cell
-def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False):
+def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False, once=False):
 
     prev_N = get_dfset_len(f'{directory}/{dfset}')-1
 
@@ -345,6 +345,8 @@ def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False):
         if N > prev_N :
             plot_stats(load_dfset(base_dir=directory, dfsetfn=dfset), T=T, plotchi2=plotchi2)
             show()
+            if once:
+                break
             clear_output(wait=True)
             prev_N = N
         else :
