@@ -86,3 +86,46 @@ $$
 As shown above, one can approximate the $\langle E_p \rangle$ with the first term and the only unknown parameter in this formula is the variance of the distribution. Note that above expression is *independent* from the particular shape of the potential energy probability distribution for the single degree of freedom except of its mean $\langle E_p \rangle$ and variance $\sigma$.
 
 However, we need to consider that the CLT is true *asymptotically*. At this point we need to decide if this relation has any practical use for *finite*, and preferably not too large, $N$? The common wisdom in statistical community states that for $N \gtrapprox 50$ the distribution of the average is practically indistinguishable from the true normal distribution, and even for smaller $N$ if the starting distribution is not too wild the convergence is usually very quick. 
+
+## A very short example
+
+Example taken from the `LAMMPS Tutorial` samples the thermodynamic distribution of 3C-SiC crystal at 300K. We start by importing required modules.
+
+```python
+from ase.build import bulk
+from tqdm.auto import tqdm
+import asap3
+from hecss.monitor import plot_stats
+```
+
+Then we define the crystal and interaction model used in the calculation
+
+```python
+model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+
+sys_size = '3x3x3'
+sc = [int(v) for v in sys_size.split('x')]
+
+cryst = bulk('SiC', crystalstructure='zincblende',
+                 a=4.38120844, cubic=True).repeat(tuple(sc))
+cryst.set_calculator(asap3.OpenKIMcalculator(model))
+```
+
+Then we define the sampler parameters (N -- number of samples, T -- temperature) and run it.
+
+```python
+T = 300
+N = 1_000
+samples = [_ for _ in  HECSS_Sampler(cryst, asap3.OpenKIMcalculator(model), 
+                                     T, N=N, pbar=tqdm(total=N))]
+```
+
+And finally we plot the histogram of the resulting energy distribution.
+
+```python
+plot_stats(samples, T)
+```
+
+
+![png](docs/images/output_18_0.png)
+

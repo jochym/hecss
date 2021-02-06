@@ -94,11 +94,32 @@ nb_path: "06_monitor_phonons.ipynb"
 <span class="ansi-green-intense-fg ansi-bold">      9</span>                )
 
 <span class="ansi-green-fg">~/Projects/hecss/nbdev/hecss/monitor.py</span> in <span class="ansi-cyan-fg">monitor_phonons</span><span class="ansi-blue-fg">(directory, dfset, prefix, kpath, sc, order, cutoff, born, charge, k_list, fig_out)</span>
-<span class="ansi-green-intense-fg ansi-bold">    244</span>                 SN <span class="ansi-blue-fg">=</span> SN<span class="ansi-blue-fg">//</span><span class="ansi-cyan-fg">2</span>
-<span class="ansi-green-intense-fg ansi-bold">    245</span>             <span class="ansi-green-fg">if</span> all_done<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 246</span><span class="ansi-red-fg">                 </span>sleep<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">30</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    247</span> 
-<span class="ansi-green-intense-fg ansi-bold">    248</span> <span class="ansi-red-fg"># Cell</span>
+<span class="ansi-green-intense-fg ansi-bold">    232</span>                         all_done <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span>
+<span class="ansi-green-intense-fg ansi-bold">    233</span>                         r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, sc=sc,
+<span class="ansi-green-fg">--&gt; 234</span><span class="ansi-red-fg">                                         o=order, n=NN, c2=cutoff, born=born, charge=charge)
+</span><span class="ansi-green-intense-fg ansi-bold">    235</span>                         <span class="ansi-green-fg">if</span> r<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    236</span>                             bnd_lst<span class="ansi-blue-fg">[</span>NN<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> loadtxt<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f&#39;{directory}/{prefix}.bands&#39;</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>T
+
+<span class="ansi-green-fg">~/Projects/hecss/nbdev/hecss/monitor.py</span> in <span class="ansi-cyan-fg">run_alamode</span><span class="ansi-blue-fg">(d, prefix, kpath, dfset, sc, o, n, c2, born, charge)</span>
+<span class="ansi-green-intense-fg ansi-bold">     75</span> 
+<span class="ansi-green-intense-fg ansi-bold">     76</span>     <span class="ansi-green-fg">with</span> open<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f&#39;{d}/{prefix}_phon.in&#39;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;w&#39;</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">as</span> ff<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">---&gt; 77</span><span class="ansi-red-fg">         </span>phon <span class="ansi-blue-fg">=</span> subprocess<span class="ansi-blue-fg">.</span>run<span class="ansi-blue-fg">(</span>phon_cmd<span class="ansi-blue-fg">,</span> cwd<span class="ansi-blue-fg">=</span>d<span class="ansi-blue-fg">,</span> stdout<span class="ansi-blue-fg">=</span>ff<span class="ansi-blue-fg">,</span> stderr<span class="ansi-blue-fg">=</span>subprocess<span class="ansi-blue-fg">.</span>PIPE<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     78</span> 
+<span class="ansi-green-intense-fg ansi-bold">     79</span>     alm <span class="ansi-blue-fg">=</span> subprocess<span class="ansi-blue-fg">.</span>run<span class="ansi-blue-fg">(</span>alm_cmd<span class="ansi-blue-fg">,</span> cwd<span class="ansi-blue-fg">=</span>d<span class="ansi-blue-fg">,</span> stdout<span class="ansi-blue-fg">=</span>subprocess<span class="ansi-blue-fg">.</span>PIPE<span class="ansi-blue-fg">,</span> stderr<span class="ansi-blue-fg">=</span>subprocess<span class="ansi-blue-fg">.</span>PIPE<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/opt/miniconda/envs/jh/lib/python3.6/subprocess.py</span> in <span class="ansi-cyan-fg">run</span><span class="ansi-blue-fg">(input, timeout, check, *popenargs, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    423</span>     <span class="ansi-green-fg">with</span> Popen<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>popenargs<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">as</span> process<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    424</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 425</span><span class="ansi-red-fg">             </span>stdout<span class="ansi-blue-fg">,</span> stderr <span class="ansi-blue-fg">=</span> process<span class="ansi-blue-fg">.</span>communicate<span class="ansi-blue-fg">(</span>input<span class="ansi-blue-fg">,</span> timeout<span class="ansi-blue-fg">=</span>timeout<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    426</span>         <span class="ansi-green-fg">except</span> TimeoutExpired<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    427</span>             process<span class="ansi-blue-fg">.</span>kill<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/opt/miniconda/envs/jh/lib/python3.6/subprocess.py</span> in <span class="ansi-cyan-fg">communicate</span><span class="ansi-blue-fg">(self, input, timeout)</span>
+<span class="ansi-green-intense-fg ansi-bold">    851</span>                 self<span class="ansi-blue-fg">.</span>stdout<span class="ansi-blue-fg">.</span>close<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    852</span>             <span class="ansi-green-fg">elif</span> self<span class="ansi-blue-fg">.</span>stderr<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 853</span><span class="ansi-red-fg">                 </span>stderr <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>stderr<span class="ansi-blue-fg">.</span>read<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    854</span>                 self<span class="ansi-blue-fg">.</span>stderr<span class="ansi-blue-fg">.</span>close<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    855</span>             self<span class="ansi-blue-fg">.</span>wait<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
 
 <span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
 </div>

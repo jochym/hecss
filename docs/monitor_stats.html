@@ -115,6 +115,32 @@ nb_path: "05_monitor_stats.ipynb"
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-5-2132b547ef5d&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-red-fg">#interactive</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> T <span class="ansi-blue-fg">=</span> <span class="ansi-cyan-fg">300</span>
+<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>monitor_stats<span class="ansi-blue-fg">(</span>T<span class="ansi-blue-fg">=</span>T<span class="ansi-blue-fg">,</span> directory<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">f&#39;example/VASP_3C-SiC/{supercell}/phon/&#39;</span><span class="ansi-blue-fg">,</span> dfset<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">f&#39;EXAMPLE_DFSET_T{T:.1f}K&#39;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/Projects/hecss/nbdev/hecss/monitor.py</span> in <span class="ansi-cyan-fg">monitor_stats</span><span class="ansi-blue-fg">(T, directory, dfset, plotchi2, once)</span>
+<span class="ansi-green-intense-fg ansi-bold">    351</span>             prev_N <span class="ansi-blue-fg">=</span> N
+<span class="ansi-green-intense-fg ansi-bold">    352</span>         <span class="ansi-green-fg">else</span> <span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 353</span><span class="ansi-red-fg">             </span>sleep<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">15</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
