@@ -2,7 +2,47 @@
 > High Efficiency Configuration Space Sampler
 
 
-HECSS is a Markow chain Monte-Carlo Metropolis-Hastings configuration space sampler. The theoretical foundation of the code are presented in the section `Background` below.
+HECSS is a Markow chain Monte-Carlo Metropolis-Hastings configuration space sampler. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The theoretical foundation of the code are presented in the section `Background` below.
+
+## A very short example
+
+Minimal example using LAMMPS potential from the asap3 package and OpenKIM database. Here we will sample the thermodynamic distribution of 3C-SiC crystal at 300K. We start by importing required modules, define the crystal and energy/forces calculator, run the sampler and finally plot the energy distribution. 
+
+More detailed examples are included in the `LAMMPS_Tutorial` and `VASP_Tutorial`.
+
+```python
+from ase.build import bulk
+import asap3
+from hecss.monitor import plot_stats
+```
+
+Then we define the crystal and interaction model used in the calculation
+
+```python
+model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+
+cryst = bulk('SiC', crystalstructure='zincblende', a=4.38120844, cubic=True).repeat((3,3,3))
+
+cryst.set_calculator(asap3.OpenKIMcalculator(model))
+```
+
+Then we define the sampler parameters (N -- number of samples, T -- temperature) and run it.
+
+```python
+T = 300
+N = 1_000
+samples = HECSS(cryst, asap3.OpenKIMcalculator(model), T).generate(N)
+```
+
+And finally we plot the histogram of the resulting energy distribution which corresponds to the thermal equilibrium distribution.
+
+```python
+plot_stats(samples, T)
+```
+
+
+![png](docs/images/output_9_0.png)
+
 
 ## Install
 
@@ -22,12 +62,7 @@ For update just use your chosen package manager update function
 
 ## Usage
 
-There are two main ways to use the library:
- * Use `hecss` library in your own python code. For this 
- *
-
-Start by copying files from `example` subdirectory into `WORK` and following
-the tutorial included there by opening `run_sampler.py` as Notebook.
+The examples and detailed descriptions are provided in `LAMMPS_Tutorial` and `VASP_Tutorial`.
 
 # Background
 
@@ -86,43 +121,3 @@ $$
 As shown above, one can approximate the $\langle E_p \rangle$ with the first term and the only unknown parameter in this formula is the variance of the distribution. Note that above expression is *independent* from the particular shape of the potential energy probability distribution for the single degree of freedom except of its mean $\langle E_p \rangle$ and variance $\sigma$.
 
 However, we need to consider that the CLT is true *asymptotically*. At this point we need to decide if this relation has any practical use for *finite*, and preferably not too large, $N$? The common wisdom in statistical community states that for $N \gtrapprox 50$ the distribution of the average is practically indistinguishable from the true normal distribution, and even for smaller $N$ if the starting distribution is not too wild the convergence is usually very quick. 
-
-## A very short example
-
-Minimal example using LAMMPS potential from the asap3 package and OpenKIM database. Here we will sample the thermodynamic distribution of 3C-SiC crystal at 300K. We start by importing required modules, define the crystal and energy/forces calculator, run the sampler and finally plot the energy distribution. 
-
-More detailed examples are included in the `LAMMPS_Tutorial` and `VASP_Tutorial`.
-
-```python
-from ase.build import bulk
-import asap3
-from hecss.monitor import plot_stats
-```
-
-Then we define the crystal and interaction model used in the calculation
-
-```python
-model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
-
-cryst = bulk('SiC', crystalstructure='zincblende', a=4.38120844, cubic=True).repeat((3,3,3))
-
-cryst.set_calculator(asap3.OpenKIMcalculator(model))
-```
-
-Then we define the sampler parameters (N -- number of samples, T -- temperature) and run it.
-
-```python
-T = 300
-N = 1_000
-samples = HECSS(cryst, asap3.OpenKIMcalculator(model), T).generate(N)
-```
-
-And finally we plot the histogram of the resulting energy distribution.
-
-```python
-plot_stats(samples, T)
-```
-
-
-![png](docs/images/output_18_0.png)
-
