@@ -6,6 +6,7 @@ index = {"normalize_conf": "02_core.ipynb",
          "write_dfset": "02_core.ipynb",
          "HECSS_Sampler": "02_core.ipynb",
          "HECSS": "02_core.ipynb",
+         "hecss_sampler": "03_cli.ipynb",
          "THz": "04_monitor.ipynb",
          "plot_band_set": "04_monitor.ipynb",
          "plot_bands": "04_monitor.ipynb",
@@ -22,6 +23,7 @@ index = {"normalize_conf": "02_core.ipynb",
          "monitor_stats": "04_monitor.ipynb"}
 
 modules = ["core.py",
+           "cli.py",
            "monitor.py"]
 
 doc_url = "//hecss/"
