@@ -5,6 +5,7 @@ __all__ = ['normalize_conf', 'write_dfset', 'HECSS_Sampler', 'HECSS']
 # Cell
 import sys
 import ase
+from ase import units
 import scipy
 from scipy import stats
 from scipy.special import expit

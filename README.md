@@ -53,11 +53,3 @@ if you prefer pip as your package manager or:
 conda install -c jochym hecss
 ```
 if you prefer to use conda. The channel above will be changed to conda-forge at a later date.
-
-## Update
-
-For update just use your chosen package manager update function
-
-## Usage
-
-The examples and detailed descriptions are provided in `LAMMPS_Tutorial` and `VASP_Tutorial`.
