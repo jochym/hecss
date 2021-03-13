@@ -319,7 +319,8 @@ class HECSS:
                  pbar=True, priors=None, posts=None, width_list=None):
         self.pbar = tqdm(total=N)
         self.pbar.disable = not pbar
-        self.N=0
+        self.N=N
+        self.total_N=0
         self.T=T_goal
         self.sampler = HECSS_Sampler(cryst, calc, T_goal,
                                      width=width, maxburn=maxburn,
@@ -330,7 +331,7 @@ class HECSS:
                                      reuse_base=reuse_base, verb=verb,
                                      priors=priors, posts=posts, width_list=width_list)
 
-    def generate(self, N=1, sentinel=None, **kwargs):
+    def generate(self, N=None, sentinel=None, **kwargs):
         '''
         Generate and return the list of N samples provided
         by the `HECSS_Sampler` generator in `self.sampler`.
@@ -344,8 +345,10 @@ class HECSS:
         time at the start since first initial and burn-in
         samples must be produced.
         '''
-        self.pbar.reset(self.N + N)
-        self.pbar.update(self.N)
+        if N is None:
+            N = self.N
+        self.pbar.reset(self.total_N + N)
+        self.pbar.update(self.total_N)
         smpls = []
         for smpl in self.sampler:
             smpls.append(smpl)
@@ -354,5 +357,5 @@ class HECSS:
             if len(smpls) >= N:
                 #self.pbar.close()
                 break
-        self.N += len(smpls)
+        self.total_N += len(smpls)
         return smpls
