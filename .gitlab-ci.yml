@@ -2,7 +2,9 @@ default:
 #  image: python:3.7
   image: continuumio/miniconda3:latest
   before_script:
-  - conda install -c jochym -c conda-forge -c fastai numpy nbdev jupyter asap3 kim-api openkim-models=2019.07.25
+  - conda install -c conda-forge mamba
+  - mamba install -c conda-forge -c fastai numpy nbdev jupyter kim-api openkim-models=2019.07.25
+  - conda install -c jochym asap3  
   - pip install -e .
 
 read_notebooks:
