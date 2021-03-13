@@ -4,7 +4,7 @@ default:
   before_script:
   - conda install -c conda-forge mamba
   - mamba install -c conda-forge -c fastai numpy nbdev jupyter kim-api openkim-models=2019.07.25
-  - conda install -c jochym asap3  
+  - mamba install -c jochym asap3  
   - pip install -e .
 
 read_notebooks:
