@@ -14,13 +14,11 @@ import asap3
 from hecss.monitor import plot_stats
 ```
 
-Then we define the crystal and interaction model used in the calculation
+Then we define the crystal and interaction model used in the calculation. In this case we use 3x3x3 supercell of the SiC crystal in zincblende structure and describe the interaction using LAMMPS potential from the OpenKIM database and ASAP3 implementation of the calculator.
 
 ```python
 model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
-
 cryst = bulk('SiC', crystalstructure='zincblende', a=4.38120844, cubic=True).repeat((3,3,3))
-
 cryst.set_calculator(asap3.OpenKIMcalculator(model))
 ```
 
@@ -44,7 +42,7 @@ plot_stats(samples, T)
 
 ## Install
 
-The HECSS package is avaliable on pypi and conda. Installation is simple just run:
+The HECSS package is avaliable on pypi and conda. Installation is simple, but requires a number of other packages to be installed as well. Both package menagers handle these dependencies automatically. It just run:
 ```
 pip install hecss
 ```

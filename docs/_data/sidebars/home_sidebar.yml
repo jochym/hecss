@@ -11,28 +11,28 @@ entries:
       url: /
     - output: web,pdf
       title: Background
-      url: /Background
+      url: Background.html
     - output: web,pdf
       title: LAMMPS Tutorial
-      url: /LAMMPS_Tutorial
+      url: LAMMPS_Tutorial.html
     - output: web,pdf
       title: VASP Tutorial
-      url: /VASP_Tutorial
+      url: VASP_Tutorial.html
     - output: web,pdf
       title: Core
-      url: /core
+      url: core.html
     - output: web,pdf
       title: CLI
-      url: /cli
+      url: cli.html
     - output: web,pdf
       title: Monitor
-      url: /monitor
+      url: monitor.html
     - output: web,pdf
       title: Sampling statistics monitoring
-      url: /monitor_stats
+      url: monitor_stats.html
     - output: web,pdf
       title: Phonon convergence monitoring
-      url: /monitor_phonons
+      url: monitor_phonons.html
     output: web
     title: hecss
   output: web

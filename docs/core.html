@@ -2,6 +2,7 @@
 
 title: Core
 
+
 keywords: fastai
 sidebar: home_sidebar
 
@@ -21,13 +22,6 @@ nb_path: "02_core.ipynb"
 
 <div class="container" id="notebook-container">
         
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -99,6 +93,13 @@ at dxutils package.</code></pre>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
@@ -135,13 +136,6 @@ at dxutils package.</code></pre>
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -168,10 +162,17 @@ If it does not it will be created.</code></pre>
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="HECSS_Sampler-generator-function"><a href="/hecss/core#HECSS_Sampler"><code>HECSS_Sampler</code></a> generator function<a class="anchor-link" href="#HECSS_Sampler-generator-function"> </a></h2><p>The implementation of the core functionality is centered around this generator function which yields samples from the thermal distribution at a given temperature.
-This is more flexible but also more advanced technique. For every-day use it is better to employ <a href="/hecss/core#HECSS"><code>HECSS</code></a> class which facilitates more traditional interface and usage patterns using this function under the hood.</p>
+<h2 id="HECSS_Sampler-generator-function"><a href="/hecss/core.html#HECSS_Sampler"><code>HECSS_Sampler</code></a> generator function<a class="anchor-link" href="#HECSS_Sampler-generator-function"> </a></h2><p>The implementation of the core functionality is centered around this generator function which yields samples from the thermal distribution at a given temperature.
+This is more flexible but also more advanced technique. For every-day use it is better to employ <a href="/hecss/core.html#HECSS"><code>HECSS</code></a> class which facilitates more traditional interface and usage patterns using this function under the hood.</p>
 <h3 id="Usage">Usage<a class="anchor-link" href="#Usage"> </a></h3><p>A general usage scheme runs the sampler in the for loop as an iterator providing series of samples.</p>
 <ul>
 <li><code>N</code>: number of requested samples, </li>
@@ -212,13 +213,6 @@ This is more flexible but also more advanced technique. For every-day use it is 
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -296,13 +290,6 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="HECSS-class"><a href="/hecss/core#HECSS"><code>HECSS</code></a> class<a class="anchor-link" href="#HECSS-class"> </a></h2><p>Standard interface to the HECSS library. This class encapsulates the actual sampler implemented in the <a href="/hecss/core#HECSS_Sampler"><code>HECSS_Sampler</code></a> generator funtion and provides main functionality of the library through the <code>generate</code> method.</p>
-
-</div>
-</div>
-</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -310,6 +297,13 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="HECSS-class"><a href="/hecss/core.html#HECSS"><code>HECSS</code></a> class<a class="anchor-link" href="#HECSS-class"> </a></h2><p>Standard interface to the HECSS library. This class encapsulates the actual sampler implemented in the <a href="/hecss/core.html#HECSS_Sampler"><code>HECSS_Sampler</code></a> generator funtion and provides main functionality of the library through the <code>generate</code> method.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -336,6 +330,13 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Usage">Usage<a class="anchor-link" href="#Usage"> </a></h3>
@@ -344,7 +345,7 @@ The generator yields samples from the thermodynamic distribution at T=T_goal as 
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>After creating <a href="/hecss/core#HECSS"><code>HECSS</code></a> object for the structure, calculator and temperature you call the <code>generate</code> method to obtain a list of samples of a given length.</p>
+<p>After creating <a href="/hecss/core.html#HECSS"><code>HECSS</code></a> object for the structure, calculator and temperature you call the <code>generate</code> method to obtain a list of samples of a given length.</p>
 
 </div>
 </div>
