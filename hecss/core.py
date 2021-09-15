@@ -108,11 +108,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
-    reuse_base   : (only for VASP calculator) None or the base calc directory for the ground
+    reuse_base   : None or the base calculator created by restarting the ground
                    state config. If None the base will be recalculated at the start of the run.
-                   If directory name - the energy from this dir will be reused as ground state
-                   energy for the calculation. Be careful to have the same VASP setup in calc
-                   and reuse_base, otherwise the ground state energy and distribution
+                   If the value is a calculator - the energy from this calculator will be used
+                   as ground state energy for the calculation. Be careful to have the same setup
+                   in calc and reuse_base, otherwise the ground state energy and distribution
                    will be wrong.
     verb         : print verbose progress messages for interactive use
     pbar         : tqdm progress bar object. If None (default) there will be no output.
@@ -160,7 +160,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     dim = (nat, 3)
 
     if reuse_base is not None :
-        calc0 = ase.calculators.vasp.Vasp2(label='base', directory=reuse_base, restart=True)
+        calc0 = reuse_base
         Ep0 = calc0.get_potential_energy()
     else :
         Ep0 = cryst.get_potential_energy()
