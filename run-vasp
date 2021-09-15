@@ -1,4 +1,13 @@
 #!/bin/bash
 
-/home/jochym/devel/scripts/run-vasp/run-vasp54 -b -N 1 -p 32 -q blade  $*
+# This script should run vasp in current directory and wait for the run to finish.
+# This particular example is for my own cluster (the first params define the queue 
+# and node), everything after "--" is passed to SLURMs sbatch command.
+# A generic line using SLURM would look like this:
+#
+# sbatch [job_params] -W vasp_running_script
+#
+# The "-W" param makes the sbatch command wait for the job to finish.
+
+run-vasp6 -N 1 -p 32 -q blade  $* -- -W
 
