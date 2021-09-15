@@ -6,7 +6,6 @@ __all__ = ['hecss_sampler']
 from nbdev import *
 from fastcore.script import *
 
-
 # Cell
 @call_parse
 def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE is accepted.", str)="CONTCAR",
@@ -28,7 +27,7 @@ def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE 
     print(src_path.parent, src_path.name)
 
     if calc=="VASP":
-        calculator = Vasp2(label=label, directory=src_path.parent, restart=True)
+        calculator = Vasp(label=label, directory=src_path.parent, restart=True)
         cryst = ase.Atoms(calculator.atoms)
         cryst.set_calculator(calculator)
         calculator.set(directory=work_dir)

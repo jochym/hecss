@@ -162,7 +162,8 @@ def plot_omega(omega):
 
 # Cell
 def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', sc='../sc/CONTCAR',
-                    order=1, cutoff=10, born=None, charge=None, k_list=None, fig_out=None):
+                    order=1, cutoff=10, born=None, charge=None, k_list=None,
+                    fig_out=None, once=False):
 
     def update_fig(fig, bnd_lst, kpnts, k_lst):
         if fig is not None:
@@ -220,9 +221,9 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
             if r[0]:
                 bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
                 fig = update_fig(fig, bnd_lst, kpnts, k_list)
-                prev_N = N
                 if fig_out is not None :
                     fig_out[-1]=fig
+                prev_N = N
         else :
             SN = N//2
             all_done = True
@@ -243,6 +244,8 @@ def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='crys
                         break
                 SN = SN//2
             if all_done:
+                if once :
+                    break
                 sleep(30)
 
 # Cell
