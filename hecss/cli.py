@@ -3,7 +3,6 @@
 __all__ = ['hecss_sampler']
 
 # Cell
-from nbdev import *
 from fastcore.script import *
 
 # Cell
