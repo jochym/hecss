@@ -40,6 +40,10 @@ And finally we plot the histogram of the resulting energy distribution which cor
 plot_stats(samples, T)
 ```
 
+
+![png](docs/images/output_9_0.png)
+
+
 ## Install
 
 The HECSS package is avaliable on pypi and conda. Installation is simple, but requires a number of other packages to be installed as well. Both package menagers handle these dependencies automatically. It just run:

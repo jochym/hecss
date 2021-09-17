@@ -33,6 +33,7 @@ def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE 
                              , str)="VASP",
                   N:Param("Number of samples to be generated", int)=10,
                   DF:Param("Write DFSET file for ALAMODE", bool)=False,
+                  com:Param("Command to run calculator", str)="./run-calc",
                   ):
     '''
     Run HECSS sampler on the structure in the directory.
@@ -48,7 +49,8 @@ def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE 
         cryst = ase.Atoms(calculator.atoms)
         cryst.set_calculator(calculator)
         calculator.set(directory=work_dir)
-        calculator.set(command=f'{os.getcwd()}/run-vasp -J "hecss"')
+        com = Path(com)
+        calculator.set(command=f'{com.absolute()} {label}')
     sentinel = None
     if DF :
         sentinel = dfset_writer
