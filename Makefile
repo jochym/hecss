@@ -20,7 +20,7 @@ release: pypi
 	nbdev_bump_version
 
 pypi: dist
-	twine upload --repository pypi dist/*
+	twine upload --repository test_hecss dist/*
 
 dist: clean
 	python setup.py sdist bdist_wheel
