@@ -9,5 +9,5 @@
 #
 # The "-W" param makes the sbatch command wait for the job to finish.
 
-run-vasp6 -N 1 -p 32 -q blade -J $1 -- -W
+run-vasp6 -N 1 -p 64 -q blade2 -J $1 -- -W
 

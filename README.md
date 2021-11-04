@@ -46,7 +46,7 @@ plot_stats(samples, T)
 
 ## Install
 
-The HECSS package is avaliable on pypi and conda. Installation is simple, but requires a number of other packages to be installed as well. Both package menagers handle these dependencies automatically. It just run:
+The HECSS package will be shortly avaliable on pypi and conda. Installation is simple, but requires a number of other packages to be installed as well. Both package menagers handle these dependencies automatically. Just run:
 ```
 pip install hecss
 ```
