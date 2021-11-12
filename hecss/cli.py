@@ -4,7 +4,7 @@ __all__ = ['dfset_writer', 'hecss_sampler']
 
 # Cell
 #export
-from fastcore.script import *
+import click
 from pathlib import Path
 import os
 import ase
@@ -23,22 +23,16 @@ def dfset_writer(s, sl, workdir=''):
     return False
 
 # Cell
-@call_parse
-def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE is accepted.", str)="CONTCAR",
-                  work_dir:Param("Work directory", str)="WORK",
-                  label:Param("Label for the calculations. This got appended to work directory")="hecss",
-                  T:Param("Target temperature in Kelvin", float)=300,
-                  calc:Param("ASE calculator to be used for the job.\n"+
-                             "Supported calculators: VASP (default)"
-                             , str)="VASP",
-                  N:Param("Number of samples to be generated", int)=10,
-                  DF:Param("Write DFSET file for ALAMODE", bool)=False,
-                  com:Param("Command to run calculator", str)="./run-calc",
-                  ):
+def hecss_sampler(fname='CONTCAR', workdir='WORK', label='hecss',
+                  T=300, calc='VASP', dfset=True, N=10, command='./run-calc'):
     '''
     Run HECSS sampler on the structure in the directory.
+    fname - Basic structure file. Any type recognized by ASE is accepted.
     '''
-    print(f'Running HECSS on {fname} at {T}K in {work_dir} directory using {calc}.')
+    print(f'Running HECSS on {fname}\n',
+          f'Temperature:    {T}K\n',
+          f'Work directory: {workdir}\n',
+          f'Calculator:     {calc}.')
 
     src_path = Path(fname)
 
@@ -48,12 +42,37 @@ def hecss_sampler(fname:Param("Basic structure file. Any type recognized by ASE 
         calculator = Vasp(label=label, directory=src_path.parent, restart=True)
         cryst = ase.Atoms(calculator.atoms)
         cryst.set_calculator(calculator)
-        calculator.set(directory=work_dir)
-        com = Path(com)
-        calculator.set(command=f'{com.absolute()} {label}')
+        calculator.set(directory=workdir)
+        command = Path(command)
+        calculator.set(command=f'{command.absolute()} {label}')
     sentinel = None
-    if DF :
+    if dfset :
         sentinel = dfset_writer
-    sampler = HECSS(cryst, calculator, T, directory=work_dir)
-    samples = sampler.generate(N, sentinel=sentinel, workdir=work_dir)
+    sampler = HECSS(cryst, calculator, T, directory=workdir)
+    samples = sampler.generate(N, sentinel=sentinel, workdir=workdir)
     return samples
+
+# Cell
+@click.command()
+@click.argument('fname', default='CONTCAR', type=click.Path(exists=True))
+@click.option('-w', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
+@click.option('-l', '--label', default="hecss", help="Label for the calculations.")
+@click.option('-T', '--temp', default=300, help="Target temperature in Kelvin.")
+@click.option('-C', '--calc', default="VASP", type=str,
+              help="ASE calculator to be used for the job.\n" + "Supported calculators: VASP (default)")
+@click.option('--dfset/--no-dfest', default=True, help='Write DFSET file for ALAMODE')
+@click.option('-N', '--nsamples', default=10, type=str, help="Number of samples to be generated")
+@click.option('-c', '--command', default='/run-calc', help="Command to run calculator")
+def _hecss_sampler(fname, workdir, label, temp, calc, dfset, nsamples, command):
+    '''
+    Run HECSS sampler on the structure in the directory.
+    fname - Basic structure file. Any type recognized by ASE is accepted.
+    '''
+    return hecss_sampler(fname=fname,
+                         workdir=workdir,
+                         label=label,
+                         T=temp,
+                         calc=calc,
+                         dfset=dfset,
+                         N=nsamples,
+                         command=command)
