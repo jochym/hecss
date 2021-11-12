@@ -46,12 +46,12 @@ plot_stats(samples, T)
 
 ## Install
 
-The HECSS package will be shortly avaliable on pypi and conda. Installation is simple, but requires a number of other packages to be installed as well. Both package menagers handle these dependencies automatically. Just run:
+The HECSS package is avaliable on pypi (the conda package will follow shortly). Installation is simple, but requires a number of other packages to be installed as well. Package menagers handle these dependencies automatically. It is advisable to install in a dedicated virtual environment e.g.:
+```
+python3 -m venv venv
+. venv/bin/activate
+```
+then install with `pip`:
 ```
 pip install hecss
 ```
-if you prefer pip as your package manager or:
-```
-conda install -c jochym hecss
-```
-if you prefer to use conda. The channel above will be changed to conda-forge at a later date.
