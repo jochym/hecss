@@ -3,7 +3,7 @@
 __all__ = ['dfset_writer', 'hecss_sampler']
 
 # Cell
-#export
+# export
 import click
 from pathlib import Path
 import os
@@ -57,12 +57,12 @@ def hecss_sampler(fname='CONTCAR', workdir='WORK', label='hecss',
 @click.argument('fname', default='CONTCAR', type=click.Path(exists=True))
 @click.option('-w', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
 @click.option('-l', '--label', default="hecss", help="Label for the calculations.")
-@click.option('-T', '--temp', default=300, help="Target temperature in Kelvin.")
+@click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
 @click.option('-C', '--calc', default="VASP", type=str,
               help="ASE calculator to be used for the job.\n" + "Supported calculators: VASP (default)")
 @click.option('--dfset/--no-dfest', default=True, help='Write DFSET file for ALAMODE')
-@click.option('-N', '--nsamples', default=10, type=str, help="Number of samples to be generated")
-@click.option('-c', '--command', default='/run-calc', help="Command to run calculator")
+@click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
+@click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
 def _hecss_sampler(fname, workdir, label, temp, calc, dfset, nsamples, command):
     '''
     Run HECSS sampler on the structure in the directory.

@@ -15,6 +15,12 @@ docs: $(SRC)
 
 test:
 	nbdev_test_nbs
+    
+test_asap:
+	nbdev_test_nbs --flags asap
+
+test_vasp:
+	nbdev_test_nbs --flags vasp
 
 release: pypi
 	nbdev_bump_version
