@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# This script should run vasp in current directory 
+# and wait for the run to finish.
+# 
+# A generic line using SLURM would look like this:
+#
+# sbatch [job_params] -W vasp_running_script
+#
+# The "-W" param makes the sbatch command wait for the job to finish.
+
+
+JN=`pwd`
+JN=`basename ${JN}`
+
+# Partition of the cluster
+PART=small
+
+# Number of nodes
+N=1
+
+# Number of MPI tasks
+ntask=64
+
+# Name the job after directory if no label is passed as first argument
+if [ "${1}." != "." ]; then
+  JN=${1}
+fi
+
+sbatch -W -J ${JN} -p $PART -N $N -n $ntask run-vasp-script
