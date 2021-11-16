@@ -13,7 +13,7 @@ entries:
       title: Background
       url: Background
     - output: web,pdf
-      title: Title
+      title: Setup
       url: Setup
     - output: web,pdf
       title: LAMMPS Tutorial

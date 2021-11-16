@@ -1,13 +1,13 @@
 ---
 
-title: Title
+title: Setup
 
 
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "At the moment the HECSS sampler supports only VASP and ASAP3/OpenKIM calculators. However, it is explicitly written in such a way that it should be quite easy to extend it to other calculators (e.g. QE, AbInit). The VASP and ASAP calculators are simply the only ones tested so far. The following instructions cover only VASP. Contributions extending support to other calculators are welcomed and will be included in the distribution."
+description: "At the moment the HECSS sampler supports only VASP and ASAP3/OpenKIM calculators. However, it is explicitly written in such a way that it should be quite easy to extend it to other calculators (e.g. QE, AbInit). The VASP and ASAP calculators are simply the only ones tested so far. The following instructions cover only VASP. Contributions extending support to other calculators are welcomed and will be included in the distribution."
 nb_path: "00_Setup.ipynb"
 ---
 <!--
@@ -31,8 +31,7 @@ nb_path: "00_Setup.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Setup">Setup<a class="anchor-link" href="#Setup"> </a></h2><p>At the moment the HECSS sampler supports only VASP and ASAP3/OpenKIM calculators. However, it is explicitly written in such a way that it should be quite easy to extend it to other calculators (e.g. QE, AbInit). The VASP and ASAP calculators are simply the only ones tested so far. The following instructions cover only VASP. Contributions extending support to other calculators are welcomed and will be included in the distribution.</p>
-<h3 id="VASP-calculator">VASP calculator<a class="anchor-link" href="#VASP-calculator"> </a></h3><p>After installing of the HECSS package you need to configure it. This involves configuring ASE (Atomistic Simulation Environment) to be able to generate VASP input files. Refer to <a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html">ASE documentation</a> for details. Usually yu need to:</p>
+<h2 id="VASP-calculator">VASP calculator<a class="anchor-link" href="#VASP-calculator"> </a></h2><p>After installing of the HECSS package you need to configure it. This involves configuring ASE (Atomistic Simulation Environment) to be able to generate VASP input files. Refer to <a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html">ASE documentation</a> for details. Usually yu need to:</p>
 <ol>
 <li>Put your pseudopotential files in a dedicated directory tree as described  in the docs. My setup contains a directory with three subdirs for LDA, GGA, and PBE pseudopotentials:<div class="highlight"><pre><span></span>potpaw  
 potpaw_GGA  

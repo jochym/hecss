@@ -27,7 +27,7 @@ modules = ["core.py",
            "cli.py",
            "monitor.py"]
 
-doc_url = "https://jochym.gitlab.io//hecss/"
+doc_url = "https://jochym.gitlab.io/hecss//"
 
 git_url = "https://gitlab.com/jochym/hecss/tree/nbdev/"
 
