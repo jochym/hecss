@@ -29,6 +29,93 @@ nb_path: "03_cli.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The hecss sampler can be also used from the command line using <code>hecss</code> command:</p>
+<div class="highlight"><pre><span></span>~$ hecss --help
+usage: hecss <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--workdir WORKDIR<span class="o">]</span> <span class="o">[</span>--label LABEL<span class="o">]</span> <span class="o">[</span>--T T<span class="o">]</span> <span class="o">[</span>--width WIDTH<span class="o">]</span>
+             <span class="o">[</span>--calc CALC<span class="o">]</span> <span class="o">[</span>--dfset<span class="o">]</span> <span class="o">[</span>--N N<span class="o">]</span> <span class="o">[</span>--cmd CMD<span class="o">]</span> <span class="o">[</span>--V<span class="o">]</span>
+             fname
+
+Run HECSS sampler on the structure passed <span class="k">in</span> fname.
+
+positional arguments:
+  fname              Supercell structure file.The containing directory 
+                     must be readable by Vasp<span class="o">(</span>restart<span class="o">)</span>.
+
+optional arguments:
+  -h, --help         show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  --workdir WORKDIR  Output directory <span class="k">for</span> samples <span class="o">(</span>default: calc<span class="o">)</span>
+  --label LABEL      Job label passed to run-calc <span class="nb">command</span> <span class="o">(</span>default: hecss<span class="o">)</span>
+  --T T              Target temperature <span class="o">(</span>K<span class="o">)</span> <span class="o">(</span>default: <span class="m">300</span><span class="o">)</span>
+  --width WIDTH      Initial scale of the prior distribution <span class="o">(</span>default: <span class="m">1</span>.0<span class="o">)</span>
+  --calc CALC        Type of the calculator. Only VASP supported. <span class="o">(</span>default: VASP<span class="o">)</span>
+  --dfset            Write DFset file <span class="o">(</span>default: True<span class="o">)</span>
+  --N N              Number of samples <span class="o">(</span>default: <span class="m">10</span><span class="o">)</span>
+  --cmd CMD          Command <span class="k">for</span> job submission <span class="o">(</span>default: ./run-calc<span class="o">)</span>
+  --V                Print version and <span class="nb">exit</span> <span class="o">(</span>default: False<span class="o">)</span>
+</pre></div>
+<p>To use it you need to prepare:</p>
+<ol>
+<li><code>run-calc</code> script which should start the VASP calculation. You need to put this script in the root of your project tree. The example of such a script is included in the source as <code>run-calc.example</code>. :</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># This script should run vasp in current directory </span>
+<span class="c1"># and wait for the run to finish.</span>
+<span class="c1"># </span>
+<span class="c1"># A generic line using SLURM would look like this:</span>
+<span class="c1">#</span>
+<span class="c1"># sbatch [job_params] -W vasp_running_script</span>
+<span class="c1">#</span>
+<span class="c1"># The &quot;-W&quot; param makes the sbatch command wait for the job to finish.</span>
+
+
+<span class="nv">JN</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>
+<span class="nv">JN</span><span class="o">=</span><span class="sb">`</span>basename <span class="si">${</span><span class="nv">JN</span><span class="si">}</span><span class="sb">`</span>
+
+<span class="c1"># Partition of the cluster</span>
+<span class="nv">PART</span><span class="o">=</span>small
+
+<span class="c1"># Number of nodes</span>
+<span class="nv">N</span><span class="o">=</span><span class="m">1</span>
+
+<span class="c1"># Number of MPI tasks</span>
+<span class="nv">ntask</span><span class="o">=</span><span class="m">64</span>
+
+<span class="c1"># Name the job after directory if no label is passed as first argument</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="si">}</span><span class="s2">.&quot;</span> !<span class="o">=</span> <span class="s2">&quot;.&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nv">JN</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="si">}</span>
+<span class="k">fi</span>
+
+sbatch -W -J <span class="si">${</span><span class="nv">JN</span><span class="si">}</span> -p <span class="nv">$PART</span> -N <span class="nv">$N</span> -n <span class="nv">$ntask</span> run-vasp-script
+</pre></div>
+<ol>
+<li><p>A directory with fully converged and optimized supercell structure which can be read in by the ASE <code>Vasp(restart=...)</code> command</p>
+</li>
+<li><p>A directory for the generated samples.</p>
+</li>
+</ol>
+<p>The directory tree may look like this:</p>
+
+<pre><code>my_project ----- sc
+             |
+             +-- T_100
+             |
+             +-- T_200
+             |
+             +-- ...
+             |
+             +-- run-calc</code></pre>
+<p>You execute the sampler from the <code>my_project</code> directory (remember to activate your virtual environment first). Generation of N=30 samples at T=100K:</p>
+<div class="highlight"><pre><span></span>~$ <span class="nb">cd</span> my_project
+~$ hecss --workdir T_100 --T <span class="m">100</span> --N <span class="m">30</span> --cmd ./run-calc sc
+</pre></div>
+<p>The above command will put the generated samples inside the <code>T_100</code> directory, together with the DFSET file with displacement-force data extracted from the calculation. The calculation may take a long time. Thus it is advisable to execute the hecss command inside <code>screen</code> (or some similar terminal multiplexer) to prevent the break of the calculation in case of session disconnection. The <code>hecss</code> command shows a progress to guide you through the calculation (ETA, time/it, data about last sample etc.). The example run is included at the bottom of this document.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
