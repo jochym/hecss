@@ -41,8 +41,9 @@ def hecss_sampler(fname:  Param("Supercell structure file."
     Run HECSS sampler on the structure passed in fname.
     '''
 
+    import hecss
+
     if V:
-        import hecss
         print(f'HECSS ver. {hecss.__version__}\n'
                'High Efficiency Configuration Space Sampler\n'
                '(C) 2021 by Paweł T. Jochym\n'
@@ -50,14 +51,13 @@ def hecss_sampler(fname:  Param("Supercell structure file."
         return
 
 
-    print(f'Running HECSS on {fname}\n',
-          f'Temperature:    {T}K\n',
-          f'Work directory: {workdir}\n',
+    print(f'HECSS ({hecss.__version__})\n'
+          f'Supercell:      {fname}\n'
+          f'Temperature:    {T}K\n'
+          f'Work directory: {workdir}\n'
           f'Calculator:     {calc}.')
 
     src_path = Path(fname)
-
-    print(src_path.parent, src_path.name)
 
     if calc=="VASP":
         calculator = Vasp(label=label, directory=src_path.parent, restart=True)
