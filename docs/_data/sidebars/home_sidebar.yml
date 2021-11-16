@@ -13,6 +13,9 @@ entries:
       title: Background
       url: Background
     - output: web,pdf
+      title: Title
+      url: Setup
+    - output: web,pdf
       title: LAMMPS Tutorial
       url: LAMMPS_Tutorial
     - output: web,pdf

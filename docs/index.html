@@ -164,13 +164,22 @@ nb_path: "index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Install">Install<a class="anchor-link" href="#Install"> </a></h2><p>The HECSS package is avaliable on pypi (the conda package will follow shortly). Installation is simple, but requires a number of other packages to be installed as well. Package menagers handle these dependencies automatically. It is advisable to install in a dedicated virtual environment e.g.:</p>
+<h2 id="Install">Install<a class="anchor-link" href="#Install"> </a></h2><p>The HECSS package is avaliable on pypi and conda, the conda-forge package will 
+follow shortly. Installation is simple, but requires a number of other packages to be installed as well. Package menagers handle these dependencies automatically.</p>
+<h3 id="Install-with-pip">Install with pip<a class="anchor-link" href="#Install-with-pip"> </a></h3><p>It is advisable to install in a dedicated virtual environment e.g.:</p>
 
 <pre><code>python3 -m venv venv
 . venv/bin/activate</code></pre>
 <p>then install with <code>pip</code>:</p>
 
 <pre><code>pip install hecss</code></pre>
+<h3 id="Install-with-conda">Install with conda<a class="anchor-link" href="#Install-with-conda"> </a></h3><p>Also installation with conda should be performed for dedicated or some other non-base environment. To create dedicated environment you can invoke <code>conda create</code>:</p>
+
+<pre><code>conda create -n hecss -c jochym hecss</code></pre>
+<p>or you can install in some working environment <code>venv</code>:</p>
+
+<pre><code>conda install -n venv -c jochym hecss</code></pre>
+<p>When conda-forge packages become avaliable you can replace <code>-c jochym</code> with <code>-c conda-forge</code> in the above commands.</p>
 
 </div>
 </div>
