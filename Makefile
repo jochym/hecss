@@ -22,8 +22,14 @@ test_asap:
 test_vasp:
 	nbdev_test_nbs --flags vasp
 
-release: pypi
+release: pypi conda_release
 	nbdev_bump_version
+
+conda_release:
+	fastrelease_conda_package --do_build false
+	sed -i 's/APACHE/GPL3/g' conda/hecss/meta.yaml
+	sed -i 's/Apache Software/GPL-3.0-or-later/g' conda/hecss/meta.yaml
+	conda mambabuild --python 3.8 conda/hecss
 
 pypi: dist
 	twine upload --repository hecss dist/*
@@ -33,3 +39,4 @@ dist: clean
 
 clean:
 	rm -rf dist
+	conda build purge
