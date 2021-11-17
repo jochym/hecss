@@ -5,13 +5,13 @@ __all__ = ['dfset_writer', 'hecss_sampler']
 # Cell
 # export
 import click
-from fastcore.script import Param, call_parse, bool_arg, store_true, store_false
 from pathlib import Path
 import os
 import ase
 from ase.calculators.vasp import Vasp
 from ase import units as un
 from .core import *
+import hecss
 
 # Cell
 def dfset_writer(s, sl, workdir=''):
@@ -36,23 +36,21 @@ def dfset_writer(s, sl, workdir=''):
 @click.option('-n', '--nodfset', is_flag=True, help='Do not write DFSET file for ALAMODE')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
-@click.option('-V', '--version', is_flag=True, help="Print version and exit")
-def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command, version):
+@click.version_option(hecss.__version__, '-V', '--version',
+                      message="HECSS, version %(version)s\n"
+                          'High Efficiency Configuration Space Sampler\n'
+                          '(C) 2021 by Paweł T. Jochym\n'
+                          '    License: GPL v3 or later')
+@click.help_option('-h', '--help')
+def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command):
     '''
-    Run HECSS sampler on the structure in the directory.
-    fname - Supercell structure file.
-    The containing directory must be readable by Vasp(restart).
+    Run HECSS sampler on the structure in the provided file (FNAME).
+
+    \b
+    FNAME - Supercell structure file. The containing
+            directory must be readable by Vasp(restart).
+            Usually this is a CONTCAR file for a supercell.
     '''
-
-    import hecss
-
-    if version:
-        print(f'HECSS ver. {hecss.__version__}\n'
-               'High Efficiency Configuration Space Sampler\n'
-               '(C) 2021 by Paweł T. Jochym\n'
-               '    License: GPL v3 or later')
-        return
-
 
     print(f'HECSS ({hecss.__version__})\n'
           f'Supercell:      {fname}\n'

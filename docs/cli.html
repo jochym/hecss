@@ -160,9 +160,12 @@ sbatch -W -J <span class="si">${</span><span class="nv">JN</span><span class="si
 <h4 id="<Command hecss-sampler>" class="doc_header"><code><Command hecss-sampler></code><a href="" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code><Command hecss-sampler></code>(<strong>*<code>args</code></strong>:<code>Any</code>, <strong>**<code>kwargs</code></strong>:<code>Any</code>)</p>
 </blockquote>
 
-<pre><code>Run HECSS sampler on the structure in the directory.
-fname - Supercell structure file.
-The containing directory must be readable by Vasp(restart).</code></pre>
+<pre><code>Run HECSS sampler on the structure in the provided file (FNAME).
+
+
+FNAME - Supercell structure file. The containing
+        directory must be readable by Vasp(restart).
+        Usually this is a CONTCAR file for a supercell.</code></pre>
 
 </div>
 
@@ -189,7 +192,7 @@ The containing directory must be readable by Vasp(restart).</code></pre>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">click.testing</span> <span class="kn">import</span> <span class="n">CliRunner</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">CliRunner</span><span class="p">()</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">hecss_sampler</span><span class="p">,</span> <span class="s1">&#39;-V &quot;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">CliRunner</span><span class="p">()</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">hecss_sampler</span><span class="p">,</span> <span class="s1">&#39;-V&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -202,7 +205,7 @@ The containing directory must be readable by Vasp(restart).</code></pre>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>HECSS ver. 0.3.17
+<pre>HECSS, version 0.3.17
 High Efficiency Configuration Space Sampler
 (C) 2021 by Paweł T. Jochym
     License: GPL v3 or later
@@ -239,8 +242,11 @@ High Efficiency Configuration Space Sampler
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Usage: hecss-sampler [OPTIONS] FNAME
 
-  Run HECSS sampler on the structure in the directory. fname - Supercell
-  structure file.  The containing directory must be readable by Vasp(restart).
+  Run HECSS sampler on the structure in the provided file (FNAME).
+
+  FNAME - Supercell structure file. The containing 
+          directory must be readable by Vasp(restart).
+          Usually this is a CONTCAR file for a supercell.
 
 Options:
   -W, --workdir PATH      Work directory
@@ -252,8 +258,8 @@ Options:
   -n, --nodfset           Do not write DFSET file for ALAMODE
   -N, --nsamples INTEGER  Number of samples to be generated
   -c, --command TEXT      Command to run calculator
-  -V, --version           Print version and exit
-  --help                  Show this message and exit.
+  -V, --version           Show the version and exit.
+  -h, --help              Show this message and exit.
 
 </pre>
 </div>
