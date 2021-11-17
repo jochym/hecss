@@ -24,26 +24,29 @@ def dfset_writer(s, sl, workdir=''):
     return False
 
 # Cell
-@call_parse
-def hecss_sampler(fname:  Param("Supercell structure file."
-                                "The containing directory must be readable by Vasp(restart)."
-                                , str),
-                  workdir:Param("Output directory for samples", str)='calc',
-                  label:  Param("Job label passed to run-calc command", str)='hecss',
-                  T:      Param("Target temperature (K)", float)=300,
-                  width:  Param("Initial scale of the prior distribution", float)=1.0,
-                  calc:   Param("Type of the calculator. Only VASP supported.", str)='VASP',
-                  dfset:  Param("Write DFset file", store_false)=True,
-                  N:      Param("Number of samples", int)=10,
-                  cmd:    Param("Command for job submission", str)='./run-calc',
-                  V:      Param("Print version and exit", store_true)=False):
+@click.command()
+@click.argument('fname', type=click.Path())
+@click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
+@click.option('-l', '--label', default="hecss", help="Label for the calculations.")
+@click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
+@click.option('-w', '--width', default=1.0, type=float, help="Initial scale of the prior distribution")
+@click.option('-C', '--calc', default="VASP", type=str,
+              help="ASE calculator to be used for the job. "
+                      "Supported calculators: VASP (default)")
+@click.option('-n', '--nodfset', is_flag=True, help='Do not write DFSET file for ALAMODE')
+@click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
+@click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
+@click.option('-V', '--version', is_flag=True, help="Print version and exit")
+def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command, version):
     '''
-    Run HECSS sampler on the structure passed in fname.
+    Run HECSS sampler on the structure in the directory.
+    fname - Supercell structure file.
+    The containing directory must be readable by Vasp(restart).
     '''
 
     import hecss
 
-    if V:
+    if version:
         print(f'HECSS ver. {hecss.__version__}\n'
                'High Efficiency Configuration Space Sampler\n'
                '(C) 2021 by Paweł T. Jochym\n'
@@ -53,9 +56,9 @@ def hecss_sampler(fname:  Param("Supercell structure file."
 
     print(f'HECSS ({hecss.__version__})\n'
           f'Supercell:      {fname}\n'
-          f'Temperature:    {T}K\n'
+          f'Temperature:    {temp}K\n'
           f'Work directory: {workdir}\n'
-          f'Calculator:     {calc}.')
+          f'Calculator:     {calc}')
 
     src_path = Path(fname)
 
@@ -64,42 +67,16 @@ def hecss_sampler(fname:  Param("Supercell structure file."
         cryst = ase.Atoms(calculator.atoms)
         cryst.set_calculator(calculator)
         calculator.set(directory=workdir)
-        command = Path(cmd)
+        command = Path(command)
         calculator.set(command=f'{command.absolute()} {label}')
     else:
         print(f'The {calc} calculator is not supported.')
         return
-    sentinel = None
-    if dfset :
-        sentinel = dfset_writer
-    sampler = HECSS(cryst, calculator, T, directory=workdir, width=width)
-    samples = sampler.generate(N, sentinel=sentinel, workdir=workdir)
-    return samples
 
-# Cell
-@click.command()
-@click.argument('fname', type=click.Path(exists=True))
-@click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
-@click.option('-l', '--label', default="hecss", help="Label for the calculations.")
-@click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
-@click.option('-w', '--width', default=1.0, type=float, help="Initial scale of the prior distribution")
-@click.option('-C', '--calc', default="VASP", type=str,
-              help="ASE calculator to be used for the job.\n" + "Supported calculators: VASP (default)")
-@click.option('--dfset/--no-dfest', default=True, help='Write DFSET file for ALAMODE')
-@click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
-@click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
-def _hecss_sampler(fname, workdir, label, temp, width, calc, dfset, nsamples, command):
-    '''
-    Run HECSS sampler on the structure in the directory.
-    fname - Supercell structure file.
-    The containing directory must be readable by Vasp(restart).
-    '''
-    return hecss_sampler(fname=fname,
-                         workdir=workdir,
-                         label=label,
-                         T=temp,
-                         width=width,
-                         calc=calc,
-                         dfset=dfset,
-                         N=nsamples,
-                         cmd=command)
+    if nodfset :
+        sentinel = None
+    else :
+        sentinel = dfset_writer
+    sampler = HECSS(cryst, calculator, temp, directory=workdir, width=width)
+    samples = sampler.generate(nsamples, sentinel=sentinel, workdir=workdir)
+    return
