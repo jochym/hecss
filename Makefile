@@ -22,7 +22,7 @@ test_asap:
 test_vasp:
 	nbdev_test_nbs --flags vasp
 
-release: pypi conda_release
+release: pypi # conda_release
 	nbdev_bump_version
 
 conda_meta:
