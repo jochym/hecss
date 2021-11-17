@@ -32,12 +32,14 @@ nb_path: "03_cli.ipynb"
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The hecss sampler can be also used from the command line using <code>hecss</code> command:</p>
-<div class="highlight"><pre><span></span>~$ hecss --help
-Usage: hecss <span class="o">[</span>OPTIONS<span class="o">]</span> FNAME
+<div class="highlight"><pre><span></span>~$ hecss -h
+Usage: hecss-sampler <span class="o">[</span>OPTIONS<span class="o">]</span> FNAME
 
-  Run HECSS sampler on the structure <span class="k">in</span> the directory. 
-  fname - Supercell structure file.  
-          The containing directory must be readable by Vasp<span class="o">(</span>restart<span class="o">)</span>.
+  Run HECSS sampler on the structure <span class="k">in</span> the provided file <span class="o">(</span>FNAME<span class="o">)</span>.
+
+  FNAME - Supercell structure file. The containing 
+          directory must be readable by Vasp<span class="o">(</span>restart<span class="o">)</span>.
+          Usually this is a CONTCAR file <span class="k">for</span> a supercell.
 
 Options:
   -W, --workdir PATH      Work directory
@@ -49,8 +51,8 @@ Options:
   -n, --nodfset           Do not write DFSET file <span class="k">for</span> ALAMODE
   -N, --nsamples INTEGER  Number of samples to be generated
   -c, --command TEXT      Command to run calculator
-  -V, --version           Print version and <span class="nb">exit</span>
-  --help                  Show this message and exit.
+  -V, --version           Show the version and exit.
+  -h, --help              Show this message and exit.
 </pre></div>
 <p>To use it you need to prepare:</p>
 <ol>
