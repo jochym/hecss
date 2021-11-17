@@ -45,6 +45,7 @@ def dfset_writer(s, sl, workdir=''):
 def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).
+    Read the docs at: https://jochym.gitlab.io/hecss/
 
     \b
     FNAME - Supercell structure file. The containing
