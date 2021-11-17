@@ -302,25 +302,26 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     e = linspace(E_goal - 3*Es, E_goal + 3*Es, 200)
     n = len(es)
 
-    plt.hist(es, bins='auto', density=True, label=f'{n} samples', alpha=0.5, rwidth=0.4, zorder=0)
+    plt.hist(es, bins='auto', density=False, label=f'{n} samples', alpha=0.5, rwidth=0.4, zorder=0)
     h = histogram(es, bins='auto', density=False)
     de = (h[1][-1]-h[1][0])/len(h[0])
+    N = len(es)
     if sqrN :
         plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de,
                         yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
     plt.axvline(E_goal, ls='--', color='C2', label='Target energy')
-    pdf = stats.norm.pdf(e, E_goal, Es)
-    plt.fill_between(e,  (pdf-sqrt(pdf)).clip(min=0), pdf+sqrt(pdf), label='$(1,2,3)/\\sqrt{N}$', color='C1', alpha=0.1, zorder=9)
+    pdf = N*de*stats.norm.pdf(e, E_goal, Es)
+    plt.fill_between(e,  (pdf-sqrt(pdf)).clip(min=0), pdf+sqrt(pdf), label='$\\sigma, 2\\sigma, 3\\sigma$', color='C1', alpha=0.1, zorder=9)
     plt.fill_between(e,  (pdf-2*sqrt(pdf)).clip(min=0), pdf+2*sqrt(pdf), color='C1', alpha=0.1, zorder=9)
     plt.fill_between(e,  (pdf-3*sqrt(pdf)).clip(min=0), pdf+3*sqrt(pdf), color='C1', alpha=0.1, zorder=9)
     plt.plot(e, pdf, '--', color='C1', label='Target normal dist.')
     fit = stats.norm.fit(es)
-    plt.plot(e,  stats.norm.pdf(e, *fit), '--', color='C3', label='Fitted normal dist.', zorder=10)
+    plt.plot(e,  N*de*stats.norm.pdf(e, *fit), '--', color='C3', label='Fitted normal dist.', zorder=10)
     if plotchi2 :
         fit = stats.chi2.fit(es, f0=3*nat)
         plt.plot(e,  stats.chi2.pdf(e, *fit), '--', color='C4', label='Fitted $\\chi^2$ dist.', zorder=10)
     plt.xlabel('Potential energy (meV/at)')
-    plt.ylabel('Probability density')
+    plt.ylabel('Samples')
     plt.xlim(E_goal-3*Es,E_goal+3*Es)
     plt.legend(loc='upper left', bbox_to_anchor=(0.7,0.5,0.5,0.5))
     if show :
