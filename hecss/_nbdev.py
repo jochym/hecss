@@ -29,6 +29,6 @@ modules = ["core.py",
 
 doc_url = "https://jochym.gitlab.io//hecss/"
 
-git_url = "https://gitlab.com/jochym/hecss/tree/nbdev/"
+git_url = "https://gitlab.com/jochym/hecss"
 
 def custom_doc_links(name): return None
