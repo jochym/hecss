@@ -12,6 +12,7 @@ Minimal example using LAMMPS potential from the asap3 package and OpenKIM databa
 #asap
 from ase.build import bulk
 import asap3
+from hecss.core import HECSS
 from hecss.monitor import plot_stats
 ```
 
