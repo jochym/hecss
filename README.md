@@ -1,56 +1,71 @@
 # HECSS
+> High Efficiency Configuration Space Sampler
 
-## High Efficiency Configuration Space Sampler
 
-This is a Markow-Chain Metropolis-Hastings configuration space sampler.
+HECSS is a Markow chain Monte-Carlo, configuration space sampler using Metropolis-Hastings algorithm for probablity distribution sampling. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The theoretical foundation of the code are presented in the section [Background](https://jochym.gitlab.io/hecss/Background) in the [Documentation](https://jochym.gitlab.io/hecss/). More detailed examples are included in the [LAMMPS](https://jochym.gitlab.io/hecss/LAMMPS_Tutorial) and [VASP](https://jochym.gitlab.io/hecss/VASP_Tutorial) tutorials.
 
-The main sampler is in the `hecss.py` module. The calculation monitoring
-functions are in the `calc_monitor.py` module. The examples are in:
+## A very short example
 
-* `run_sampler.py` - jupyter notebook with full sampler run example
-* `monitor_stats.py` - sampling statistics notebook
-* `monitor_phonons.py` - phonon convergence monitoring notebook
-* `example` - directory with input data files with 3C-SiC 2x2x2 supercell
+Minimal example using LAMMPS potential from the asap3 package and OpenKIM database. Here we will sample the thermodynamic distribution of 3C-SiC crystal at 300K. We start by importing required modules, define the crystal and energy/forces calculator, run the sampler and finally plot the energy distribution. 
 
-The notebooks should be opened with `open as -> notebook` in JupyterLab.
+```python
+#asap
+from ase.build import bulk
+import asap3
+from hecss.core import HECSS
+from hecss.monitor import plot_stats
+```
+
+Then we define the crystal and interaction model used in the calculation. In this case we use 3x3x3 supercell of the SiC crystal in zincblende structure and describe the interaction using LAMMPS potential from the OpenKIM database and ASAP3 implementation of the calculator.
+
+```python
+#asap
+model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+cryst = bulk('SiC', crystalstructure='zincblende', a=4.38120844, cubic=True).repeat((3,3,3))
+cryst.set_calculator(asap3.OpenKIMcalculator(model))
+```
+
+Then we define the sampler parameters (N -- number of samples, T -- temperature) and run it.
+
+```python
+#asap
+T = 300
+N = 1_000
+samples = HECSS(cryst, asap3.OpenKIMcalculator(model), T).generate(N)
+```
+
+And finally we plot the histogram of the resulting energy distribution which corresponds to the thermal equilibrium distribution.
+
+```python
+#asap
+plot_stats(samples, T)
+```
+
+
+![png](docs/images/output_9_0.png)
+
 
 ## Install
 
-For now the install is only with `git clone`. The proper package is comming soon.
-Run:
-```
-git clone http://git.dx.ifj.edu.pl/jochym/hecss.git 
-```
-in your working directory. It will create `hecss` directory with multiple files 
-and `WORK` subdirectory. Do all your work in this directory (copy examples there 
-and work from there). It is best to run calculations *above* the `hecss` directory
-and keep notebooks controlling the calculations in the `WORK` directory:
-```
---crystal---hecss---WORK
-          |
-          --calc_1---calc
-          |        |
-          |        --phon
-          |        |
-          |        --sc
-          |
-          --calc_2---calc
-                   |
-                   --phon
-                   |
-                   --sc
-```
-Alternatively you can have `calc_x` directories under `WORK` subdirectory. This structure enables you to update the package without touching your files.
+The HECSS package is avaliable on pypi and conda-forge additionally the package is present also in my personal anaconda channel (jochym). Installation is simple, but requires a number of other packages to be installed as well. Package menagers handle these dependencies automatically. 
 
-## Update
-
-If you followed above advice the update is done by executing:
+### Install with pip
+It is advisable to install in a dedicated virtual environment e.g.:
 ```
-git pull
+python3 -m venv venv
+. venv/bin/activate
 ```
-from within `hecss` directory. This will pull all released updates for the package.
+then install with `pip`:
+```
+pip install hecss
+```
 
-## Usage
-
-Start by copying files from `example` subdirectory into `WORK` and following
-the tutorial included there by opening `run_sampler.py` as Notebook.
+### Install with conda
+Also installation with conda should be performed for dedicated or some other non-base environment. To create dedicated environment you can invoke `conda create`:
+```
+conda create -n hecss -c conda-forge hecss
+```
+or you can install in some working environment `venv`:
+```
+conda install -n venv -c conda-forge hecss
+```

@@ -1,0 +1,14 @@
+{
+  "hecss": {
+    "Overview": "/",
+    "Background": "Background",
+    "Setup": "Setup",
+    "LAMMPS Tutorial": "LAMMPS_Tutorial",
+    "VASP Tutorial": "VASP_Tutorial",
+    "Core": "core",
+    "CLI": "cli",
+    "Monitor": "monitor",
+    "Sampling statistics monitoring": "monitor_stats",
+    "Phonon convergence monitoring": "monitor_phonons"
+  }
+}
