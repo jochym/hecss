@@ -6,6 +6,7 @@ monitor_phonons.ipynb
 example/*/*/calc
 example/*/*/phon/DFSET_*
 example/*/*/phon/cryst*.*
+example/VASP_3C-SiC_calculated/*/*/smpl
 __pycache__
 *.pyc
 TEST
@@ -151,3 +152,4 @@ checklink/cookies.txt
 run-vasp
 run-calc
 conda/hecss/meta.yaml
+hr.py

@@ -1,0 +1,39 @@
+
+&general
+  PREFIX = cryst
+  MODE = phonons ;   
+  FCSXML = cryst.xml 
+  NKD = 2
+  KD = C Si
+  MASS =  12.0110000000  28.0850000000
+  TMAX = 1000
+  EMIN = 0; EMAX = 1000; DELTA_E = 2
+  BORNINFO = 3C_SiC.born 
+  NONANALYTIC = 2 
+
+/
+
+
+&cell
+    1.8897259890 # factor 
+    0.0000000000   2.1858288950   2.1858288950
+    2.1858288950   0.0000000000   2.1858288950
+    2.1858288950   2.1858288950   0.0000000000 # cell matrix
+/
+
+
+&analysis
+  PRINTMSD = 1
+  PRINTEVEC = 1
+/
+
+&kpoint
+  1
+  G  0     0     0      K   0.375 0.750 0.375    51
+  K  0.375 0.750 0.375  X   0.5   1.0   0.5      51
+  X  0.5   0.5   0      G   0     0     0        51
+  G  0     0     0      L   0.5   0.5   0.5      51
+
+/
+
+
