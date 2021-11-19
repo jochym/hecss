@@ -22,20 +22,20 @@ entries:
       title: VASP Tutorial
       url: VASP_Tutorial
     - output: web,pdf
-      title: Core
-      url: core
-    - output: web,pdf
       title: CLI
-      url: cli
-    - output: web,pdf
-      title: Monitor
-      url: monitor
+      url: CLI
     - output: web,pdf
       title: Sampling statistics monitoring
       url: monitor_stats
     - output: web,pdf
       title: Phonon convergence monitoring
       url: monitor_phonons
+    - output: web,pdf
+      title: Core
+      url: core
+    - output: web,pdf
+      title: Monitor
+      url: monitor
     output: web
     title: hecss
   output: web
