@@ -109,7 +109,7 @@ sbatch -W -J <span class="si">${</span><span class="nv">JN</span><span class="si
              +-- run-calc</code></pre>
 <p>You execute the sampler from the <code>my_project</code> directory (remember to activate your virtual environment first). Generation of N=30 samples at T=100K:</p>
 <div class="highlight"><pre><span></span>~$ <span class="nb">cd</span> my_project
-~$ hecss -W T_100 --T <span class="m">100</span> --N <span class="m">30</span> -c ./run-calc sc/CONTCAR
+~$ hecss -W T_100 -T <span class="m">100</span> -N <span class="m">30</span> -c ./run-calc sc/CONTCAR
 </pre></div>
 <p>The above command will put the generated samples inside the <code>T_100</code> directory, together with the DFSET file with displacement-force data extracted from the calculation. The calculation may take a long time. Thus it is advisable to execute the hecss command inside <code>screen</code> (or some similar terminal multiplexer) to prevent the break of the calculation in case of session disconnection. The <code>hecss</code> command shows a progress to guide you through the calculation (ETA, time/it, data about last sample etc.). The example run is included at the bottom of this document.</p>
 
