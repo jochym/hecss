@@ -307,8 +307,13 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     de = (h[1][-1]-h[1][0])/len(h[0])
     N = len(es)
     if sqrN :
-        plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0]/h[0].sum()/de,
-                        yerr=sqrt(h[0])/h[0].sum()/de, ls='', label='$1/\\sqrt{N}$')
+        plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0],
+                     yerr=sqrt(h[0]), fmt='+', color='C0', alpha=0.66,
+                     capsize=6, label='$\\pm\\sqrt{n}$')
+        # plt.errorbar((h[1][:-1]+h[1][1:])/2, h[0],
+        #              yerr=2*sqrt(h[0]), fmt='+', color='C0', alpha=0.33,
+        #              capsize=4, label='$2/\\sqrt{N}$')
+
     plt.axvline(E_goal, ls='--', color='C2', label='Target energy')
     pdf = N*de*stats.norm.pdf(e, E_goal, Es)
     plt.fill_between(e,  (pdf-sqrt(pdf)).clip(min=0), pdf+sqrt(pdf), label='$\\sigma, 2\\sigma, 3\\sigma$', color='C1', alpha=0.1, zorder=9)
@@ -328,7 +333,7 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
         plt.show()
 
 # Cell
-def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False, once=False):
+def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False, sqrN=False, once=False):
 
     prev_N = get_dfset_len(f'{directory}/{dfset}')-1
 
@@ -347,7 +352,7 @@ def monitor_stats(T=300, directory='phon', dfset='DFSET', plotchi2=False, once=F
     while True :
         N = get_dfset_len(f'{directory}/{dfset}')
         if N > prev_N :
-            plot_stats(load_dfset(base_dir=directory, dfsetfn=dfset), T=T, plotchi2=plotchi2)
+            plot_stats(load_dfset(base_dir=directory, dfsetfn=dfset), T=T, plotchi2=plotchi2, sqrN=sqrN)
             show()
             if once:
                 break
