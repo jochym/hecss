@@ -27,7 +27,7 @@ def dfset_writer(s, sl, workdir=''):
 # Cell
 # export
 @click.command()
-@click.argument('fname', type=click.Path())
+@click.argument('fname', type=click.Path(exists=True))
 @click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
 @click.option('-l', '--label', default="hecss", help="Label for the calculations.")
 @click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
