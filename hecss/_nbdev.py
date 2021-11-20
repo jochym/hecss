@@ -4,10 +4,10 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"dfset_writer": "02_CLI.ipynb",
          "hecss_sampler": "02_CLI.ipynb",
-         "normalize_conf": "11_core.ipynb",
          "write_dfset": "11_core.ipynb",
          "HECSS_Sampler": "11_core.ipynb",
          "HECSS": "11_core.ipynb",
+         "normalize_conf": "11_core.ipynb",
          "THz": "12_monitor.ipynb",
          "plot_band_set": "12_monitor.ipynb",
          "plot_bands": "12_monitor.ipynb",
