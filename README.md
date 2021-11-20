@@ -1,6 +1,15 @@
 # HECSS
+> High Efficiency Configuration Space Sampler
 
 
+[![PVersion
+Badge](https://img.shields.io/pypi/v/hecss.svg)](https://pypi.org/project/hecss/)
+[![CVersion
+Badge](https://anaconda.org/conda-forge/hecss/badges/version.svg)](https://anaconda.org/conda-forge/hecss)
+[![Downloads
+Badge](https://anaconda.org/conda-forge/hecss/badges/downloads.svg)](https://anaconda.org/conda-forge/hecss)
+[![License
+Badge](https://anaconda.org/jochym/hecss/badges/license.svg)](https://anaconda.org/jochym/hecss)
 
 HECSS is a Markow chain Monte-Carlo, configuration space sampler using Metropolis-Hastings algorithm for probablity distribution sampling. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The theoretical foundation of the code are presented in the section [Background](https://jochym.gitlab.io/hecss/Background) in the [Documentation](https://jochym.gitlab.io/hecss/). More detailed examples are included in the [LAMMPS](https://jochym.gitlab.io/hecss/LAMMPS_Tutorial) and [VASP](https://jochym.gitlab.io/hecss/VASP_Tutorial) tutorials.
 
