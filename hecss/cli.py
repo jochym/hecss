@@ -42,6 +42,7 @@ def dfset_writer(s, sl, workdir=''):
                           '(C) 2021 by Paweł T. Jochym\n'
                           '    License: GPL v3 or later')
 @click.help_option('-h', '--help')
+# export
 def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).
