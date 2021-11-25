@@ -87,8 +87,10 @@ def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, c
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', type=float)
-@click.option('-n', '--sqrn', is_flag=True, help='Show sqrt(N) bands on the histogram.')
+@click.option('-n', '--sqrn', is_flag=True, help='Show sqrt(N) bars on the histogram.')
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
+@click.option('-w', '--width', type=float, default=6, help='Width of the figure.')
+@click.option('-h', '--height', type=float, default=4, help='Height of the figure.')
 @click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
 @click.option('-x', is_flag=True, default=False, help='Make plot in an interactive window')
 @click.version_option(hecss.__version__, '-V', '--version',
@@ -96,8 +98,7 @@ def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, c
                           'High Efficiency Configuration Space Sampler\n'
                           '(C) 2021 by Paweł T. Jochym\n'
                           '    License: GPL v3 or later')
-@click.help_option('-h', '--help')
-def plot_stats( dfset, t, output, x, sixel, sqrn):
+def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
     """
     Plot the statistics of the samples from the DFSET file.
     Use T(K) as a reference target temperature. Optionally
@@ -107,6 +108,8 @@ def plot_stats( dfset, t, output, x, sixel, sqrn):
     import matplotlib.pylab as plt
 
     p = Path(dfset)
+
+    plt.figure(figsize=(float(width), float(height)))
     hm.plot_stats(hm.load_dfset(p.parent, p.name), T=t, sqrN=sqrn, show=x)
     if output:
         plt.savefig(output)

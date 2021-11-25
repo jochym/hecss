@@ -23,7 +23,7 @@ test_vasp:
 	nbdev_test_nbs --flags vasp
 
 release: pypi # conda_release
-	nbdev_bump_version
+	nbdev_bump_version --part 3
 
 conda_meta:
 	fastrelease_conda_package --do_build false
@@ -36,7 +36,7 @@ conda_release: conda_meta
 	conda mambabuild --python 3.8 conda/hecss
 
 pypi: dist
-	twine upload --repository hecss dist/*
+	twine upload --repository test_hecss dist/*
 
 dist: clean
 	python setup.py sdist bdist_wheel
