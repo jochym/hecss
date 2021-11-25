@@ -153,10 +153,10 @@ def plot_bands( bands, output, x, sixel, width, height, label, nodecor):
 
     ll = label.split(',')
     if len(ll) < len(bands):
-        cp = os.path.commonpath(pl)
-        rpl = [p[len(cp):][::-1] for p in pl]
+        cp = os.path.commonpath(bands)
+        rpl = [p[len(cp):][::-1] for p in bands]
         cs = os.path.commonpath(rpl)
-        ll = [p[len(cp):-len(cs)] for p in pl]
+        ll = [p[len(cp):-len(cs)] for p in bands]
 
     for b, l in zip(bands, ll):
         p = Path(b)
