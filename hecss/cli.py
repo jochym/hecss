@@ -151,12 +151,19 @@ def plot_bands( bands, output, x, sixel, width, height, label, nodecor):
 
     plt.figure(figsize=(float(width), float(height)))
 
-    for b, l in zip(bands, label.split(',')):
+    ll = label.split(',')
+    if len(ll) < len(bands):
+        cp = os.path.commonpath(pl)
+        rpl = [p[len(cp):][::-1] for p in pl]
+        cs = os.path.commonpath(rpl)
+        ll = [p[len(cp):-len(cs)] for p in pl]
+
+    for b, l in zip(bands, ll):
         p = Path(b)
 
         hm.plot_bands_file(p, lbl=l, decorate=not nodecor)
 
-    if label:
+    if label or len(bands)>1:
         plt.legend()
 
     if output:
