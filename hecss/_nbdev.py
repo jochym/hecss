@@ -4,6 +4,7 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"dfset_writer": "02_CLI.ipynb",
          "hecss_sampler": "02_CLI.ipynb",
+         "plot_stats": "12_monitor.ipynb",
          "write_dfset": "11_core.ipynb",
          "HECSS_Sampler": "11_core.ipynb",
          "HECSS": "11_core.ipynb",
@@ -20,7 +21,6 @@ index = {"dfset_writer": "02_CLI.ipynb",
          "plot_omega": "12_monitor.ipynb",
          "monitor_phonons": "12_monitor.ipynb",
          "load_dfset": "12_monitor.ipynb",
-         "plot_stats": "12_monitor.ipynb",
          "monitor_stats": "12_monitor.ipynb"}
 
 modules = ["cli.py",
@@ -29,6 +29,6 @@ modules = ["cli.py",
 
 doc_url = "https://jochym.gitlab.io//hecss/"
 
-git_url = "https://gitlab.com/jochym/hecss/tree/master/"
+git_url = "https://gitlab.com/jochym/hecss/tree/devel/"
 
 def custom_doc_links(name): return None

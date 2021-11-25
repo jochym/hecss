@@ -81,3 +81,39 @@ def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, c
     sampler = HECSS(cryst, calculator, temp, directory=workdir, width=width)
     samples = sampler.generate(nsamples, sentinel=sentinel, workdir=workdir)
     return
+
+# Internal Cell
+# exporti
+@click.command()
+@click.argument('dfset', type=click.Path(exists=True))
+@click.argument('T', type=float)
+@click.option('-n', '--sqrn', is_flag=True, help='Show sqrt(N) bands on the histogram.')
+@click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
+@click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
+@click.option('-x', is_flag=True, default=False, help='Make plot in an interactive window')
+@click.version_option(hecss.__version__, '-V', '--version',
+                      message="HECSS, version %(version)s\n"
+                          'High Efficiency Configuration Space Sampler\n'
+                          '(C) 2021 by Paweł T. Jochym\n'
+                          '    License: GPL v3 or later')
+@click.help_option('-h', '--help')
+def plot_stats( dfset, t, output, x, sixel, sqrn):
+    """
+    Plot the statistics of the samples from the DFSET file.
+    Use T(K) as a reference target temperature. Optionally
+    write out the plot to the output graphics file.
+    """
+    import hecss.monitor as hm
+    import matplotlib.pylab as plt
+
+    p = Path(dfset)
+    hm.plot_stats(hm.load_dfset(p.parent, p.name), T=t, sqrN=sqrn, show=x)
+    if output:
+        plt.savefig(output)
+    if sixel:
+        try :
+            import sixelplot
+        except ImportError:
+            print('SixEl graphics support not installed. Install sixelplot package.')
+            return
+        sixelplot.show()
