@@ -35,6 +35,7 @@ def write_dfset(fn, c):
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             N=None, w_search=True, delta_sample=0.1,
+            modify=None, modify_args=None,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
     '''
@@ -170,6 +171,9 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     except AttributeError :
         pass
 
+    if modify is not None:
+        cr = modify(cr, cryst, 'i', *modify_args)
+
     e = (cr.get_potential_energy()-Ep0)/nat
     f = cr.get_forces()
     xscale = sqrt(un.kB*T_goal*np.abs(x/f))
@@ -193,6 +197,9 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             cr.calc.set(directory=f'{basedir}/smpl/{i:04d}')
         except AttributeError :
             pass
+
+        if modify is not None:
+            cr = modify(cr, cryst, 's', *modify_args)
 
         e_star = (cr.get_potential_energy()-Ep0)/nat
         f_star = cr.get_forces()
@@ -280,6 +287,7 @@ class HECSS:
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
                  N=None, w_search=True, delta_sample=0.1,
+                 modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
                  pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
         self.pbar = tqdm(total=N)
@@ -291,6 +299,7 @@ class HECSS:
                                      width=width, maxburn=maxburn,
                                      w_search=w_search,
                                      delta_sample=delta_sample,
+                                     modify=modify, modify_args=modify_args,
                                      pbar=self.pbar,
                                      directory=directory,
                                      reuse_base=reuse_base, verb=verb,
