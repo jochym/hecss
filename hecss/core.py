@@ -34,7 +34,7 @@ def write_dfset(fn, c):
 
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
-            N=None, w_search=True, delta_sample=0.1,
+            N=None, w_search=True, delta_sample=0.1, sigma=2, xi=1,
             modify=None, modify_args=None,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
@@ -62,6 +62,8 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     w_search     : Run search for initial w. If false start from whatever
                    is passed as width.
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
+    sigma        : Range around E0 in sigmas to stop w-serach mode
+    xi           : strength of the amplitude correction term [0-1]
     directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
@@ -117,6 +119,8 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     nat = cryst.get_global_number_of_atoms()
     dim = (nat, 3)
     xscale = np.ones(dim)
+    xi = min(0,xi)
+    xi = max(1,xi)
 
     if reuse_base is not None :
         calc0 = reuse_base
@@ -190,7 +194,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if verb and (n>0 or k>0):
             smpl_print(r)
 
-        x_star = xscale * Q.rvs(size=dim, scale=w * w_scale ) / xscale.mean()
+        x_star = (xi*xscale/xscale.mean() + (1-xi)) * Q.rvs(size=dim, scale=w * w_scale )
 
         cr.set_positions(cryst.get_positions()+x_star)
         try :
@@ -214,7 +218,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
 
         if w_search :
             w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
-            if i==0 and abs(e_star-E_goal) > Es :
+            if i==0 and abs(e_star-E_goal) > sigma*Es :
                 # We are in w-search mode but still far from E_goal
                 # Continue
                 k += 1
@@ -286,7 +290,7 @@ class HECSS:
     Class facilitating more traditional use of the `HECSS_Sampler` generator.
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
-                 N=None, w_search=True, delta_sample=0.1,
+                 N=None, w_search=True, delta_sample=0.1, sigma=2, xi=1,
                  modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
                  pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
@@ -299,6 +303,7 @@ class HECSS:
                                      width=width, maxburn=maxburn,
                                      w_search=w_search,
                                      delta_sample=delta_sample,
+                                     sigma=sigma, xi=xi,
                                      modify=modify, modify_args=modify_args,
                                      pbar=self.pbar,
                                      directory=directory,
