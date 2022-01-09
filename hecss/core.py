@@ -34,8 +34,8 @@ def write_dfset(fn, c):
 
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
-            N=None, w_search=True, delta_sample=0.1, sigma=2, xi=1,
-            modify=None, modify_args=None,
+            N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1,
+            Ep0=None, modify=None, modify_args=None,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
     '''
@@ -64,6 +64,10 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
     sigma        : Range around E0 in sigmas to stop w-serach mode
     xi           : strength of the amplitude correction term [0-1]
+    Ep0          : T=0 energy (base, no dstortions), if None (default) calculate E0.
+    modify       : pass your own pre-processing function to modify the structure
+                   before calculation
+    modify_args  : dictionary of extra arguments to pass to modify function
     directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
@@ -107,11 +111,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                 pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{xscale.std()/xscale.mean():6.3f}')
             else :
                 pbar.set_postfix(xs=f'{xscale.std()/xscale.mean():6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
-                                 w_bar=np.mean([_[0] for _ in wl]) if wl else w,
-                                 alpha=alpha, rej=(min(r,max_r)*'x') + (max_r-min(r,max_r))*' ')
+                                 w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
+                                 alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
         else :
             if i==0:
-                print(f'Burn-in sample {xscale.std()/xscale.mean():6.3f}:{k}  w:{w:.4f}  alpha:{alpha:6.4e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
+                print(f'Burn-in sample {xscale.std()/xscale.mean():6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
             else :
                 print(f'Sample {xscale.std()/xscale.mean():6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}  alpha:{alpha:10.3e} ' + (min(r,max_r)*'x') + (max_r-min(r,max_r))*' ', end='\n')
             sys.stdout.flush()
@@ -122,11 +126,12 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     xi = min(0,xi)
     xi = max(1,xi)
 
-    if reuse_base is not None :
-        calc0 = reuse_base
-        Ep0 = calc0.get_potential_energy()
-    else :
-        Ep0 = cryst.get_potential_energy()
+    if Ep0 is None:
+        if reuse_base is not None:
+            calc0 = reuse_base
+            Ep0 = calc0.get_potential_energy()
+        else:
+            Ep0 = cryst.get_potential_energy()
 
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)
@@ -211,7 +216,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         wl.append((w,e_star))
 
         if i==0 :
-            delta = 0.3
+            delta = 10 * delta_sample
         else :
             delta = delta_sample
         w_prev = w
@@ -290,8 +295,8 @@ class HECSS:
     Class facilitating more traditional use of the `HECSS_Sampler` generator.
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
-                 N=None, w_search=True, delta_sample=0.1, sigma=2, xi=1,
-                 modify=None, modify_args=None,
+                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1,
+                 Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
                  pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
         self.pbar = tqdm(total=N)
@@ -304,7 +309,7 @@ class HECSS:
                                      w_search=w_search,
                                      delta_sample=delta_sample,
                                      sigma=sigma, xi=xi,
-                                     modify=modify, modify_args=modify_args,
+                                     Ep0=Ep0, modify=modify, modify_args=modify_args,
                                      pbar=self.pbar,
                                      directory=directory,
                                      reuse_base=reuse_base, verb=verb,
