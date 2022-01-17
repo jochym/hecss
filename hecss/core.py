@@ -110,7 +110,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         max_r = 15
         if pbar:
             if i==0:
-                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{sqrt(xscale.std()/xscale.mean()):6.3f}')
+                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{xscale.std():6.3f}')
             else :
                 pbar.set_postfix(xs=f'{sqrt(xscale.std()/xscale.mean()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
                                  w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
