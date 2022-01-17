@@ -6,6 +6,7 @@ __all__ = ['write_dfset', 'HECSS_Sampler', 'HECSS', 'normalize_conf']
 import sys
 import ase
 from ase import units
+from ase.calculators import calculator
 import scipy
 from scipy import stats
 from scipy.special import expit
@@ -34,7 +35,7 @@ def write_dfset(fn, c):
 
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
-            N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1,
+            N=None, w_search=True, delta_sample=0.01, sigma=2, xi=0,
             Ep0=None, modify=None, modify_args=None,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
@@ -66,7 +67,8 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     xi           : strength of the amplitude correction term [0-1]
     Ep0          : T=0 energy (base, no dstortions), if None (default) calculate E0.
     modify       : pass your own pre-processing function to modify the structure
-                   before calculation
+                   before calculation. The function must return a  (e, f) tuple
+                   with energy of the structure (e, scalar) and forces (f, array).
     modify_args  : dictionary of extra arguments to pass to modify function
     directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
@@ -108,23 +110,28 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         max_r = 15
         if pbar:
             if i==0:
-                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{xscale.std()/xscale.mean():6.3f}')
+                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{sqrt(xscale.std()/xscale.mean()):6.3f}')
             else :
-                pbar.set_postfix(xs=f'{xscale.std()/xscale.mean():6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
+                pbar.set_postfix(xs=f'{sqrt(xscale.std()/xscale.mean()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
                                  w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
                                  alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
-        else :
+        elif pbar is None :
             if i==0:
-                print(f'Burn-in sample {xscale.std()/xscale.mean():6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
+                print(f'Burn-in sample {sqrt(xscale.std()/xscale.mean()):6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
             else :
-                print(f'Sample {xscale.std()/xscale.mean():6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}  alpha:{alpha:10.3e} ' + (min(r,max_r)*'x') + (max_r-min(r,max_r))*' ', end='\n')
+                print(f'Sample {sqrt(xscale.std()/xscale.mean()):6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
+                      +  f' alpha:{alpha:10.3e} ' + f' rej:{r:d}', end='\n')
             sys.stdout.flush()
+        else :
+            pass
 
-    nat = cryst.get_global_number_of_atoms()
+    nat = len(cryst)
     dim = (nat, 3)
+
     xscale = np.ones(dim)
-    xi = min(0,xi)
-    xi = max(1,xi)
+    mu = np.ones(dim)
+    xi = max(0,xi)
+    xi = min(1,xi)
 
     if Ep0 is None:
         if reuse_base is not None:
@@ -145,7 +152,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     w = width
     w_prev = w
 
-    x = Q.rvs(size=dim, scale=w * w_scale  )
+    x = Q.rvs(size=dim, scale=w * w_scale)
 
     if width_list is None :
         wl = []
@@ -181,12 +188,12 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         pass
 
     if modify is not None:
-        cr = modify(cr, cryst, 'i', *modify_args)
+        e, f = modify(cr, cryst, 'i', *modify_args)
+    else:
+        e = cr.get_potential_energy()
+        f = cr.get_forces()
 
-    e = (cr.get_potential_energy()-Ep0)/nat
-    f = cr.get_forces()
-    xscale = sqrt(un.kB*T_goal*np.abs(x/f))
-
+    e = (e-Ep0)/nat
 
     k = 0
     r = 0
@@ -199,7 +206,13 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if verb and (n>0 or k>0):
             smpl_print(r)
 
-        x_star = (xi*xscale/xscale.mean() + (1-xi)) * Q.rvs(size=dim, scale=w * w_scale )
+        if xscale_list is not None:
+            xscale_list.append(mu)
+
+        assert xscale.shape==dim
+        assert (xi*xscale + np.ones(dim)-xi).shape==dim
+
+        x_star = (xi*xscale + np.ones(dim)-xi) * Q.rvs(size=dim, scale=w * w_scale )
 
         cr.set_positions(cryst.get_positions()+x_star)
         try :
@@ -207,11 +220,16 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         except AttributeError :
             pass
 
-        if modify is not None:
-            cr = modify(cr, cryst, 's', *modify_args)
+        try :
+            if modify is not None:
+                e_star, f_star = modify(cr, cryst, 's', *modify_args)
+            else:
+                e_star = cr.get_potential_energy()
+                f_star = cr.get_forces()
+        except calculator.CalculatorError:
+            continue
 
-        e_star = (cr.get_potential_energy()-Ep0)/nat
-        f_star = cr.get_forces()
+        e_star = (e_star-Ep0)/nat
 
         wl.append((w,e_star))
 
@@ -236,10 +254,6 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                 continue
 
         priors.append((n, i, x_star, f_star, e_star))
-
-        xscale += sqrt(un.kB*T_goal*np.abs(x/f))
-        if xscale_list is not None:
-            xscale_list.append(xscale/xscale.mean())
 
         if i==0 :
             # We are in w-search mode and just found a proper w
@@ -283,6 +297,9 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if posts is not None :
             posts.append((n, i-1, x, f, e))
 
+        mu = np.abs(f*x)/(un.kB*T_goal)
+        xscale *= (1-2*delta*(expit(5*(mu-1))-0.5))
+        xscale /= xscale.mean()
 
         yield n, i-1, x, f, e
 
@@ -295,12 +312,14 @@ class HECSS:
     Class facilitating more traditional use of the `HECSS_Sampler` generator.
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
-                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1,
+                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=0,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
                  pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
-        self.pbar = tqdm(total=N)
-        self.pbar.disable = not pbar
+        if pbar is True:
+            self.pbar = tqdm(total=N)
+        else:
+            self.pbar = pbar
         self.N=N
         self.total_N=0
         self.T=T_goal
@@ -332,8 +351,13 @@ class HECSS:
         '''
         if N is None:
             N = self.N
-        self.pbar.reset(self.total_N + N)
-        self.pbar.update(self.total_N)
+
+        # This is a workaround for the miss-design of tqdm
+        # where bool() for total==None returns error
+        if self.pbar is not None and self.pbar is not False:
+            self.pbar.reset(self.total_N + N)
+            self.pbar.update(self.total_N)
+
         smpls = []
         for smpl in self.sampler:
             smpls.append(smpl)
