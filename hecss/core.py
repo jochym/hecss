@@ -5,16 +5,19 @@ __all__ = ['write_dfset', 'HECSS_Sampler', 'HECSS', 'normalize_conf']
 # Cell
 import sys
 import ase
-from ase import units
+import ase.units as un
 from ase.calculators import calculator
 import scipy
-from scipy import stats
-from scipy.special import expit
 import numpy as np
 from numpy import log, exp, sqrt, linspace, dot
-import ase.units as un
+from scipy import stats
+from scipy.special import expit
 from tqdm.auto import tqdm
 from itertools import islice
+from spglib import find_primitive, get_symmetry_dataset
+import spglib
+from collections import Counter
+from ase.data import chemical_symbols
 
 # Cell
 def write_dfset(fn, c):
@@ -36,7 +39,7 @@ def write_dfset(fn, c):
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             N=None, w_search=True, delta_sample=0.01, sigma=2, xi=0,
-            Ep0=None, modify=None, modify_args=None,
+            Ep0=None, modify=None, modify_args=None, symprec=1e-5,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
     '''
@@ -70,6 +73,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                    before calculation. The function must return a  (e, f) tuple
                    with energy of the structure (e, scalar) and forces (f, array).
     modify_args  : dictionary of extra arguments to pass to modify function
+    symprec      : symmetry detection treshold for spglib functions
     directory    : (only for VASP calculator) directory for calculations and generated samples.
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
@@ -112,14 +116,14 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             if i==0:
                 pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{xscale.std():6.3f}')
             else :
-                pbar.set_postfix(xs=f'{sqrt(xscale.std()/xscale.mean()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
+                pbar.set_postfix(xs=f'{sqrt(xscale.std()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
                                  w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
                                  alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
         elif pbar is None :
             if i==0:
-                print(f'Burn-in sample {sqrt(xscale.std()/xscale.mean()):6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
+                print(f'Burn-in sample {sqrt(xscale.std()):6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
             else :
-                print(f'Sample {sqrt(xscale.std()/xscale.mean()):6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
+                print(f'Sample {sqrt(xscale.std()):6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
                       +  f' alpha:{alpha:10.3e} ' + f' rej:{r:d}', end='\n')
             sys.stdout.flush()
         else :
@@ -128,10 +132,19 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     nat = len(cryst)
     dim = (nat, 3)
 
-    xscale = np.ones(dim)
+    symm = get_symmetry_dataset(cryst, symprec=symprec)
+    dofmap = symm['mapping_to_primitive']
+    dof = list(sorted(set(dofmap)))
+    dofmu = np.ones((len(dof), 3))
+    dofxs = np.ones(dofmu.shape)
+
     mu = np.ones(dim)
+    xscale = np.ones(dim)
+
     xi = max(0,xi)
     xi = min(1,xi)
+
+    assert 0 <= xi <= 1
 
     if Ep0 is None:
         if reuse_base is not None:
@@ -173,7 +186,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     else :
         basedir = directory
 
-    cr = ase.Atoms(numbers = cryst.get_atomic_numbers(),
+    cr = ase.Atoms(cryst.get_atomic_numbers(),
                    cell=cryst.get_cell(),
                    scaled_positions=cryst.get_scaled_positions(),
                    pbc=True, calculator=calc)
@@ -207,12 +220,12 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             smpl_print(r)
 
         if xscale_list is not None:
-            xscale_list.append(mu)
+            xscale_list.append(dofmu)
 
-        assert xscale.shape==dim
-        assert (xi*xscale + np.ones(dim)-xi).shape==dim
+        #x_star =  Q.rvs(size=dim, scale=w * w_scale * xscale)
+        x_star = xscale * Q.rvs(size=dim, scale=w * w_scale)
 
-        x_star = (xi*xscale + np.ones(dim)-xi) * Q.rvs(size=dim, scale=w * w_scale )
+        assert x_star.shape == dim
 
         cr.set_positions(cryst.get_positions()+x_star)
         try :
@@ -298,8 +311,14 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             posts.append((n, i-1, x, f, e))
 
         mu = np.abs(f*x)/(un.kB*T_goal)
-        xscale *= (1-2*delta*(expit(5*(mu-1))-0.5))
-        xscale /= xscale.mean()
+        dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
+
+        dofxs *= (1-2*delta*(expit(5*(dofmu-1))-0.5))
+        dofxs /= dofxs.mean()
+
+        xscale = dofxs[dofmap]     # Map from primitive unit cell
+        xscale /= xscale.mean()    # Normalize
+        xscale = (xi*xscale + np.ones(dim) - xi) # mix with unity: (xi*xs + (1-xi)*1), 0<xi<1
 
         yield n, i-1, x, f, e
 
