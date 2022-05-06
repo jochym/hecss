@@ -39,7 +39,7 @@ nb_path: "00_Background.ipynb"
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>To reproduce the thermal equilibrium in the system, independent configurations of displacements consistent with a desired non-zero temperature should be selected. 
 Having any initial approximations for the lattice dynamics of the system (e.g. standard harmonic approach) one can estimate temperature-dependent atomic mean-square-displacements (MSD) using a small set of force-displacement relations. Using these MSD data as a first approximation, the atomic displacements with normal distribution around equilibrium positions can be easily generated. 
-There is, however, a subtle issue around displacements generated this way -- they are <em>uncorrelated</em> between atoms, while in reality atomic displacements are correlated at least for their close neighbours. For example, it is easy to see that a simultaneous out-of-phase movement of neighboring atoms towards or away from each other will generate larger changes in energy than a synchronous in-phase movement of the same atoms. The former configuration should be represented with lower probability than the later, instead of equal probability present in the above simplistic scheme. Thus, while the static configurations generation may be a correct direction in general, such a naive approach is not sufficient.</p>
+There is, however, a subtle issue around displacements generated this way -- they are <em>uncorrelated</em> between atoms, while in reality atomic displacements are correlated at least for their close neighbours. For example, it is easy to see that a simultaneous out-of-phase movement of neighbouring atoms towards or away from each other will generate larger changes in energy than a synchronous in-phase movement of the same atoms. The former configuration should be represented with lower probability than the later, instead of equal probability present in the above simplistic scheme. Thus, while the static configurations generation may be a correct direction in general, such a naive approach is not sufficient.</p>
 
 </div>
 </div>
@@ -53,7 +53,7 @@ There is, however, a subtle issue around displacements generated this way -- the
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The general form of the equipartition theorem says that a generalized virial for any phase space coordinate (i.e. generalized coordinate or momentum) is proportional to temperature when it is averaged over the whole ensemble:</p>
+<p>The general form of the equipartition theorem says that a generalised virial for any phase space coordinate (i.e. generalised coordinate or momentum) is proportional to temperature when it is averaged over the whole ensemble:</p>
 $$
 \left\langle x_m \frac{\partial H}{\partial x_n}\right\rangle = \delta_{mn}k_B T 
 $$<p>If we assume ergodicity of the system, the ensemble average may be replaced with time average.
@@ -95,6 +95,19 @@ $$</p>
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Equilibration-between-degrees-of-freedom">Equilibration between degrees of freedom<a class="anchor-link" href="#Equilibration-between-degrees-of-freedom"> </a></h2>
 </div>
- 
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The procedure described above leads to the statistical ensemble with correctly distributed total energy. This is equivalent to the correct temperature of the system  but not necessarily to the <em>thermodynamic equilibrium</em>, since different degrees of freedom (DOF) may carry different portion of the total energy. To make the temperature of each DOF the same the sampling procedure employs the same scheme to each set of symmetry-connected DOFs as is used for total energy - making each averaged virial the same for these DOFs. This procedure is particularly effective for systems with many DOFs connected by symmetry (e.g. regular crystals). It seems less effective for systems with very low symmetry (e.g. decorated surfaces or molecules). The principle still works, only the large number of DOFs makes for large statistical fluctuations for each DOF - due to the low statistics and no averaging.</p>
+
+</div>
+</div>
+</div>
+</div>
+
 

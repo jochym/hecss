@@ -268,7 +268,9 @@ def load_dfset(base_dir='phon', dfsetfn='DFSET'):
             s = int(s)
             c = int(c)
             e = float(e)
-            confs.append((s,c, dfset[s-1,:,0:3], dfset[s-1,:,3:], e))
+            confs.append((s,c,
+                          dfset[s-1,:,0:3]*un.Bohr,
+                          dfset[s-1,:,3:]*un.Ry/un.Bohr, e))
 
     return confs
 

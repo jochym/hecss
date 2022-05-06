@@ -38,7 +38,8 @@ def write_dfset(fn, c):
 
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
-            N=None, w_search=True, delta_sample=0.01, sigma=2, xi=0,
+            N=None, w_search=True, delta_sample=0.01, sigma=2,
+            xi=1, chi=1,
             Ep0=None, modify=None, modify_args=None, symprec=1e-5,
             directory=None, reuse_base=None, verb=True, pbar=None,
             priors=None, posts=None, width_list=None, xscale_list=None):
@@ -68,6 +69,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
     sigma        : Range around E0 in sigmas to stop w-serach mode
     xi           : strength of the amplitude correction term [0-1]
+    chi          : strength of the amplitude correction term mixing [0-1]
     Ep0          : T=0 energy (base, no dstortions), if None (default) calculate E0.
     modify       : pass your own pre-processing function to modify the structure
                    before calculation. The function must return a  (e, f) tuple
@@ -146,6 +148,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
 
     assert 0 <= xi <= 1
 
+    chi = max(0,chi)
+    chi = min(1,chi)
+
+    assert 0 <= chi <= 1
+
     if Ep0 is None:
         if reuse_base is not None:
             calc0 = reuse_base
@@ -164,8 +171,6 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
 
     w = width
     w_prev = w
-
-    x = Q.rvs(size=dim, scale=w * w_scale)
 
     if width_list is None :
         wl = []
@@ -191,41 +196,36 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                    scaled_positions=cryst.get_scaled_positions(),
                    pbc=True, calculator=calc)
 
-    if pbar:
-        pbar.set_postfix(Sample='initial')
-
-    cr.set_positions(cryst.get_positions()+x)
     try :
         cr.calc.set(directory=f'{basedir}/smpl/{i:04d}')
     except AttributeError :
+        # Calculator is not directory-based
+        # Ignore the error
         pass
 
-    if modify is not None:
-        e, f = modify(cr, cryst, 'i', *modify_args)
-    else:
-        e = cr.get_potential_energy()
-        f = cr.get_forces()
-
-    e = (e-Ep0)/nat
+    # Start from the equilibrium position
+    e = 0
+    x = np.zeros(dim)
+    f = np.zeros(dim)
 
     k = 0
     r = 0
     alpha = 0
+    prior_len=0
+    pfit = None
 
     if pbar:
         pbar.set_postfix(Sample='burn-in')
 
-    while N is None or n < N:
-        if verb and (n>0 or k>0):
-            smpl_print(r)
-
-        if xscale_list is not None:
-            xscale_list.append(dofmu)
+    while True:
 
         #x_star =  Q.rvs(size=dim, scale=w * w_scale * xscale)
         x_star = xscale * Q.rvs(size=dim, scale=w * w_scale)
 
         assert x_star.shape == dim
+
+        if verb and (n>0 or k>0):
+            smpl_print(r)
 
         cr.set_positions(cryst.get_positions()+x_star)
         try :
@@ -240,16 +240,24 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                 e_star = cr.get_potential_energy()
                 f_star = cr.get_forces()
         except calculator.CalculatorError:
+            print(f"Calculator in {cr.calc.directory} faild.\n", file=sys.stderr)
+            print("Ignoring. Generating next displacement.", file=sys.stderr)
             continue
+
+        if xscale_list is not None:
+            xscale_list.append(dofmu)
 
         e_star = (e_star-Ep0)/nat
 
         wl.append((w,e_star))
 
         if i==0 :
+            # w-search mode
             delta = 10 * delta_sample
         else :
+            # sampling mode
             delta = delta_sample
+
         w_prev = w
 
         if w_search :
@@ -264,6 +272,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                         f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                     return
                 # Continue searching for proper w
+                # print(f'{w=} ({abs(e_star-E_goal)/(sigma*Es)}). Continue searching')
                 continue
 
         priors.append((n, i, x_star, f_star, e_star))
@@ -283,13 +292,16 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             if len(priors) > 3 :
                 # There is no sense in fitting priors to normal dist if we have just 2-3 samples
                 # The 4 samples is still rather low but seems to work well enough
+                # On the first visit here len(priors)>3 and prior_len==1
+                # Thus, the pfit will be initialized before first use  below.
                 if  len(priors) > 1.1*prior_len:
                     # Re-fit the prior only if we get 10% more samples
-                    pfit = stats.norm.fit([_[-1] for _ in priors])
+                    pfit = Q.fit([_[-1] for _ in priors])
                     prior_len = len(priors)
 
+                assert pfit is not None
                 # Take into account estimated transition probability
-                alpha *= stats.norm.pdf(e, *pfit)/stats.norm.pdf(e_star, *pfit)
+                alpha *= Q.pdf(e, *pfit)/Q.pdf(e_star, *pfit)
 
         if np.random.rand() < alpha:
             x = x_star
@@ -310,17 +322,28 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if posts is not None :
             posts.append((n, i-1, x, f, e))
 
-        mu = np.abs(f*x)/(un.kB*T_goal)
+        # mu = np.sqrt(np.abs(f*x)/(un.kB*T_goal))
+        mu = np.sqrt(np.abs(f*x)/np.abs(f*x).mean())
         dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
 
-        dofxs *= (1-2*delta*(expit(5*(dofmu-1))-0.5))
-        dofxs /= dofxs.mean()
+        dofxs *= (1-2*10*delta*(expit(5*(dofmu-1))-0.5))
 
-        xscale = dofxs[dofmap]     # Map from primitive unit cell
-        xscale /= xscale.mean()    # Normalize
-        xscale = (xi*xscale + np.ones(dim) - xi) # mix with unity: (xi*xs + (1-xi)*1), 0<xi<1
+        dofxs2 = dofxs**2
+        dofxs = np.sqrt(dofxs2 / dofxs2.mean())
+
+        xscale = (chi * dofxs[dofmap] + xscale * (1 - chi))
+
+        # xscale = (dofxs[dofmap])**2     # Map from primitive unit cell
+        # xscale /= xscale.mean()         # Normalize energy scale
+        # xscale = np.sqrt(xscale)
+
+        # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1
+        xscale = (xi*xscale + np.ones(dim) - xi)
 
         yield n, i-1, x, f, e
+
+        if N is not None and n > N:
+            break
 
     if pbar:
         pbar.close()
@@ -331,7 +354,7 @@ class HECSS:
     Class facilitating more traditional use of the `HECSS_Sampler` generator.
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
-                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=0,
+                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1, chi=1,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
                  pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
