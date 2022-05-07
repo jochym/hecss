@@ -244,9 +244,6 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             print("Ignoring. Generating next displacement.", file=sys.stderr)
             continue
 
-        if xscale_list is not None:
-            xscale_list.append(dofmu)
-
         e_star = (e_star-Ep0)/nat
 
         wl.append((w,e_star))
@@ -322,11 +319,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if posts is not None :
             posts.append((n, i-1, x, f, e))
 
-        # mu = np.sqrt(np.abs(f*x)/(un.kB*T_goal))
-        mu = np.sqrt(np.abs(f*x)/np.abs(f*x).mean())
+        mu = np.sqrt(2*np.abs(f*x)/(un.kB*T_goal))
+        # mu = np.sqrt(np.abs(f*x)/(np.abs(f*x).mean()))
         dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
 
-        dofxs *= (1-2*10*delta*(expit(5*(dofmu-1))-0.5))
+        dofxs *= (1-2*0.05*(expit(5*(dofmu-1))-0.5))
 
         dofxs2 = dofxs**2
         dofxs = np.sqrt(dofxs2 / dofxs2.mean())
@@ -339,6 +336,9 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
 
         # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1
         xscale = (xi*xscale + np.ones(dim) - xi)
+
+        if xscale_list is not None:
+            xscale_list.append(dofmu)
 
         yield n, i-1, x, f, e
 
