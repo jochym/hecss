@@ -18,6 +18,7 @@ from spglib import find_primitive, get_symmetry_dataset
 import spglib
 from collections import Counter
 from ase.data import chemical_symbols
+from matplotlib import pyplot as plt
 
 # Cell
 def write_dfset(fn, c):
@@ -39,10 +40,11 @@ def write_dfset(fn, c):
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             N=None, w_search=True, delta_sample=0.01, sigma=2,
-            xi=1, chi=1,
+            xi=1, chi=1, xscale_init=None,
             Ep0=None, modify=None, modify_args=None, symprec=1e-5,
             directory=None, reuse_base=None, verb=True, pbar=None,
-            priors=None, posts=None, width_list=None, xscale_list=None):
+            priors=None, posts=None, width_list=None,
+            dofmu_list=None, xscale_list=None):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
     temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory`
@@ -141,7 +143,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     dofxs = np.ones(dofmu.shape)
 
     mu = np.ones(dim)
-    xscale = np.ones(dim)
+    if xscale_init is None:
+        xscale = np.ones(dim)
+    else :
+        xscale = np.array(xscale_init)
+        assert xscale.shape == dim
 
     xi = max(0,xi)
     xi = min(1,xi)
@@ -257,6 +263,33 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
 
         w_prev = w
 
+        # Equilibrate all degrees of freedom
+        mu = np.abs(f_star*x_star)/(un.kB*T_goal)
+        # mu = np.abs(f_star*x_star)/(np.abs(f_star*x_star).mean())
+
+        # Avarage mu over images of the atom in the P.U.C.
+        dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
+
+        # We use sqrt(mu) since the energy is quadratic in position
+        # 0.05 => 5% maximum change in xscale from step to step
+        # 0.2 => half width/sharpness of the sigmoid, roughly linear part
+        dofxs *= (1-2*0.05*(expit((np.sqrt(dofmu)-1)/0.2)-0.5))
+
+        # We need to normalize to unchanged energy ~ xs**2
+        # The scale must be back linear in xs, thus sqrt(<xs>)
+        dofxs /= np.sqrt((dofxs**2).mean())
+
+        xscale = (chi * dofxs[dofmap] + xscale * (1 - chi))
+
+        # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1
+        xscale = (xi*xscale + np.ones(dim) - xi)
+
+        if xscale_list is not None:
+            xscale_list.append(xscale)
+
+        if dofmu_list is not None:
+            dofmu_list.append(dofmu)
+
         if w_search :
             w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
             if i==0 and abs(e_star-E_goal) > sigma*Es :
@@ -300,6 +333,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                 # Take into account estimated transition probability
                 alpha *= Q.pdf(e, *pfit)/Q.pdf(e_star, *pfit)
 
+
         if np.random.rand() < alpha:
             x = x_star
             e = e_star
@@ -319,27 +353,6 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         if posts is not None :
             posts.append((n, i-1, x, f, e))
 
-        mu = np.sqrt(2*np.abs(f*x)/(un.kB*T_goal))
-        # mu = np.sqrt(np.abs(f*x)/(np.abs(f*x).mean()))
-        dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
-
-        dofxs *= (1-2*0.05*(expit(5*(dofmu-1))-0.5))
-
-        dofxs2 = dofxs**2
-        dofxs = np.sqrt(dofxs2 / dofxs2.mean())
-
-        xscale = (chi * dofxs[dofmap] + xscale * (1 - chi))
-
-        # xscale = (dofxs[dofmap])**2     # Map from primitive unit cell
-        # xscale /= xscale.mean()         # Normalize energy scale
-        # xscale = np.sqrt(xscale)
-
-        # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1
-        xscale = (xi*xscale + np.ones(dim) - xi)
-
-        if xscale_list is not None:
-            xscale_list.append(dofmu)
-
         yield n, i-1, x, f, e
 
         if N is not None and n > N:
@@ -354,10 +367,12 @@ class HECSS:
     Class facilitating more traditional use of the `HECSS_Sampler` generator.
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
-                 N=None, w_search=True, delta_sample=0.01, sigma=2, xi=1, chi=1,
+                 N=None, w_search=True, delta_sample=0.01, sigma=2,
+                 xi=1, chi=1, xscale_init=None,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
-                 pbar=True, priors=None, posts=None, width_list=None, xscale_list=None):
+                 pbar=True, priors=None, posts=None, width_list=None,
+                 dofmu_list=None, xscale_list=None):
         if pbar is True:
             self.pbar = tqdm(total=N)
         else:
@@ -369,13 +384,16 @@ class HECSS:
                                      width=width, maxburn=maxburn,
                                      w_search=w_search,
                                      delta_sample=delta_sample,
-                                     sigma=sigma, xi=xi,
+                                     sigma=sigma,
+                                     xi=xi, chi=chi, xscale_init=xscale_init,
                                      Ep0=Ep0, modify=modify, modify_args=modify_args,
                                      pbar=self.pbar,
                                      directory=directory,
                                      reuse_base=reuse_base, verb=verb,
                                      priors=priors, posts=posts,
-                                     width_list=width_list, xscale_list=xscale_list)
+                                     width_list=width_list,
+                                     dofmu_list=dofmu_list,
+                                     xscale_list=xscale_list)
 
     def generate(self, N=None, sentinel=None, **kwargs):
         '''

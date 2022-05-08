@@ -21,7 +21,14 @@ index = {"dfset_writer": "02_CLI.ipynb",
          "plot_omega": "12_monitor.ipynb",
          "monitor_phonons": "12_monitor.ipynb",
          "load_dfset": "12_monitor.ipynb",
-         "monitor_stats": "12_monitor.ipynb"}
+         "monitor_stats": "12_monitor.ipynb",
+         "moving_average": "12_monitor.ipynb",
+         "ewma": "12_monitor.ipynb",
+         "plot_hist": "12_monitor.ipynb",
+         "plot_virial_stat": "12_monitor.ipynb",
+         "plot_acceptance_history": "12_monitor.ipynb",
+         "plot_dofmu_stat": "12_monitor.ipynb",
+         "plot_xs_stat": "12_monitor.ipynb"}
 
 modules = ["cli.py",
            "core.py",
