@@ -41,7 +41,7 @@ def dfset_writer(s, sl, workdir=''):
 @click.version_option(hecss.__version__, '-V', '--version',
                       message="HECSS, version %(version)s\n"
                           'High Efficiency Configuration Space Sampler\n'
-                          '(C) 2021 by Paweł T. Jochym\n'
+                          '(C) 2021-2022 by Paweł T. Jochym\n'
                           '    License: GPL v3 or later')
 @click.help_option('-h', '--help')
 def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command):
