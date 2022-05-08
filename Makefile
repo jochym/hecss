@@ -23,7 +23,7 @@ test_vasp:
 	nbdev_test_nbs --flags vasp
 
 release: pypi # conda_release
-	nbdev_bump_version --part 3
+	nbdev_bump_version --part 2
 
 conda_meta:
 	fastrelease_conda_package --do_build false
