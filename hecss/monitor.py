@@ -468,11 +468,11 @@ def plot_dofmu_stat(cryst, dofmu, skip=50):
         window = 50
         asx = moving_average(xdof[:,elmask,:].mean((-1,-2)), window)
         plot((n-len(asx))//2+arange(len(asx)), asx, '--',
-                 label=f'{chemical_symbols[el]} (ma, {window=})', color=f'C{i}');
+                 label=f'{chemical_symbols[el]} (ma, w={window})', color=f'C{i}');
 
         asx = ewma(xdof[:,elmask,:].mean((-1,-2)), window)
         plot((n-len(asx))//2+arange(len(asx)), asx,
-                 label=f'{chemical_symbols[el]} (ewma, {window=})', color=f'C{i}');
+                 label=f'{chemical_symbols[el]} (ewma, w={window})', color=f'C{i}');
 
     axvspan(0, skip, color='k', alpha=0.2)
     title('Virial history')
@@ -522,11 +522,11 @@ def plot_xs_stat(cryst, xsl, skip=50):
         window = 30
         asx = moving_average(xdof[:,elmap==el,:].mean((-1,-2)), window)
         plot((n-len(asx))//2 + arange(len(asx)), asx, '--',
-                 label=f'{chemical_symbols[el]} (ma, {window=})', color=f'C{i}');
+                 label=f'{chemical_symbols[el]} (ma, w={window})', color=f'C{i}');
 
         asx = ewma(xdof[:,elmap==el,:].mean((-1,-2)), window)
         plot((n-len(asx))//2 + arange(len(asx)), asx,
-                 label=f'{chemical_symbols[el]} (ewma, {window=})', color=f'C{i}');
+                 label=f'{chemical_symbols[el]} (ewma, w={window})', color=f'C{i}');
 
     axvspan(0, skip, color='k', alpha=0.2)
 
