@@ -7,7 +7,7 @@ __all__ = ['THz', 'plot_band_set', 'plot_bands', 'plot_bands_file', 'run_alamode
 
 # Cell
 from numpy import sqrt, loadtxt, array, linspace, histogram
-from numpy import median, abs, convolve, ones, arange
+from numpy import median, abs, convolve, ones, arange, cumsum
 from IPython.display import clear_output
 import subprocess
 from time import sleep
@@ -440,13 +440,15 @@ def plot_virial_stat(cryst, smpl, T):
 
 def plot_acceptance_history(smpl):
     figure(figsize=(10,4))
-    plot(100*array([(n+1)/(i+1) for i, n, x, f, e in  smpl]))
+    na = array([n for i, n, x, f, e in smpl])
+    na = cumsum((na[1:]-na[:-1])%2)
+    plot(100*(na/arange(1,len(na)+1))[1:])
     xlabel('Step')
-    ylabel('Acceptance ratio (%)');
+    ylabel('Acceptance ratio (approx., %)');
 
 # Cell
 
-def plot_dofmu_stat(cryst, dofmu, skip=50):
+def plot_dofmu_stat(cryst, dofmu, skip=10, window=10):
     symm = get_symmetry_dataset(cryst)
     dofmap = symm['mapping_to_primitive']
     dof = set(dofmap)
@@ -455,6 +457,7 @@ def plot_dofmu_stat(cryst, dofmu, skip=50):
     elmap = array(sorted(elems.items())).T
     xdof = array(dofmu)
     skip = min(skip, len(dofmu)//2)
+    window = min(window, len(dofmu)//2)
 
     figure(figsize=(10,4))
 
@@ -465,7 +468,6 @@ def plot_dofmu_stat(cryst, dofmu, skip=50):
         plot(xdof[:,elmask,:].reshape((-1,3*sum(elmask))),
                  '.', color=f'C{i}', ms=1, alpha=0.2)
 
-        window = 50
         asx = moving_average(xdof[:,elmask,:].mean((-1,-2)), window)
         plot((n-len(asx))//2+arange(len(asx)), asx, '--',
                  label=f'{chemical_symbols[el]} (ma, w={window})', color=f'C{i}');
@@ -501,7 +503,7 @@ def plot_dofmu_stat(cryst, dofmu, skip=50):
 
 # Cell
 
-def plot_xs_stat(cryst, xsl, skip=50):
+def plot_xs_stat(cryst, xsl, skip=10, window=10):
     symm = get_symmetry_dataset(cryst)
     dofmap = symm['mapping_to_primitive']
     dof = set(dofmap)
@@ -511,6 +513,7 @@ def plot_xs_stat(cryst, xsl, skip=50):
     elmap = cryst.get_atomic_numbers()
     xdof = array(xsl)
     skip = min(skip, len(xsl)//2)
+    window = min(window, len(xsl)//2)
 
     plt.figure(figsize=(10,4))
 
@@ -519,7 +522,6 @@ def plot_xs_stat(cryst, xsl, skip=50):
         plot(xdof[:,elmap==el,:].mean((-2,-1)),
                  '.', color=f'C{i}', ms=2, alpha=0.25)
 
-        window = 30
         asx = moving_average(xdof[:,elmap==el,:].mean((-1,-2)), window)
         plot((n-len(asx))//2 + arange(len(asx)), asx, '--',
                  label=f'{chemical_symbols[el]} (ma, w={window})', color=f'C{i}');

@@ -52,6 +52,7 @@ def calc_init_xscale(cryst, xsl, skip=None):
 # Cell
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
             N=None, w_search=True, delta_sample=0.01, sigma=2,
+            eqdelta=0.05, eqsigma=0.2,
             xi=1, chi=1, xscale_init=None,
             Ep0=None, modify=None, modify_args=None, symprec=1e-5,
             directory=None, reuse_base=None, verb=True, pbar=None,
@@ -294,9 +295,10 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
 
         # We use sqrt(mu) since the energy is quadratic in position
-        # 0.05 => 5% maximum change in xscale from step to step
-        # 0.2 => half width/sharpness of the sigmoid, roughly linear part
-        dofxs *= (1-2*0.05*(expit((np.sqrt(dofmu)-1)/0.2)-0.5))
+        # eqdelta = 0.05 => 5% maximum change in xscale from step to step
+        # eqsigma = 0.2 => half width/sharpness of the sigmoid,
+        #                  roughly linear part of the curve
+        dofxs *= (1-2*eqdelta*(expit((np.sqrt(dofmu)-1)/eqsigma)-0.5))
 
         # We need to normalize to unchanged energy ~ xs**2
         # The scale must be back linear in xs, thus sqrt(<xs>)
@@ -391,6 +393,7 @@ class HECSS:
     '''
     def __init__(self, cryst, calc, T_goal, width=1, maxburn=20,
                  N=None, w_search=True, delta_sample=0.01, sigma=2,
+                 eqdelta=0.05, eqsigma=0.2,
                  xi=1, chi=1, xscale_init=None,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True,
@@ -408,6 +411,7 @@ class HECSS:
                                      w_search=w_search,
                                      delta_sample=delta_sample,
                                      sigma=sigma,
+                                     eqdelta=eqdelta, eqsigma=eqsigma,
                                      xi=xi, chi=chi,
                                      xscale_init=xscale_init,
                                      Ep0=Ep0, modify=modify, modify_args=modify_args,
