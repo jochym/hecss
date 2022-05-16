@@ -39,6 +39,24 @@ def write_dfset(fn, c):
 
 # Cell
 def calc_init_xscale(cryst, xsl, skip=None):
+    '''
+    Calculate initial xscale amplitude correction coefficients
+    from the history exported from the previous calculation
+    (with `xscale_list` argument).
+
+    INPUT
+    -----
+    cryst : ASE structure
+    xsl   : List of amplitude correction coefficients. The shape of
+            each element of the list must be `cryst.get_positions().shape`
+    skip  : Number of samples to skip at the start of the xsl list
+
+    OUTPUT
+    ------
+    Array amplitude correction coefficients with shape the same as
+    `cryst.get_positions().shape`. May be directly plugged into
+    `xscale_init` argument of `HECSS_Sampler` or `HECSS`.
+    '''
     from numpy import array, ones
     elmap = cryst.get_atomic_numbers()
     if skip is not None:
@@ -83,8 +101,13 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
                    is passed as width.
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
     sigma        : Range around E0 in sigmas to stop w-serach mode
+    eqdelta      : Max. speed of amplitude correction from step to step (0.05=5%)
+    eqsigma      : Half width of linear part of amplitude correction function.
     xi           : strength of the amplitude correction term [0-1]
     chi          : strength of the amplitude correction term mixing [0-1]
+    xscale_init  : Initial values of the amplitude correction coefficients.
+                   Array with shape `cryst.get_positions().shape`.
+                   May be generated with `calc_init_xscale` function.
     Ep0          : T=0 energy (base, no dstortions), if None (default) calculate E0.
     modify       : pass your own pre-processing function to modify the structure
                    before calculation. The function must return a  (e, f) tuple
@@ -108,7 +131,11 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     priors       : Output parameter. If not None, store in passed list the sequence of priors.
     posts        : Output parameter. If not None, store in passed list the sequence of posteriors.
     width_list   : Output parameter. If not None, store in passed list the sequence of widths.
-    xscale_list  : Output parameter. If not None, store in passed list the array of xscales (normalized).
+    dofmu_list   : Output parameter. If not None, store in passed list the array of DOF virials
+                   relative to temperature (T_goal).
+    xscale_list  : Output parameter. If not None, store in passed list the array of amplitude
+                   correction coefficients (normalized). May be used to generate `xscale_init`
+                   values with the help of `calc_init_xscale` function.
 
     OUTPUT
     ------
@@ -131,17 +158,22 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         max_r = 15
         if pbar:
             if i==0:
-                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', xs=f'{xscale.std():6.3f}')
+                pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha,
+                                 dE=f'{(e_star-E_goal)/Es:+6.2f} sigma',
+                                 xs=f'{sqrt(xscale.std()):6.3f}')
             else :
-                pbar.set_postfix(xs=f'{sqrt(xscale.std()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', w=w,
-                                 w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
+                pbar.set_postfix(xs=f'{sqrt(xscale.std()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%',
+                                 w=w, w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
                                  alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
         elif pbar is None :
             if i==0:
-                print(f'Burn-in sample {sqrt(xscale.std()):6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
+                print(f'Burn-in sample {sqrt(xscale.std()):6.3f}:{k}'
+                      f'  w:{w:.4f}  alpha:{alpha:7.1e}'
+                      f'  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
             else :
-                print(f'Sample {sqrt(xscale.std()):6.3f}:{n:04d}  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
-                      +  f' alpha:{alpha:10.3e} ' + f' rej:{r:d}', end='\n')
+                print(f'Sample {sqrt(xscale.std()):6.3f}:{n:04d}'
+                      f'  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
+                      f' alpha:{alpha:10.3e}  rej:{r:d}', end='\n')
             sys.stdout.flush()
         else :
             pass
@@ -169,6 +201,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
         xscale = np.array(xscale_init)
         assert xscale.shape == dim
 
+    # Initialise dofxs from data passed in xscale_init
     dofxs = np.array([xscale[dofmap==d,:].mean(axis=0) for d in dof])
     assert dofxs.shape == dofmu.shape
 
@@ -456,6 +489,31 @@ class HECSS:
                 break
         self.total_N += len(smpls)
         return smpls
+
+# Internal Cell
+
+def select_asap_model(comp='SiC'):
+    '''
+    This simple function selects the latest *working* OpenKIM model
+    containing `comp` in the name. Required since some models are
+    not loding properly and the names are not stable.
+    OUTPUT
+    ------
+    Name of the model. If nothing is found returns None.
+    '''
+    import asap3
+    models = []
+    for pot in [pot for pot in asap3.OpenKIMavailable() if comp in pot]:
+        try :
+            calc = asap3.OpenKIMcalculator(pot)
+            models.append(pot)
+        except asap3.AsapError :
+            pass
+    if models :
+        model = sorted(models, key=lambda m: m.split('_')[3])[-1]
+    else :
+        model = None
+    return model
 
 # Cell
 def normalize_conf(c, base):

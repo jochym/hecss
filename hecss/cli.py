@@ -10,19 +10,34 @@ import os
 import ase
 from ase.calculators.vasp import Vasp
 from ase import units as un
+from numpy import savetxt, loadtxt
 from .core import *
 import hecss
 
 # Internal Cell
 # exporti
-def dfset_writer(s, sl, workdir=''):
+def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
-    Just write samples to the DFSET.dat file in the workdir directory.
+    Write samples to the DFSET file in the workdir directory.
+    If the scale and xsl list are not empy save amplitude correction
+    and empty the xsl list (!).
     '''
     wd = Path(workdir)
-    write_dfset(f'{wd.joinpath("DFSET.dat")}', s)
+    write_dfset(f'{wd.joinpath(dfset)}', s)
+    if scale and xsl:
+        with open(wd.joinpath(scale), 'at') as sf:
+            for xs in xsl:
+                savetxt(sf, xs, fmt='%8.5f', header=f'{xs.shape}, {len(sl)}, {len(xsl)}')
+        xsl.clear()
     # Important! Return False to keep iteration going
     return False
+
+# Internal Cell
+# exporti
+_version_message=("HECSS, version %(version)s\n"
+                  'High Efficiency Configuration Space Sampler\n'
+                  '(C) 2021-2022 by Paweł T. Jochym\n'
+                  '    License: GPL v3 or later')
 
 # Internal Cell
 # exporti
@@ -32,21 +47,20 @@ def dfset_writer(s, sl, workdir=''):
 @click.option('-l', '--label', default="hecss", help="Label for the calculations.")
 @click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
 @click.option('-w', '--width', default=1.0, type=float, help="Initial scale of the prior distribution")
+@click.option('-a', '--ampl', default='', type=click.Path(), help='Initialise amplitude correction from the file.')
+@click.option('-s', '--scale', default='', type=click.Path(), help='Save amplitude correction history')
 @click.option('-C', '--calc', default="VASP", type=str,
               help="ASE calculator to be used for the job. "
                       "Supported calculators: VASP (default)")
 @click.option('-n', '--nodfset', is_flag=True, help='Do not write DFSET file for ALAMODE')
+@click.option('-d', '--dfset', default='DFSET.dat', help='Name of the DFSET file')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
-@click.version_option(hecss.__version__, '-V', '--version',
-                      message="HECSS, version %(version)s\n"
-                          'High Efficiency Configuration Space Sampler\n'
-                          '(C) 2021-2022 by Paweł T. Jochym\n'
-                          '    License: GPL v3 or later')
+@click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, command):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, command):
     '''
-    Run HECSS sampler on the structure in the provided file (FNAME).
+    Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.gitlab.io/hecss/
 
     \b
@@ -78,9 +92,37 @@ def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, c
         sentinel = None
     else :
         sentinel = dfset_writer
-    sampler = HECSS(cryst, calculator, temp, directory=workdir, width=width)
-    samples = sampler.generate(nsamples, sentinel=sentinel, workdir=workdir)
+
+    xsl = None
+    if scale:
+        xsl = []
+
+    xsi = None
+    if ampl:
+        xsi = loadtxt(ampl)
+
+    sampler = HECSS(cryst, calculator, temp, directory=workdir, width=width, xscale_init=xsi, xscale_list=xsl)
+    samples = sampler.generate(nsamples, sentinel=sentinel, workdir=workdir, dfset=dfset, scale=scale, xsl=xsl)
     return
+
+# Internal Cell
+# exporti
+@click.command()
+@click.argument('supercell', type=click.Path(exists=True))
+@click.argument('scale', type=click.Path(exists=True))
+@click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
+@click.option('-s', '--skip', default=0, type=int, help='Skip this number of samples at the beginning')
+@click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
+@click.help_option('-h', '--help')
+def calculate_xscale(supercell, scale, output, skip):
+    '''
+    Calculate initial values for amplitude correction coefficients
+    from the scale file data for the specified supercell.
+    '''
+    sc = ase.io.read(supercell)
+    xsl = loadtxt(scale).reshape((-1, len(sc), 3))
+    xsi = calc_init_xscale(sc, xsl, skip=skip if skip else None)
+    savetxt(output, xsi, fmt='%9.4f')
 
 # Internal Cell
 # exporti
@@ -93,11 +135,7 @@ def hecss_sampler(fname, workdir, label, temp, width, calc, nodfset, nsamples, c
 @click.option('-h', '--height', type=float, default=4, help='Height of the figure.')
 @click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
 @click.option('-x', is_flag=True, default=False, help='Make plot in an interactive window')
-@click.version_option(hecss.__version__, '-V', '--version',
-                      message="HECSS, version %(version)s\n"
-                          'High Efficiency Configuration Space Sampler\n'
-                          '(C) 2021 by Paweł T. Jochym\n'
-                          '    License: GPL v3 or later')
+@click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
     """
     Plot the statistics of the samples from the DFSET file.
@@ -135,11 +173,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
               help='Label(s) for the plot. Comma-separated list')
 @click.option('-x', is_flag=True, default=False,
               help='Make plot in an interactive window')
-@click.version_option(hecss.__version__, '-V', '--version',
-                      message="HECSS, version %(version)s\n"
-                          'High Efficiency Configuration Space Sampler\n'
-                          '(C) 2021 by Paweł T. Jochym\n'
-                          '    License: GPL v3 or later')
+@click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 def plot_bands( bands, output, x, sixel, width, height, label, nodecor):
     """
     Plot the phonon dispersion from the file generated by ALAMODE.
