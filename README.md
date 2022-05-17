@@ -20,7 +20,7 @@ Minimal example using LAMMPS potential from the asap3 package and OpenKIM databa
 #asap
 from ase.build import bulk
 import asap3
-from hecss.core import HECSS
+from hecss.core import HECSS, select_asap_model
 from hecss.monitor import plot_stats
 ```
 
@@ -28,7 +28,8 @@ Then we define the crystal and interaction model used in the calculation. In thi
 
 ```python
 #asap
-model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+# model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+model = select_asap_model('SiC')
 cryst = bulk('SiC', crystalstructure='zincblende', a=4.38120844, cubic=True).repeat((3,3,3))
 cryst.set_calculator(asap3.OpenKIMcalculator(model))
 ```
@@ -50,7 +51,9 @@ plot_stats(samples, T)
 ```
 
 
+    
 ![png](docs/images/output_9_0.png)
+    
 
 
 ## Install

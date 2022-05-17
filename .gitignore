@@ -153,3 +153,4 @@ run-vasp
 run-calc
 conda/hecss/meta.yaml
 hr.py
+run-calc.sh

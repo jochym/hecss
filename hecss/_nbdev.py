@@ -4,13 +4,17 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"dfset_writer": "02_CLI.ipynb",
          "hecss_sampler": "02_CLI.ipynb",
+         "calculate_xscale": "02_CLI.ipynb",
+         "plot_stats": "12_monitor.ipynb",
+         "plot_bands": "12_monitor.ipynb",
          "write_dfset": "11_core.ipynb",
+         "calc_init_xscale": "11_core.ipynb",
          "HECSS_Sampler": "11_core.ipynb",
          "HECSS": "11_core.ipynb",
+         "select_asap_model": "11_core.ipynb",
          "normalize_conf": "11_core.ipynb",
          "THz": "12_monitor.ipynb",
          "plot_band_set": "12_monitor.ipynb",
-         "plot_bands": "12_monitor.ipynb",
          "plot_bands_file": "12_monitor.ipynb",
          "run_alamode": "12_monitor.ipynb",
          "get_dfset_len": "12_monitor.ipynb",
@@ -20,8 +24,14 @@ index = {"dfset_writer": "02_CLI.ipynb",
          "plot_omega": "12_monitor.ipynb",
          "monitor_phonons": "12_monitor.ipynb",
          "load_dfset": "12_monitor.ipynb",
-         "plot_stats": "12_monitor.ipynb",
-         "monitor_stats": "12_monitor.ipynb"}
+         "monitor_stats": "12_monitor.ipynb",
+         "moving_average": "12_monitor.ipynb",
+         "ewma": "12_monitor.ipynb",
+         "plot_hist": "12_monitor.ipynb",
+         "plot_virial_stat": "12_monitor.ipynb",
+         "plot_acceptance_history": "12_monitor.ipynb",
+         "plot_dofmu_stat": "12_monitor.ipynb",
+         "plot_xs_stat": "12_monitor.ipynb"}
 
 modules = ["cli.py",
            "core.py",
@@ -29,6 +39,6 @@ modules = ["cli.py",
 
 doc_url = "https://jochym.gitlab.io//hecss/"
 
-git_url = "https://gitlab.com/jochym/hecss/tree/master/"
+git_url = "https://gitlab.com/jochym/hecss/tree/devel/"
 
 def custom_doc_links(name): return None
