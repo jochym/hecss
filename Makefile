@@ -36,7 +36,7 @@ conda_release: conda_meta
 	conda mambabuild --python 3.8 conda/hecss
 
 pypi: dist
-	twine upload --repository test_hecss dist/*
+	twine upload --repository hecss dist/*
 
 dist: clean
 	python setup.py sdist bdist_wheel
