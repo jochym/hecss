@@ -7,7 +7,7 @@ __all__ = ['THz', 'plot_band_set', 'plot_bands', 'plot_bands_file', 'run_alamode
 
 # Cell
 from numpy import sqrt, loadtxt, array, linspace, histogram
-from numpy import median, abs, convolve, ones, arange, cumsum
+from numpy import median, abs, convolve, ones, arange, cumsum, fromiter
 from IPython.display import clear_output
 import subprocess
 from time import sleep
@@ -298,7 +298,7 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     #es = [(Vasp2(restart=d).get_potential_energy()-E0)/nat
     #          for d in sorted(glob(base_dir+'/../calc/T_600.0K/smpl/0*/'))]
 
-    es = array([_[-1] for _ in confs])
+    es = fromiter((_[-1] for _ in confs), float)
 
     if T is None:
         T = 2*es.mean()/3/un.kB

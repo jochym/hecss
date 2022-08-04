@@ -9,6 +9,9 @@
     "Sampling statistics monitoring": "monitor_stats",
     "Phonon convergence monitoring": "monitor_phonons",
     "Core": "core",
-    "Monitor": "monitor"
+    "Monitor": "monitor",
+    "Temperature scan planner": "planner",
+    "Sampling optimizer": "optimize",
+    "MH (Metropolis-Hastings)": "mh"
   }
 }

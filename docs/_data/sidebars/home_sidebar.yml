@@ -36,6 +36,15 @@ entries:
     - output: web,pdf
       title: Monitor
       url: monitor
+    - output: web,pdf
+      title: Temperature scan planner
+      url: planner
+    - output: web,pdf
+      title: Sampling optimizer
+      url: optimize
+    - output: web,pdf
+      title: MH (Metropolis-Hastings)
+      url: mh
     output: web
     title: hecss
   output: web
