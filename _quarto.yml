@@ -1,0 +1,38 @@
+ipynb-filters: [nbdev_filter]
+
+project:
+  type: website
+  output-dir: _docs
+  preview:
+    port: 3000
+    browser: false
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 4
+
+website:
+  title: "hecss"
+  site-url: "https://jochym.gitlab.io//hecss/"
+  description: "High Efficiency Configuration Space Sampler"
+  twitter-card: true
+  open-graph: true
+  reader-mode: true
+  repo-branch: devel
+  repo-url: "https://gitlab.com/jochym/hecss/tree/devel/"
+  repo-actions: [issue]
+  navbar:
+    background: primary
+    search: true
+    right:
+      - icon: github
+        href: "https://gitlab.com/jochym/hecss/tree/devel/"
+  sidebar:
+    style: "floating"
+
+metadata-files: 
+  - sidebar.yml
+  - custom.yml

@@ -154,3 +154,7 @@ run-calc
 conda/hecss/meta.yaml
 hr.py
 run-calc.sh
+_docs/
+sidebar.yml
+
+/.quarto/
