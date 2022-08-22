@@ -405,7 +405,7 @@ def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
         fit = rfun.fit(v, f0=df)
     m = v.mean()
     s = v.std()
-    axvline(v.mean(), ls='--', color=f'C{n}', label=f'{el}{l} = {m:.2f}+/-{s:.2f}')
+    axvline(v.mean(), ls='--', color=f'C{n}', label=f'{el}{l} = {m:.2f}±{s:.2f}')
     if normal:
         x = linspace(m-3*s, m+3*s, 100)
     else:
