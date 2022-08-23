@@ -37,22 +37,34 @@ class HECSS:
                  delta_sample=0.01, sigma=2,
                  eqdelta=0.05, eqsigma=0.2,
                  xi=1, chi=1, 
-                 width=1, 
+                 width=None, 
                  w_search=True,
                  xscale_init=None,
+                 logistic_dist = False,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True, 
                  pbar=True, width_list=None, 
                  dofmu_list=None, xscale_list=None, monitor=None):
         self.cryst = cryst
         self.calc = calc
-        self.width = width
         self.maxburn = maxburn
         self.w_search = w_search
+        self.directory = directory
         self.w_list = []
         self.w_scale = 1e-3 # Overall scale in w(T) function (Ang/sqrt(K))
         self.eta = width # width = eta * w_scale sqrt(T)
+        
+        if logistic_dist:
+            self.Q = stats.logistic
+        else:
+            self.Q = stats.norm
+
         self.pbar = None
+        self._pbar = None
+        if pbar is not None:
+            self.pbar = pbar
+            
+        self.samplers = {}
         
     def smpl_print(self):
         return
@@ -89,7 +101,7 @@ class HECSS:
 
 # %% ../11_core.ipynb 5
 @patch 
-def estimate_width_scale(self: HECSS, n=1, Tmax=600, wm_out=False):
+def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=False, pbar=None):
     '''
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
@@ -104,41 +116,75 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, wm_out=False):
     $$
     
     '''
-    cr = ase.Atoms(self.cryst.get_atomic_numbers(), 
-               cell=self.cryst.get_cell(),
-               scaled_positions=self.cryst.get_scaled_positions(),
-               pbc=True, 
-               calculator= self.calc() if callable(self.calc) 
-                                       else self.calc)
+
     E0 = self.cryst.get_potential_energy()
     nat = len(self.cryst)
-    dim = (nat, 3)
+    dim = (nat, 3)    
+    
+    if self.directory is None :
+        basedir = f'calc'
+    else :
+        basedir = self.directory
+        
+    cr = ase.Atoms(self.cryst.get_atomic_numbers(), 
+                   cell=self.cryst.get_cell(),
+                   scaled_positions=self.cryst.get_scaled_positions(),
+                   pbc=True, 
+                   calculator= self.calc() if callable(self.calc) 
+                                           else self.calc)
+    close_pbar = False
+    
+    if self.pbar and pbar is None:
+        pbar = tqdm(total=n)
+        close_pbar = True
+    
+    if pbar:
+        pbar.reset(n)
+        pbar.set_postfix(Stage='eta estimation')
+        if self.w_list:
+            pbar.update(len(self.w_list))
+        
     while len(self.w_list) < n:
         T = stats.uniform.rvs(0, Tmax) # Kelvin
         if not T:
             continue
         w = self.w_scale * np.sqrt(T)
-        dx = stats.norm.rvs(size=dim, scale=w)
+        dx = self.Q.rvs(size=dim, scale=w)
         cr.set_positions(self.cryst.get_positions()+dx)
+        try :
+            cr.calc.set(directory=f'{basedir}/w_est/{len(self.w_list):03d}')
+        except AttributeError :
+            # Calculator is not directory-based
+            # Ignore the error
+            pass
         E = cr.get_potential_energy()
         self.w_list.append([w, T, (E-E0)/nat])
+        if pbar:
+            pbar.update()
+
     wm = np.array(self.w_list).T
-    y = np.sqrt(2*wm[2]/(3*wm[1]*un.kB))
+    y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
+    m = y.mean()
     
+    if pbar and close_pbar:
+        pbar.close()
+    
+    if set_scale:
+        self.eta = m
+        
     if wm_out:
-        return y.mean(), y.std(), wm
+        return m, y.std(), wm
     else :
-        return y.mean(), y.std()
+        return m, y.std()
 
 # %% ../11_core.ipynb 6
 @patch
-def sampler(self: HECSS, T_goal, N=None, 
-           w_search=True, delta_sample=0.01, sigma=2,
+def _sampler(self: HECSS, T_goal, N=None, 
+           delta_sample=0.01, sigma=2,
            eqdelta=0.05, eqsigma=0.2,
            xi=1, chi=1, xscale_init=None,
-           logistic_dist = True,
            Ep0=None, modify=None, modify_args=None, symprec=1e-5,
-           directory=None, reuse_base=None, verb=True, pbar=False,
+           reuse_base=None, verb=True,
            width_list=None, dofmu_list=None, xscale_list=None):
     '''
     Run HECS sampler on the system `cryst` using calculator `calc` at target
@@ -212,10 +258,8 @@ def sampler(self: HECSS, T_goal, N=None,
 
     '''    
     
-    if self.pbar:
-        self.pbar.set_postfix(Sample='initial')
-    
-    
+    if self._pbar :
+        self._pbar.set_postfix(Stage='initial sample')
         
     nat = len(self.cryst)
     dim = (nat, 3)
@@ -256,9 +300,7 @@ def sampler(self: HECSS, T_goal, N=None,
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
     
-    self.width = self.eta * self.w_scale * np.sqrt(T_goal) 
-    
-    w = self.width
+    w = self.eta * self.w_scale * np.sqrt(T_goal) 
     w_prev = w
 
     if width_list is None :
@@ -266,24 +308,16 @@ def sampler(self: HECSS, T_goal, N=None,
     else :
         wl = width_list
 
-    if logistic_dist:
-        Q = stats.logistic
-        w_adjust = 0.5
-        # adiust w scalling to the distro shape
-    else:
-        Q = stats.norm
-        w_adjust = 1
-        # adiust w scalling to the distro shape
-
+    Q = self.Q
     P = Q.pdf
     
     i = 0
     n = 0
     
-    if directory is None :
+    if self.directory is None :
         basedir = f'calc/T_{T_goal:.1f}K'
     else :
-        basedir = directory
+        basedir = f'{self.directory}/T_{T_goal:.1f}K'
 
     cr = ase.Atoms(self.cryst.get_atomic_numbers(), 
                    cell=self.cryst.get_cell(),
@@ -305,14 +339,14 @@ def sampler(self: HECSS, T_goal, N=None,
     
     k = 0
     
-    if pbar:
-        pbar.set_postfix(Sample='burn-in')
+    if self._pbar:
+        self._pbar.set_postfix(Stage='w search')
 
     while True:
 
         # print_xs(cryst, xscale)
         #x_star =  Q.rvs(size=dim, scale=w * w_scale * xscale)
-        x_star = xscale * Q.rvs(size=dim, scale=w * w_adjust)
+        x_star = xscale * Q.rvs(size=dim, scale=w)
 
         assert x_star.shape == dim        
 
@@ -377,7 +411,7 @@ def sampler(self: HECSS, T_goal, N=None,
         if dofmu_list is not None:
             dofmu_list.append(np.array(dofmu))
             
-        if w_search :
+        if self.w_search :
             w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
             if i==0 and abs(e_star-E_goal) > sigma*Es :
                 # We are in w-search mode but still far from E_goal
@@ -389,13 +423,17 @@ def sampler(self: HECSS, T_goal, N=None,
                         f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                     return
                 # Continue searching for proper w
-                # print(f'{w=} ({abs(e_star-E_goal)/(sigma*Es)}). Continue searching')
+                eta = w/(self.w_scale*np.sqrt(T_goal))
+                if self._pbar:
+                    self._pbar.set_postfix(Stage=f'w search: {eta=:.3g} ({(e_star-E_goal)/(sigma*Es):.2g})')
                 continue
 
         if i==0 :
             # We are in w-search mode and just found a proper w
             # switch to sampling mode by cleaning up after the initial samples
             # clean up the w table
+            if self._pbar:
+                self._pbar.set_postfix(Stage='sampling')
             wl.clear()
 
         x = x_star
@@ -405,16 +443,14 @@ def sampler(self: HECSS, T_goal, N=None,
         n += 1
         
         self.smpl_print()
-        if self.pbar:
-            self.pbar.update()
+        if self._pbar:
+            self._pbar.update()
 
         yield n, i-1, x, f, e
         
         if N is not None and n >= N:
+            print('Generator terminated')
             break
-    
-    if self.pbar:
-        self.pbar.close()
 
 # %% ../11_core.ipynb 7
 @patch
@@ -435,23 +471,37 @@ def sample(self: HECSS, T, N, sentinel=None, **kwargs):
         # This is a workaround for the miss-design of tqdm 
         # where bool() for total==None returns error 
         # if self.pbar is not None and self.pbar is not False:
-        #     self.pbar.reset(self.total_N + N)
-        #     self.pbar.update(self.total_N)
+        #     self.pbar.reset(N)
 
-        if self.width is None:
-            self.width, sigma = self.estimate_width_scale(2, T)
-            if sigma > self.width/5 :
-                print(f'Warning: low accuracy width estimation: {self.width:.2g}±{sigma:.2g}')
+        self._pbar = None
+        if self.pbar:
+            self._pbar = tqdm(total=N)
         
-        smpls = [] 
-        for smpl in self.sampler(T, N):
+        if self.eta is None:
+            width, sigma = self.estimate_width_scale(2, T, pbar=self._pbar)
+            if sigma > width/5 :
+                print(f'Warning: low accuracy eta estimation: {width:.2g}±{sigma:.2g}')
+        
+        smpls = []
+        if self._pbar:
+            self._pbar.reset(N)
+            
+        if T in self.samplers:
+            generator = self.samplers[T]
+        else :
+            generator = self._sampler(T)
+            self.samplers[T] = generator
+            
+        for smpl in generator:
             smpls.append(smpl)
             if sentinel is not None and sentinel(smpl, smpls, **kwargs):
                 break
             if len(smpls) >= N:
-                #self.pbar.close()
                 break
         # self.total_N += len(smpls)
+        if self._pbar :
+            self._pbar.close()
+            self._pbar=None
         return smpls
 
 # %% ../11_core.ipynb 8

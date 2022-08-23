@@ -282,7 +282,8 @@ def load_dfset(base_dir='phon', dfsetfn='DFSET'):
     return confs
 
 # %% ../12_monitor.ipynb 16
-def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
+def plot_stats(confs, T=None, sqrN=False, show=True, 
+               plotchi2=False, show_samples=True):
     '''
     Plot monitoring histograms for the configuration list in confs.
     If len(confs)<3 this function is silent.
@@ -290,6 +291,7 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     confs - configuration list
     T     - target temperature in Kelvin
     show  - call show() fuction at the end (default:True)
+    show_samples - show individual samples above the histogram
     '''
 
     if len(confs) < 3:
@@ -310,8 +312,9 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     Es = sqrt(3/2)*un.kB*T/sqrt(nat)
     e = linspace(E_goal - 3*Es, E_goal + 3*Es, 200)
     n = len(es)
+    us = list(set(es))
 
-    plt.hist(es, bins='auto', density=False, label=f'{n} samples', alpha=0.5, rwidth=0.4, zorder=0)
+    plt.hist(es, bins='auto', density=False, label=f'{n}({len(us)}) samples', alpha=0.5, rwidth=0.4, zorder=0)
     h = histogram(es, bins='auto', density=False)
     de = (h[1][-1]-h[1][0])/len(h[0])
     N = len(es)
@@ -334,10 +337,21 @@ def plot_stats(confs, T=None, sqrN=False, show=True, plotchi2=False):
     if plotchi2 :
         fit = stats.chi2.fit(es, f0=3*nat)
         plt.plot(e,  stats.chi2.pdf(e, *fit), '--', color='C4', label='Fitted $\\chi^2$ dist.', zorder=10)
+        
+    if show_samples:
+        skip = len(us)//2000
+        skip = int(max(1, skip))
+        a = sqrt(2/(len(us)//skip))
+        a = max(a, 0.01)
+        a = min(a, 1)
+        for s in us[::skip]:
+            plt.axvline(s, ymin=0.97, ymax=0.99, 
+                        ls='-', lw=1, color='r', alpha=a)
+     
     plt.xlabel('Potential energy (meV/at)')
     plt.ylabel('Samples')
     plt.xlim(E_goal-3*Es,E_goal+3*Es)
-    plt.legend(loc='upper left', bbox_to_anchor=(0.7,0.5,0.5,0.5))
+    plt.legend(loc='upper right', bbox_to_anchor=(1.08, 0.965))
     if show :
         plt.show()
 
