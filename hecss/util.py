@@ -3,10 +3,11 @@
 # %% auto 0
 __all__ = ['normalize_conf']
 
-# %% ../16_util.ipynb 1
-from numpy import dot
-
 # %% ../16_util.ipynb 2
+from numpy import dot
+from spglib import find_primitive, get_symmetry_dataset
+
+# %% ../16_util.ipynb 3
 def select_asap_model(comp='SiC'):
     '''
     This simple function selects the latest *working* OpenKIM model
@@ -30,7 +31,7 @@ def select_asap_model(comp='SiC'):
         model = None
     return model
 
-# %% ../16_util.ipynb 3
+# %% ../16_util.ipynb 4
 def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20, 
             N=None, w_search=True, delta_sample=0.01, sigma=2,
             eqdelta=0.05, eqsigma=0.2,
@@ -382,7 +383,7 @@ def HECSS_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     if pbar:
         pbar.close()
 
-# %% ../16_util.ipynb 4
+# %% ../16_util.ipynb 5
 def normalize_conf(c, base):
     '''
     Normalize the configuration `c` relative to the basic structure `base`.
