@@ -2,31 +2,30 @@ default:
   image: continuumio/miniconda3:latest
   before_script:
   - conda install -c conda-forge mamba
-  - mamba install -c jochym -c conda-forge -c fastai numpy nbdev jupyter asap3 kim-api openkim-models=2019.07.25
+  - mamba install -c conda-forge -c fastai numpy nbdev jupyter asap3 kim-api openkim-models=2019.07.25
   - pip install -e .
-
-read_notebooks:
-  script:
-  - nbdev_read_nbs
 
 check if notebooks are clean:
   script:
   - echo "Check we are starting with clean git checkout"
   - if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
   - echo "Trying to strip out notebooks"
-  - nbdev_clean_nbs
+  - nbdev_clean
   - echo "Check that strip out was unnecessary"
   - git status -s # display the status to see which nbs need cleaning up
   - if [ -n "$(git status -uno -s)" ]; then echo -e "!!! Detected unstripped out notebooks\n!!!Remember to run nbdev_install_git_hooks"; false; fi
 
 check if there is diff library/nbs:
   script:
-  - if [ -n "$(nbdev_diff_nbs)" ]; then echo -e "!!! Detected difference between the notebooks and the library"; false; fi 
+  - nbdev_export
+  - echo "Check that export was unnecessary"
+  - git status -s # display the status to see which nbs need cleaning up
+  - if [ -n "$(git status -uno -s)" ]; then echo -e "!!! Detected difference between the notebooks and the library"; false; fi
 
 run tests:
   stage: test
   script:
-  - nbdev_test_nbs
+  - nbdev_test
 
 pages:
   inherit:
