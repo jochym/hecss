@@ -449,7 +449,7 @@ def _sampler(self: HECSS, T_goal, N=None,
         yield n, i-1, x, f, e
         
         if N is not None and n >= N:
-            print('Generator terminated')
+            # print('Generator terminated')
             break
 
 # %% ../11_core.ipynb 7
