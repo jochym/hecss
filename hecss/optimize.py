@@ -13,7 +13,6 @@ import ase.units as un
 from ase.build import bulk
 from spglib import find_primitive, get_symmetry_dataset
 import spglib
-import asap3
 from tqdm.auto import tqdm
 from hecss.util import select_asap_model
 from hecss.monitor import plot_stats
