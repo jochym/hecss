@@ -6,11 +6,6 @@ __all__ = ['plan_T_scan']
 # %% ../13_planner.ipynb 2
 from ase.build import bulk
 import ase.units as un
-import asap3
-from .core import HECSS
-from .util import select_asap_model
-from .optimize import make_sampling
-from .monitor import plot_stats
 from scipy import stats
 from matplotlib import pylab as plt
 import numpy as np
