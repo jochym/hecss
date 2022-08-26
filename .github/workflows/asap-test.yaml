@@ -10,7 +10,7 @@ jobs:
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@main
         with:
-          environment-file: ../../asap_env.yaml
+          environment-file: asap_env.yaml
           environment-name: asap_env
 
       # Linux and macOS
