@@ -7,7 +7,7 @@ __all__ = ['plan_T_scan']
 from ase.build import bulk
 import ase.units as un
 import asap3
-from . import HECSS
+from .core import HECSS
 from .util import select_asap_model
 from .optimize import make_sampling
 from .monitor import plot_stats
