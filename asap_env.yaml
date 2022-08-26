@@ -4,6 +4,8 @@ channels:
   - conda-forge
 dependencies:
   - asap3
+  - kim-api
+  - openkim-models=2021.01.28=h2cc385e_1
   - ase
   - nbdev
   - matplotlib
