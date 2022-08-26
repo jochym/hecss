@@ -1,0 +1,11 @@
+name: asap_env
+channels:
+  - jochym
+  - fastai
+  - conda-forge
+dependencies:
+  - asap3
+  - ase
+  - nbdev
+
+
