@@ -36,7 +36,7 @@ plot the energy distribution.
 ``` python
 from ase.build import bulk
 import asap3
-from hecss.core import HECSS
+from hecss import HECSS
 from hecss.util import select_asap_model
 from hecss.monitor import plot_stats
 ```
@@ -64,8 +64,6 @@ hecss = HECSS(cryst, lambda : asap3.OpenKIMcalculator(model))
 samples = hecss.sample(T, N)
 distrib = hecss.generate(samples, T)
 ```
-
-      0%|          | 0/100 [00:00<?, ?it/s]
 
 And finally we plot the histogram of the resulting energy distribution
 which corresponds to the thermal equilibrium distribution.

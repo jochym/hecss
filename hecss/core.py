@@ -43,7 +43,7 @@ class HECSS:
                  logistic_dist = False,
                  Ep0=None, modify=None, modify_args=None,
                  directory=None, reuse_base=None, verb=True, 
-                 pbar=True, width_list=None, 
+                 pbar=False, width_list=None, 
                  dofmu_list=None, xscale_list=None, monitor=None):
         self.cryst = cryst
         self.calc = calc
