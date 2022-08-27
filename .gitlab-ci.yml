@@ -2,8 +2,10 @@ default:
   image: continuumio/miniconda3:latest
   before_script:
   - conda install -c conda-forge mamba
-  - mamba install -c conda-forge -c fastai numpy nbdev jupyter asap3 kim-api openkim-models=2019.07.25
+  - mamba install -c conda-forge -c fastai numpy nbdev jupyter ase spglib asap3 kim-api openkim-models=2019.07.25
   - pip install -e .
+  - mamba clean -y --all
+  - conda clean -y --all
 
 check if notebooks are clean:
   script:
