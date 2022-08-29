@@ -140,7 +140,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
     
     if pbar:
         pbar.reset(n)
-        pbar.set_postfix(Stage='eta estimation')
+        pbar.set_postfix_str('eta estimation')
         if self.w_list:
             pbar.update(len(self.w_list))
         
@@ -259,7 +259,7 @@ def _sampler(self: HECSS, T_goal, N=None,
     '''    
     
     if self._pbar :
-        self._pbar.set_postfix(Stage='initial sample')
+        self._pbar.set_postfix_str('Initialization')
         
     nat = len(self.cryst)
     dim = (nat, 3)
@@ -300,6 +300,7 @@ def _sampler(self: HECSS, T_goal, N=None,
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
     
+    eta = self.eta
     w = self.eta * self.w_scale * np.sqrt(T_goal) 
     w_prev = w
 
@@ -340,7 +341,7 @@ def _sampler(self: HECSS, T_goal, N=None,
     k = 0
     
     if self._pbar:
-        self._pbar.set_postfix(Stage='w search')
+        self._pbar.set_postfix_str(f'sampling eta={self.eta:.3g}')
 
     while True:
 
@@ -372,7 +373,7 @@ def _sampler(self: HECSS, T_goal, N=None,
 
         e_star = (e_star-Ep0)/nat
         
-        wl.append((w,e_star))
+        wl.append((w/(self.w_scale*np.sqrt(T_goal)),e_star))
 
         if i==0 :
             # w-search mode
@@ -410,9 +411,10 @@ def _sampler(self: HECSS, T_goal, N=None,
 
         if dofmu_list is not None:
             dofmu_list.append(np.array(dofmu))
-            
+        
         if self.w_search :
             w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
+            eta = w/(self.w_scale*np.sqrt(T_goal))
             if i==0 and abs(e_star-E_goal) > sigma*Es :
                 # We are in w-search mode but still far from E_goal
                 # Continue
@@ -423,17 +425,14 @@ def _sampler(self: HECSS, T_goal, N=None,
                         f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                     return
                 # Continue searching for proper w
-                eta = w/(self.w_scale*np.sqrt(T_goal))
                 if self._pbar:
-                    self._pbar.set_postfix(Stage=f'w search: {eta=:.3g} ({(e_star-E_goal)/(sigma*Es):.2g})')
+                    self._pbar.set_postfix_str(f'w search: {eta=:.3g} ({(e_star-E_goal)/(sigma*Es):.2g})')
                 continue
 
         if i==0 :
             # We are in w-search mode and just found a proper w
             # switch to sampling mode by cleaning up after the initial samples
             # clean up the w table
-            if self._pbar:
-                self._pbar.set_postfix(Stage='sampling')
             wl.clear()
 
         x = x_star
@@ -442,6 +441,8 @@ def _sampler(self: HECSS, T_goal, N=None,
         i += 1
         n += 1
         
+        if self._pbar:
+            self._pbar.set_postfix_str(f'sampling eta={eta:.3g}')
         self.smpl_print()
         if self._pbar:
             self._pbar.update()
@@ -454,7 +455,7 @@ def _sampler(self: HECSS, T_goal, N=None,
 
 # %% ../11_core.ipynb 7
 @patch
-def sample(self: HECSS, T, N, sentinel=None, **kwargs):
+def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
         '''
         Generate N samples using `HECSS.sampler` generator.
         `sentinel` parameter is a call-back function 
@@ -485,20 +486,21 @@ def sample(self: HECSS, T, N, sentinel=None, **kwargs):
         smpls = []
         if self._pbar:
             self._pbar.reset(N)
-            
+
         if T in self.samplers:
             generator = self.samplers[T]
         else :
-            generator = self._sampler(T)
+            generator = self._sampler(T, **kwargs)
             self.samplers[T] = generator
             
         for smpl in generator:
             smpls.append(smpl)
-            if sentinel is not None and sentinel(smpl, smpls, **kwargs):
+            if sentinel is not None and sentinel(smpl, smpls, **sentinel_args):
                 break
             if len(smpls) >= N:
                 break
         # self.total_N += len(smpls)
+        # print(kwargs)
         if self._pbar :
             self._pbar.close()
             self._pbar=None
@@ -558,5 +560,5 @@ def calc_init_xscale(cryst, xsl, skip=None):
     xs = array(xsl)[skip:]
     xscale = ones(xs[0].shape)
     for i, el in enumerate(set(elmap)):
-        xscale[elmap==el] = xs[skip:,elmap==el,:].mean()
+        xscale[elmap==el] = xs[:,elmap==el,:].mean()
     return xscale

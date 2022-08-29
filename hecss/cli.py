@@ -10,8 +10,8 @@ import os
 import ase
 from ase.calculators.vasp import Vasp
 from ase import units as un
-from numpy import savetxt, loadtxt
-from .core import *
+from numpy import savetxt, loadtxt, array
+from hecss import *
 import hecss
 
 # %% ../02_CLI.ipynb 5
@@ -22,7 +22,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     and empty the xsl list (!).
     '''
     wd = Path(workdir)
-    write_dfset(f'{wd.joinpath(dfset)}', s)
+    write_dfset(f'{wd.joinpath(dfset)}.raw', s)
     if scale and xsl:
         with open(wd.joinpath(scale), 'at') as sf:
             for xs in xsl:
@@ -43,19 +43,20 @@ _version_message=("HECSS, version %(version)s\n"
 @click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
 @click.option('-l', '--label', default="hecss", help="Label for the calculations.")
 @click.option('-T', '--temp', default=300, type=float, help="Target temperature in Kelvin.")
-@click.option('-w', '--width', default=1.0, type=float, help="Initial scale of the prior distribution")
+@click.option('-w', '--width', default=None, type=float, help="Initial scale of the prior distribution")
 @click.option('-a', '--ampl', default='', type=click.Path(), help='Initialise amplitude correction from the file.')
 @click.option('-s', '--scale', default='', type=click.Path(), help='Save amplitude correction history')
 @click.option('-C', '--calc', default="VASP", type=str, 
               help="ASE calculator to be used for the job. "
                       "Supported calculators: VASP (default)")
-@click.option('-n', '--nodfset', is_flag=True, help='Do not write DFSET file for ALAMODE')
+@click.option('-n', '--nodfset', is_flag=True, default=False, help='Do not write DFSET file for ALAMODE')
 @click.option('-d', '--dfset', default='DFSET.dat', help='Name of the DFSET file')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
+@click.option('-p', '--pbar', is_flag=True, default=True, help="Show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, command):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, command, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.gitlab.io/hecss/
@@ -98,8 +99,28 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     if ampl:
         xsi = loadtxt(ampl)
 
-    sampler = HECSS(cryst, calculator, temp, directory=workdir, width=width, xscale_init=xsi, xscale_list=xsl)
-    samples = sampler.generate(nsamples, sentinel=sentinel, workdir=workdir, dfset=dfset, scale=scale, xsl=xsl)
+    wl = []
+        
+    sampler = HECSS(cryst, calculator, directory=workdir, width=width, pbar=pbar)
+    samples = sampler.sample(temp, nsamples, width_list = wl,
+                             sentinel = dfset_writer,
+                             sentinel_args = {'workdir': workdir,
+                                              'dfset': dfset,
+                                              'scale': scale,
+                                              'xsl': xsl
+                                             },
+                             xscale_init=xsi, xscale_list=xsl)
+    distr = sampler.generate(samples, temp)
+    if len(wl)>1 :
+        wl = array(wl).T
+        # print(wl.shape)
+        print(f'Average eta ({len(wl[0])} pnts): {wl[0].mean():.3g}+/-{wl[0].std():.3g}')
+    
+    if not nodfset:
+        wd = Path(workdir)
+        for s in distr:
+            write_dfset(f'{wd.joinpath(dfset)}', s)
+        
     return
 
 # %% ../02_CLI.ipynb 11
@@ -119,6 +140,7 @@ def calculate_xscale(supercell, scale, output, skip):
     xsl = loadtxt(scale).reshape((-1, len(sc), 3))
     xsi = calc_init_xscale(sc, xsl, skip=skip if skip else None)
     savetxt(output, xsi, fmt='%9.4f')
+    print(f'Done. The initial scale saved to: {output}')
 
 # %% ../02_CLI.ipynb 16
 @click.command()
