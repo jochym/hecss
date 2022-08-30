@@ -39,6 +39,7 @@ pages:
     - umask
     - nbdev_install
     - nbdev_docs
+    - mkdir public
     - cp -r _docs/ public/devel/
     - ls
   artifacts:
