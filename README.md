@@ -13,7 +13,8 @@ Badge](https://anaconda.org/conda-forge/hecss/badges/version.svg)](https://anaco
 Badge](https://anaconda.org/conda-forge/hecss/badges/downloads.svg)](https://anaconda.org/conda-forge/hecss)
 [![License
 Badge](https://anaconda.org/jochym/hecss/badges/license.svg)](https://anaconda.org/jochym/hecss)
-[![CI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=devel)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
+[![GHCI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=devel)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
+[![GLCI](https://gitlab.com/jochym/hecss/badges/devel/pipeline.svg)](https://gitlab.com/jochym/hecss/-/commits/devel)
 
 HECSS is a Markow chain Monte-Carlo, configuration space sampler using
 Metropolis-Hastings algorithm for probablity distribution sampling. It
