@@ -20,5 +20,4 @@ jobs:
       - name: Run nbdev_test
         shell: bash -l {0}
         run: |
-          nbdev_export
           nbdev_test --do_print --flags asap

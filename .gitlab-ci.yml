@@ -7,8 +7,6 @@ cache:
 clean:
   stage: build
   script:
-    # - nbdev_export
-    - ls -l
     - echo "Check we are starting with clean git checkout"
     - if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
     - echo "Trying to strip out notebooks"
@@ -21,7 +19,6 @@ test:
   stage: test
   script:
     - echo "Running test with flags:" $NBDEV_TEST_FLAGS
-    # - nbdev_export
     - nbdev_install
     - nbdev_test --flags $NBDEV_TEST_FLAGS
 
@@ -33,7 +30,6 @@ pages:
           echo "Not building docs"
         else 
           echo "Building docs..."
-          # nbdev_export
           nbdev_install
           nbdev_docs
           mkdir public
