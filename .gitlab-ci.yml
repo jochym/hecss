@@ -1,5 +1,6 @@
-image: jochym/dockers:nbdev# Cache modules in between jobs
+image: jochym/dockers:nbdev
 
+# Cache modules in between jobs
 # cache:
 #   key: $CI_COMMIT_REF_SLUG
 
