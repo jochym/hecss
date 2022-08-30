@@ -10,6 +10,8 @@ clean:
     - id
     - umask
     - ls -l
+    - nbdev_export
+    - ls -l
     - echo "Check we are starting with clean git checkout"
     - if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
     - echo "Trying to strip out notebooks"
