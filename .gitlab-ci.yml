@@ -33,7 +33,6 @@ test:
 #           nbdev_install
 #           nbdev_docs
 #           cp -r _docs/ public/
-#           ls _docs
 #         fi
 #   artifacts:
 #     paths:
