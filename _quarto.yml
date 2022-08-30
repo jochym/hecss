@@ -22,14 +22,14 @@ website:
   open-graph: true
   reader-mode: true
   repo-branch: devel
-  repo-url: "https://gitlab.com/jochym/hecss/tree/devel/"
+  repo-url: "https://gitlab.com/jochym/hecss/"
   repo-actions: [issue]
   navbar:
     background: primary
     search: true
     right:
       - icon: github
-        href: "https://gitlab.com/jochym/hecss/tree/devel/"
+        href: "https://gitlab.com/jochym/hecss/"
   sidebar:
     style: "floating"
 
