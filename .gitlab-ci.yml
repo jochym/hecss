@@ -36,14 +36,17 @@ test:
 pages:
   stage: deploy
   script:
-    - if [ .$BUILD_DOCS != '.yes' ]; then echo "Not building docs" ; false ; fi 
-    - echo "Building docs..."
-    - nbdev_export
-    - ls -l 
-    - nbdev_install
-    - nbdev_docs
-    - mkdir public
-    - cp -r _docs/ public/devel/
+    - |
+        if [ .$BUILD_DOCS != '.yes' ]; then 
+          echo "Not building docs"
+        else 
+          echo "Building docs..."
+          nbdev_export
+          nbdev_install
+          nbdev_docs
+          mkdir public
+          cp -r _docs/ public/devel/
+        fi
     - ls
   artifacts:
     paths:
