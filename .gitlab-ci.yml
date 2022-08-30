@@ -36,7 +36,7 @@ test:
 pages:
   stage: deploy
   script:
-    - if [ .$BUILD_DOCS == '.no' ]; then echo "Not building docs" ; false ; fi 
+    - if [ .$BUILD_DOCS != '.yes' ]; then echo "Not building docs" ; false ; fi 
     - echo "Building docs..."
     - nbdev_export
     - ls -l 
