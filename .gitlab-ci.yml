@@ -21,6 +21,7 @@ test:
     - echo "Doing the testing here..."
     - nbdev_install
     - nbdev_test
+    - nbdev_test --flags asap
 
 pages:
   stage: deploy
