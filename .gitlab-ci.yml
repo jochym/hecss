@@ -22,7 +22,6 @@ test:
     - id
     - pwd
     - ls -l
-    - sudo id
     - nbdev_install
     - nbdev_test --flags asap
 
