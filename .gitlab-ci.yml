@@ -21,7 +21,8 @@ test:
     - echo "Doing the testing here..."
     - id
     - pwd
-    - ls -l 
+    - ls -l
+    - sudo id
     - nbdev_install
     - nbdev_test --flags asap
 
