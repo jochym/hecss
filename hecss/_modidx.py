@@ -3,7 +3,7 @@
 d = { 'settings': { 'branch': 'devel',
                 'doc_baseurl': '/hecss/',
                 'doc_host': 'https://jochym.gitlab.io/',
-                'git_url': 'https://gitlab.com/jochym/hecss/tree/devel/',
+                'git_url': 'https://gitlab.com/jochym/hecss/-',
                 'lib_path': 'hecss'},
   'syms': { 'hecss.cli': { 'hecss.cli.calculate_xscale': ('cli.html#calculate_xscale', 'hecss/cli.py'),
                            'hecss.cli.dfset_writer': ('cli.html#dfset_writer', 'hecss/cli.py'),
