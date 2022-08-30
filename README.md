@@ -37,9 +37,8 @@ plot the energy distribution.
 
 ``` python
 from ase.build import bulk
-import asap3
-from hecss.core import HECSS
-from hecss.util import select_asap_model
+from hecss import HECSS
+from hecss.util import select_asap_model, create_asap_calculator
 from hecss.monitor import plot_stats
 ```
 
@@ -53,7 +52,7 @@ from the OpenKIM database and ASAP3 implementation of the calculator.
 model = select_asap_model('SiC')
 cryst = bulk('SiC', crystalstructure='zincblende', 
              a=4.38120844, cubic=True).repeat((3,3,3))
-cryst.set_calculator(asap3.OpenKIMcalculator(model))
+cryst.set_calculator(create_asap_calculator(model))
 ```
 
 Then we define the sampler parameters (N – number of samples, T –
@@ -62,7 +61,7 @@ temperature) and run it.
 ``` python
 T = 300
 N = 100
-hecss = HECSS(cryst, lambda : asap3.OpenKIMcalculator(model))
+hecss = HECSS(cryst, lambda : create_asap_calculator(model))
 samples = hecss.sample(T, N)
 distrib = hecss.generate(samples, T)
 ```

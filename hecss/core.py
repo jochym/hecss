@@ -25,8 +25,6 @@ from ase.data import chemical_symbols
 import spglib
 from spglib import find_primitive, get_symmetry_dataset
 
-from hecss.util import select_asap_model
-
 # %% ../11_core.ipynb 4
 class HECSS:
     '''
