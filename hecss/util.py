@@ -7,7 +7,7 @@ __all__ = ['normalize_conf']
 from numpy import dot
 from spglib import find_primitive, get_symmetry_dataset
 
-# %% ../16_util.ipynb 3
+# %% ../16_util.ipynb 4
 def select_asap_model(comp='SiC'):
     '''
     This simple function selects the latest *working* OpenKIM model
@@ -31,7 +31,12 @@ def select_asap_model(comp='SiC'):
         model = None
     return model
 
-# %% ../16_util.ipynb 4
+# %% ../16_util.ipynb 5
+def create_asap_calculator(model):    
+    import asap3
+    return asap3.OpenKIMcalculator(model)
+
+# %% ../16_util.ipynb 6
 def normalize_conf(c, base):
     '''
     Normalize the configuration `c` relative to the basic structure `base`.

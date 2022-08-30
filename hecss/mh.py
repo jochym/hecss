@@ -515,7 +515,7 @@ def select_asap_model(comp='SiC'):
         model = None
     return model
 
-# %% ../15_mh.ipynb 32
+# %% ../15_mh.ipynb 33
 def normalize_conf(c, base):
     '''
     Normalize the configuration `c` relative to the basic structure `base`.

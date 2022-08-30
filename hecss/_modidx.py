@@ -51,5 +51,6 @@ d = { 'settings': { 'branch': 'devel',
             'hecss.optimize': { 'hecss.optimize.get_sample_weights': ('optimize.html#get_sample_weights', 'hecss/optimize.py'),
                                 'hecss.optimize.make_sampling': ('optimize.html#make_sampling', 'hecss/optimize.py')},
             'hecss.planner': {'hecss.planner.plan_T_scan': ('planner.html#plan_t_scan', 'hecss/planner.py')},
-            'hecss.util': { 'hecss.util.normalize_conf': ('util.html#normalize_conf', 'hecss/util.py'),
+            'hecss.util': { 'hecss.util.create_asap_calculator': ('util.html#create_asap_calculator', 'hecss/util.py'),
+                            'hecss.util.normalize_conf': ('util.html#normalize_conf', 'hecss/util.py'),
                             'hecss.util.select_asap_model': ('util.html#select_asap_model', 'hecss/util.py')}}}
