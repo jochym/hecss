@@ -30,7 +30,7 @@ test:
     - ls -l
     - umask
     - nbdev_install
-    - nbdev_test --flags asap
+    - nbdev_test --flags $NBDEV_TEST_FLAGS
 
 pages:
   stage: deploy
