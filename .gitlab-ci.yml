@@ -32,10 +32,9 @@ pages:
           echo "Building docs..."
           nbdev_install
           nbdev_docs
-          mkdir public
-          cp -r _docs/ public/devel/
+          cp -r _docs/ public/
           ls _docs
         fi
   artifacts:
     paths:
-      - public/devel
+      - public
