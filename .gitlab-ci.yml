@@ -26,6 +26,7 @@ test:
     - echo "Doing the testing here..."
     - id
     - pwd
+    - nbdev_export
     - ls -l
     - umask
     - nbdev_install
@@ -37,6 +38,7 @@ pages:
     - echo "Doing the testing here..."
     - id
     - pwd
+    - nbdev_export
     - ls -l 
     - umask
     - nbdev_install
