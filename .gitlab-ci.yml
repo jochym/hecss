@@ -34,9 +34,8 @@ pages:
     - ls -l 
     - nbdev_install
     - nbdev_docs
-    - mkdir -p public/devel
     - cp -r _docs/ public/devel/
     - ls
   artifacts:
     paths:
-      - public/devel/
+      - public/devel
