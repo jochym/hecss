@@ -7,6 +7,9 @@ cache:
 clean:
   stage: build
   script:
+    - id
+    - umask
+    - ls -l
     - echo "Check we are starting with clean git checkout"
     - if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
     - echo "Trying to strip out notebooks"
@@ -22,6 +25,7 @@ test:
     - id
     - pwd
     - ls -l
+    - umask
     - nbdev_install
     - nbdev_test --flags asap
 
@@ -32,6 +36,7 @@ pages:
     - id
     - pwd
     - ls -l 
+    - umask
     - nbdev_install
     - nbdev_docs
     - cp -r _docs/ public/devel/
