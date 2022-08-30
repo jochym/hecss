@@ -36,12 +36,10 @@ test:
 pages:
   stage: deploy
   script:
-    - echo "Doing the testing here..."
-    - id
-    - pwd
+    - if [ .$BUILD_DOCS == '.no' ]; then echo "Not building docs" ; false ; fi 
+    - echo "Building docs..."
     - nbdev_export
     - ls -l 
-    - umask
     - nbdev_install
     - nbdev_docs
     - mkdir public
