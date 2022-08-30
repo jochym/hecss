@@ -30,7 +30,7 @@ test:
     - ls -l
     - umask
     - nbdev_install
-    - echo "Running test with flags: ${NBDEV_TEST_FLAGS} " 
+    - echo "Running test with flags:" $NBDEV_TEST_FLAGS
     - nbdev_test --flags $NBDEV_TEST_FLAGS
 
 pages:
