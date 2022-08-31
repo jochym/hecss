@@ -21,6 +21,10 @@ test:
     - echo "Running test with flags:" $NBDEV_TEST_FLAGS
     - nbdev_install
     - nbdev_test --flags $NBDEV_TEST_FLAGS
+    - hecss_sampler --help
+    - calculate_xscale --help
+    - plot_stats --help
+    - plot_bands --help
 
 # pages:
 #   stage: deploy
