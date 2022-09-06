@@ -16,7 +16,7 @@ format:
 
 website:
   title: "hecss"
-  site-url: "https://jochym.gitlab.io//hecss/"
+  site-url: "https://jochym.github.io//hecss/"
   description: "High Efficiency Configuration Space Sampler"
   twitter-card: true
   open-graph: true
