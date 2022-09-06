@@ -4,15 +4,24 @@ on:  [workflow_dispatch, pull_request, push]
 jobs:
   quick-test:
     runs-on: ubuntu-latest
-    steps: [uses: fastai/workflows/nbdev-ci@master]
+    steps: 
+      - uses: actions/checkout@v3
+      - uses: mamba-org/provision-with-micromamba@main
+      #- uses: fastai/workflows/nbdev-ci@master
+        with: 
+          environment-file: std_env.yaml
+          environment-name: std_env
+      - name: Run nbdev_test
+        shell: bash -l {0}
+        run: |
+          nbdev_test --do_print
+
   
   asap-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Install Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@main
+      - uses: actions/checkout@v3
+      - uses: mamba-org/provision-with-micromamba@main
         with:
           environment-file: asap_env.yaml
           environment-name: asap_env

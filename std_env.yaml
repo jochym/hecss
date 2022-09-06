@@ -1,4 +1,4 @@
-name: asap_env
+name: std_env
 channels:
   - fastai
   - conda-forge
@@ -7,8 +7,6 @@ dependencies:
   - nbdev=2.2.8
   - spglib
   - ase
-  - asap3
-  - openkim-models=2021.01.28=h2cc385e_1
   - matplotlib
   - numpy
   - scipy
