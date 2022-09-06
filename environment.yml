@@ -5,6 +5,7 @@ channels:
 dependencies:
   - python
   - fastcore
+  - tqdm
   - ase
   - asap3
   - openkim-models=2021.01.28
