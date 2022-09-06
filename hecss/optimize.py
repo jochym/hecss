@@ -16,15 +16,14 @@ import spglib
 from tqdm.auto import tqdm
 from hecss.util import select_asap_model
 from hecss.monitor import plot_stats
-
-# %% ../12_optimize.ipynb 3
+from hecss.planner import plan_T_scan
 import numpy as np
 import itertools 
 
-# %% ../12_optimize.ipynb 4
+# %% ../12_optimize.ipynb 3
 flatten = itertools.chain.from_iterable
 
-# %% ../12_optimize.ipynb 15
+# %% ../12_optimize.ipynb 10
 def make_sampling(data, T, sigma_scale=1.0, N=None, 
                   nonzero_w=False, debug=False, N_bins=None):
     if N is None:
@@ -119,7 +118,7 @@ def make_sampling(data, T, sigma_scale=1.0, N=None,
         plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.95));
     return wd
 
-# %% ../12_optimize.ipynb 17
+# %% ../12_optimize.ipynb 12
 def get_sample_weights(data, T, Nb=None, nonzero_w=False, debug=False):
 
     if Nb is None :

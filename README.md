@@ -16,10 +16,10 @@ Badge](https://anaconda.org/jochym/hecss/badges/license.svg)](https://anaconda.o
 [![GHCI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=devel)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
 [![GLCI](https://gitlab.com/jochym/hecss/badges/devel/pipeline.svg)](https://gitlab.com/jochym/hecss/-/commits/devel)
 
-HECSS is a Markow chain Monte-Carlo, configuration space sampler using
-Metropolis-Hastings algorithm for probablity distribution sampling. It
-provides an alternative way to create representations of systems at
-thermal equilibrium without running a very expensive molecular dynamics
+HECSS is a Monte-Carlo, configuration space sampler using sample
+weighting algorithm for probability distribution sampling. It provides
+an alternative way to create representations of systems at thermal
+equilibrium without running a very expensive molecular dynamics
 simulation. The theoretical foundation of the code are presented in the
 section [Background](00_Background.html) in the
 [Documentation](https://jochym.gitlab.io/hecss/). More detailed examples
