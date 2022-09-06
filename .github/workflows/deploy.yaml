@@ -6,6 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps: 
-      - echo "Skip FastAI deploynment due to bugs"
-      - echo "uses: fastai/workflows/quarto-ghp@master"
+    name: "Skip FastAI deploynment due to bugs"
+      run: echo "steps: [uses: fastai/workflows/quarto-ghp@master]"
+
+
