@@ -20,7 +20,6 @@ website:
   description: "High Efficiency Configuration Space Sampler"
   twitter-card: true
   open-graph: true
-  reader-mode: true
   repo-branch: devel
   repo-url: "https://gitlab.com/jochym/hecss/-/"
   repo-actions: [issue]
