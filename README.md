@@ -15,6 +15,7 @@ Badge](https://anaconda.org/conda-forge/hecss/badges/downloads.svg)](https://ana
 Badge](https://anaconda.org/jochym/hecss/badges/license.svg)](https://anaconda.org/jochym/hecss)
 [![GHCI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=devel)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
 [![GLCI](https://gitlab.com/jochym/hecss/badges/devel/pipeline.svg)](https://gitlab.com/jochym/hecss/-/commits/devel)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/jochym%2Fhecss/devel?labpath=index.ipynb)
 
 HECSS is a Monte-Carlo, configuration space sampler using sample
 weighting algorithm for probability distribution sampling. It provides
