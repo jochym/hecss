@@ -26,7 +26,7 @@ runs:
           pip install -Uq git+https://github.com/fastai/execnb.git
           pip install -Uq git+https://github.com/fastai/nbdev.git
         else
-          pip install -Uq nbdev=2.2.8
+          pip install -Uq nbdev==2.2.8
         fi
         pip install -e ".[dev]"
         wget -nv https://www.quarto.org/download/latest/quarto-linux-amd64.deb
