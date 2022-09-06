@@ -160,3 +160,6 @@ sidebar.yml
 /.quarto/
 
 /AUX/
+
+dot.*
+
