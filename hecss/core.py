@@ -424,7 +424,7 @@ def _sampler(self: HECSS, T_goal, N=None,
                     return
                 # Continue searching for proper w
                 if self._pbar:
-                    self._pbar.set_postfix_str(f'w search: {eta=:.3g} ({(e_star-E_goal)/(sigma*Es):.2g})')
+                    self._pbar.set_postfix_str(f'w search: eta={eta:.3g} ({(e_star-E_goal)/(sigma*Es):.2g})')
                 continue
 
         if i==0 :
