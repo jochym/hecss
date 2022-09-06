@@ -1,0 +1,12 @@
+name: hecss
+channels:
+  - conda-forge
+  - fastai
+dependencies:
+  - python
+  - fastcore
+  - ase
+  - asap3
+  - openkim-models=2021.01.28
+  - nbdev
+
