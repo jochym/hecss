@@ -38,10 +38,10 @@ the crystal and energy/forces calculator, run the sampler and finally
 plot the energy distribution.
 
 ``` python
-from ase.build import bulk
 from hecss import HECSS
 from hecss.util import select_asap_model, create_asap_calculator
 from hecss.monitor import plot_stats
+from ase.build import bulk
 ```
 
 Then we define the crystal and interaction model used in the
@@ -50,7 +50,6 @@ zincblende structure and describe the interaction using LAMMPS potential
 from the OpenKIM database and ASAP3 implementation of the calculator.
 
 ``` python
-# model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
 model = select_asap_model('SiC')
 cryst = bulk('SiC', crystalstructure='zincblende', 
              a=4.38120844, cubic=True).repeat((3,3,3))
@@ -58,7 +57,11 @@ cryst.set_calculator(create_asap_calculator(model))
 ```
 
 Then we define the sampler parameters (N – number of samples, T –
-temperature) and run it.
+temperature) and run it. The parameter with the `lambda` anonymous
+function is required in this case, due to the peculiarities of the ASAP
+implementation of the ASE calculator which cannot be re-used when the
+sampler is re-executed. This construct is probably not required for
+other calculators.
 
 ``` python
 T = 300
