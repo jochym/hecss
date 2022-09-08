@@ -49,7 +49,7 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     ridx = np.arange(len(idx))[idx]
     d = e[idx]
     if debug:
-        N_bins = max(len(data)//5, 20)
+        N_bins = max(len(data)//20, 20)
         data_range = 4*sigma
         plt.hist(d, range=(mu-data_range, mu+data_range), bins=N_bins,
                  histtype='step', density=True, alpha=0.75, 
@@ -156,7 +156,7 @@ def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25,
     wd = [(n,)+d[1:] for n, d in enumerate(wd)]
 
     if debug:
-        N_bins = max(len(data)//5, 20)
+        N_bins = max(len(data)//20, 20)
         data_range = 4*sigma
         e = np.fromiter((data[i][-1] for i in idx), float)
         plt.hist(e, weights=w, range=(mu-data_range, mu+data_range), 
