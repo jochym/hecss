@@ -512,7 +512,7 @@ from hecss.optimize import make_sampling
 def generate(self: HECSS, S, T, N=None, nonzero_w=False, 
                                 debug=False, N_bins=None):
     return make_sampling(S, T, N=N, nonzero_w=nonzero_w, 
-                         debug=debug, N_bins=N_bins)
+                         debug=debug)
 
 # %% ../11_core.ipynb 14
 def write_dfset(fn, c):
