@@ -8,12 +8,9 @@ from scipy import stats
 from matplotlib import pylab as plt
 import ase.units as un
 import numpy as np
-import itertools 
+from hecss.util import flatten
 
-# %% ../12_optimize.ipynb 4
-flatten = itertools.chain.from_iterable
-
-# %% ../12_optimize.ipynb 9
+# %% ../12_optimize.ipynb 8
 def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     '''
     Generate data weights making the probability distribution of `data` in 
@@ -87,7 +84,7 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
 
     return w, idx
 
-# %% ../12_optimize.ipynb 11
+# %% ../12_optimize.ipynb 10
 def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25, 
                   Nmul=4, N=None, nonzero_w=True, debug=False):
     '''
