@@ -50,7 +50,7 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
         data_range = 4*sigma
         plt.hist(d, range=(mu-data_range, mu+data_range), bins=N_bins,
                  histtype='step', density=True, alpha=0.75, 
-                 label='Raw data')
+                 label='Input histogram')
         plt.plot(d, -0.05*g.pdf(mu)*np.ones(d.shape), '|', 
                  alpha=max(0.01, min(1.0, 100/len(d))))
         plt.axhline(lw=1, ls=':')
@@ -72,14 +72,14 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     w /= w.sum()
     if debug:
         plt.stairs(w/bw, bb, fill=False, lw=1, label='Weighted samples')
-        x = np.linspace(e.min(), e.max(), 100)
+        x = np.linspace(mu-data_range, mu+data_range, 100)
         # The norm of the pdf is adiusted according to the norm
         # inside the represented domain
         plt.plot(x, g.pdf(x)/(cdf[-1]-cdf[0]), '-', label='Target')
         plt.hist(d, weights=w, range=(mu-data_range, mu+data_range), 
-                 bins=N_bins, density=True, alpha=0.3, label='Weighted data')
+                 bins=N_bins, density=True, alpha=0.3, label='Weighted histogram')
         plt.xlim(mu-data_range, mu+data_range)
-        plt.legend(loc='upper left', bbox_to_anchor=(0.6, 0.98))
+        plt.legend(loc='upper right', bbox_to_anchor=(1.0, 1.0))
         plt.show()
 
     return w, idx
@@ -179,6 +179,6 @@ def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25,
                  alpha=max(0.01, min(1.0, 100/len(e))))
         plt.axhline(lw=1, ls=':')
         plt.xlim(mu-data_range, mu+data_range)
-        plt.legend(loc='upper left', bbox_to_anchor=(0.7, 0.95));
+        plt.legend(loc='upper right', bbox_to_anchor=(1.0, 1.0));
     
     return wd

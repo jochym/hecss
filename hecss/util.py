@@ -6,6 +6,7 @@ __all__ = ['normalize_conf', 'write_dfset', 'calc_init_xscale']
 # %% ../16_util.ipynb 2
 from numpy import dot
 from spglib import find_primitive, get_symmetry_dataset
+from ase import units as un
 import itertools
 
 # %% ../16_util.ipynb 4

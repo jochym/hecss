@@ -26,6 +26,16 @@ import spglib
 from spglib import find_primitive, get_symmetry_dataset
 
 # %% ../11_core.ipynb 4
+_disp_dists = {
+    'normal'   : stats.norm,
+    'logistic' : stats.logistic,
+    'hypsecant': stats.hypsecant,
+    'laplace'  : stats.laplace,
+    'cauchy'   : stats.cauchy,
+}
+
+
+# %% ../11_core.ipynb 5
 class HECSS:
     '''
     Class encapsulating the sampling and weight generation 
@@ -44,14 +54,16 @@ class HECSS:
     * width : eta, displacement scaling parameter, approx 1.0
     * maxburn : max. number of initial burn-in samples
     * w_search : use width/eta searching algorithm (default True)
-    * logistic_dist : use `stats.logistic` instead of `stats.norm` distribution
-                      as the displacement distribution.
+    * disp_dist : use different distribution instead of `stats.norm` 
+                   as the displacement distribution.
     * directory : basic calculation directory used by directory based calculators
     * pbar : show progress bar during calculations
     
     '''
+    
+    
     def __init__(self, cryst, calc, width=None, maxburn=20, w_search=True,
-                 logistic_dist = False, directory=None, pbar=False):
+                 disp_dist = 'normal', directory=None, pbar=False):
         
         self.cryst = cryst
         self.calc = calc
@@ -62,11 +74,13 @@ class HECSS:
         self.w_scale = 1e-3 # Overall scale in w(T) function (Ang/sqrt(K))
         self.eta = width # width = eta * w_scale sqrt(T)
         
-        if logistic_dist:
-            self.Q = stats.logistic
-        else:
-            self.Q = stats.norm
-
+        self.Q = stats.norm
+        try :
+            self.Q = _disp_dists[disp_dist]
+        except KeyError:
+            print(f'Warning: {disp_dist} displacement distribution not supported.\n'
+                  'Keeping normal displacement distribution')
+            
         self.pbar = None
         self._pbar = None
         if pbar is not None:
@@ -107,7 +121,7 @@ class HECSS:
         
     
 
-# %% ../11_core.ipynb 5
+# %% ../11_core.ipynb 6
 @patch 
 def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=False, pbar=None):
     '''
@@ -196,7 +210,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
     else :
         return m, y.std()
 
-# %% ../11_core.ipynb 6
+# %% ../11_core.ipynb 7
 @patch
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1, xscale_init=None,
@@ -465,7 +479,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
             # print('Generator terminated')
             break
 
-# %% ../11_core.ipynb 7
+# %% ../11_core.ipynb 8
 @patch
 def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
     '''
@@ -573,10 +587,10 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
         self._pbar=None
     return smpls
 
-# %% ../11_core.ipynb 8
+# %% ../11_core.ipynb 9
 from hecss.optimize import make_sampling
 
-# %% ../11_core.ipynb 9
+# %% ../11_core.ipynb 10
 @patch
 def generate(self: HECSS, S, T, sigma_scale=1.0, border=False, probTH=0.25, 
                   Nmul=4, N=None, nonzero_w=True, debug=False):

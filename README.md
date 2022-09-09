@@ -82,10 +82,10 @@ plot_stats(distrib, T, sqrN=True)
 
 ## Install
 
-The HECSS package is avaliable on pypi and conda-forge additionally the
+The HECSS package is available on pypi and conda-forge additionally the
 package is present also in my personal anaconda channel (jochym).
 Installation is simple, but requires a number of other packages to be
-installed as well. Package menagers handle these dependencies
+installed as well. Package managers handle these dependencies
 automatically.
 
 ### Install with pip
