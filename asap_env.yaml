@@ -4,7 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - fastcore
-  - nbdev=2.2.8
+  - nbdev
   - spglib
   - ase
   - asap3
