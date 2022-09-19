@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "hecss"
+  site-url: "https://jochym.github.io//hecss/"
+  description: "High Efficiency Configuration Space Sampler"
+  repo-branch: devel
+  repo-url: "https://gitlab.com/jochym/hecss/-/"
