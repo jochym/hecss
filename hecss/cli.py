@@ -13,6 +13,7 @@ from ase import units as un
 from numpy import savetxt, loadtxt, array
 from hecss import *
 import hecss
+from hecss.util import write_dfset
 
 # %% ../02_CLI.ipynb 5
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
