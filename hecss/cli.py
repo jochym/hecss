@@ -13,7 +13,8 @@ from ase import units as un
 from numpy import savetxt, loadtxt, array
 from hecss import *
 import hecss
-from hecss.util import write_dfset
+from hecss.util import write_dfset, calc_init_xscale
+from hecss.optimize import make_sampling
 
 # %% ../02_CLI.ipynb 5
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
@@ -53,11 +54,12 @@ _version_message=("HECSS, version %(version)s\n"
 @click.option('-n', '--nodfset', is_flag=True, default=False, help='Do not write DFSET file for ALAMODE')
 @click.option('-d', '--dfset', default='DFSET.dat', help='Name of the DFSET file')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
+@click.option('-e', '--neta', default=2, type=int, help="Number of samples for eta estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
 @click.option('-p', '--pbar', is_flag=True, default=True, help="Show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, command, pbar):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, neta, command, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.gitlab.io/hecss/
@@ -103,6 +105,10 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     wl = []
         
     sampler = HECSS(cryst, calculator, directory=workdir, width=width, pbar=pbar)
+    if width is None and neta > 0:
+        print('Estimating eta (width scale).')
+        eta, sigma = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
+    print('Sampling configurations')
     samples = sampler.sample(temp, nsamples, width_list = wl,
                              sentinel = dfset_writer,
                              sentinel_args = {'workdir': workdir,
@@ -111,7 +117,10 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
                                               'xsl': xsl
                                              },
                              xscale_init=xsi, xscale_list=xsl)
-    distr = sampler.generate(samples, temp)
+    # generate distribution centered at mean energy
+    T_m = 2*array([s[-1] for s in samples]).mean()/3/un.kB
+    print(f'Generating distribution centered at: {T_m:.3f} K')
+    distr = sampler.generate(samples, T_m)
     if len(wl)>1 :
         wl = array(wl).T
         # print(wl.shape)
@@ -146,7 +155,32 @@ def calculate_xscale(supercell, scale, output, skip):
 # %% ../02_CLI.ipynb 16
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
-@click.argument('T', type=float)
+@click.argument('T', default=-1, type=float)
+@click.option('-N', '--nmul', default=4, type=int, help="Sample length multiplier")
+@click.option('-p', '--prob', type=float, default=0.25, help='Probability treshold')
+@click.option('-w', is_flag=True, default=True, help='Force non-zero weights')
+@click.option('-b', is_flag=True, default=False, help='Border samples account for the rest of domain')
+@click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
+@click.option('-d', is_flag=True, default=False, help='Plot debug plots')
+@click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
+def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
+    '''
+    Sample reshape
+    '''
+    import hecss.monitor as hm
+    p = Path(dfset)
+    smpl = hm.load_dfset(p.parent, p.name)
+    if t < 0:
+        t = 2*array([s[-1] for s in smpl]).mean()/3/un.kB 
+    dist = make_sampling(smpl, t, border=b, probTH=prob, Nmul=nmul, nonzero_w=w, debug=d)
+    for s in dist:
+        write_dfset(output, s)
+    print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
+
+# %% ../02_CLI.ipynb 19
+@click.command()
+@click.argument('dfset', type=click.Path(exists=True))
+@click.argument('T', default=-1, type=float)
 @click.option('-n', '--sqrn', is_flag=True, help='Show sqrt(N) bars on the histogram.')
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
 @click.option('-w', '--width', type=float, default=6, help='Width of the figure.')
@@ -164,9 +198,9 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
     import matplotlib.pylab as plt
 
     p = Path(dfset)
-    
+    smpl = hm.load_dfset(p.parent, p.name)
     plt.figure(figsize=(float(width), float(height)))
-    hm.plot_stats(hm.load_dfset(p.parent, p.name), T=t, sqrN=sqrn, show=x)
+    hm.plot_stats(smpl, T=t if t >0 else None, sqrN=sqrn, show=x)
     if output:
         plt.savefig(output)
     if sixel:
@@ -177,7 +211,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 20
+# %% ../02_CLI.ipynb 23
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')

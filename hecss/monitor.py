@@ -326,7 +326,7 @@ def plot_stats(confs, T=None, sqrN=False, show=True,
         #              yerr=2*sqrt(h[0]), fmt='+', color='C0', alpha=0.33,
         #              capsize=4, label='$2/\\sqrt{N}$')
 
-    plt.axvline(E_goal, ls='--', color='C2', label='Target energy')
+    plt.axvline(E_goal, ls='--', color='C2', label=f'Target energy {T:.2f} K')
     pdf = N*de*stats.norm.pdf(e, E_goal, Es)
     plt.fill_between(e,  (pdf-sqrt(pdf)).clip(min=0), pdf+sqrt(pdf), label='$\\sigma, 2\\sigma, 3\\sigma$', color='C1', alpha=0.1, zorder=9)
     plt.fill_between(e,  (pdf-2*sqrt(pdf)).clip(min=0), pdf+2*sqrt(pdf), color='C1', alpha=0.1, zorder=9)
