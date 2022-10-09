@@ -165,7 +165,12 @@ def calculate_xscale(supercell, scale, output, skip):
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
     '''
-    Sample reshape
+    Reshape the sample to the normal distribution centered around mean energy (temperature),
+    or around provided temperature T (Kelvin). The reshaping is done by adjusting weighting
+    of the samples by repeating the ones which should be up-weighted. 
+    The parameters are the variants of the weighting algorithm (see the docs).\b
+    
+    The procedure reads and produces a file with in the DFSET format.
     '''
     import hecss.monitor as hm
     p = Path(dfset)
