@@ -105,9 +105,15 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     wl = []
         
     sampler = HECSS(cryst, calculator, directory=workdir, width=width, pbar=pbar)
+
     if width is None and neta > 0:
-        print('Estimating eta (width scale).')
+        print('Estimating width scale (eta).')
         eta, sigma = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
+        if nsamples <= 1:
+            print(f'Width scale (eta) from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
+            print('Eta estimation run (N<2). Not running sampling.')
+            return
+
     print('Sampling configurations')
     samples = sampler.sample(temp, nsamples, width_list = wl,
                              sentinel = dfset_writer,
@@ -133,7 +139,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
         
     return
 
-# %% ../02_CLI.ipynb 11
+# %% ../02_CLI.ipynb 14
 @click.command()
 @click.argument('supercell', type=click.Path(exists=True))
 @click.argument('scale', type=click.Path(exists=True))
@@ -152,7 +158,7 @@ def calculate_xscale(supercell, scale, output, skip):
     savetxt(output, xsi, fmt='%9.4f')
     print(f'Done. The initial scale saved to: {output}')
 
-# %% ../02_CLI.ipynb 16
+# %% ../02_CLI.ipynb 19
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -182,7 +188,7 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
         write_dfset(output, s)
     print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
 
-# %% ../02_CLI.ipynb 19
+# %% ../02_CLI.ipynb 22
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -216,7 +222,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 23
+# %% ../02_CLI.ipynb 26
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
