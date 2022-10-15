@@ -52,4 +52,5 @@ d = { 'settings': { 'branch': 'devel',
                             'hecss.util.create_asap_calculator': ('util.html#create_asap_calculator', 'hecss/util.py'),
                             'hecss.util.normalize_conf': ('util.html#normalize_conf', 'hecss/util.py'),
                             'hecss.util.select_asap_model': ('util.html#select_asap_model', 'hecss/util.py'),
-                            'hecss.util.write_dfset': ('util.html#write_dfset', 'hecss/util.py')}}}
+                            'hecss.util.write_dfset': ('util.html#write_dfset', 'hecss/util.py')},
+            'hecss.xscale': {'hecss.xscale.plot_virial_stat': ('xscale.html#plot_virial_stat', 'hecss/xscale.py')}}}

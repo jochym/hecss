@@ -71,6 +71,7 @@ class HECSS:
         self.w_search = w_search
         self.directory = directory
         self.w_list = []
+        self._eta_samples = []
         self.w_scale = 1e-3 # Overall scale in w(T) function (Ang/sqrt(K))
         self.eta = width # width = eta * w_scale sqrt(T)
         
@@ -191,7 +192,10 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
             # Ignore the error
             pass
         E = cr.get_potential_energy()
+        i = len(self.w_list)
+        self._eta_samples.append((i, i, dx, cr.get_forces(), (E-E0)/nat))
         self.w_list.append([w, T, (E-E0)/nat])
+        
         if pbar:
             pbar.update()
 

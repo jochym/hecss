@@ -412,14 +412,14 @@ def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
         rfun = stats.norm
     else:
         rfun = stats.chi2
-    hist(v, label=f'{el}{l}', bins='auto', alpha=alpha, density=True)
+    hist(v, label=f'{el}{l}', bins='auto', color=f'C{n}', alpha=alpha, density=True)
     if normal or df is None:
         fit = rfun.fit(v)
     else:
         fit = rfun.fit(v, f0=df)
     m = v.mean()
     s = v.std()
-    axvline(v.mean(), ls='--', color=f'C{n}', label=f'{el}{l} = {m:.2f}±{s:.2f}')
+    axvline(m if normal else fit[1]+max(fit[0]-2,0)*fit[2], ls='--', color=f'C{n}', label=f'{el}{l} = {m:.2f}±{s:.2f}')
     if normal:
         x = linspace(m-3*s, m+3*s, 100)
     else:
@@ -428,11 +428,11 @@ def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
     if normal:
         xlim(m-3*s, m+3*s)
     else:
-        xlim(0, m+3*s)
+        xlim(max(0, m-3*s), m+3*s)
     return m, s
 
 # %% ../15_monitor.ipynb 23
-def plot_virial_stat(cryst, smpl, T):
+def plot_virial_stat(cryst, smpl, T, normal=False):
     elems = cryst.get_chemical_symbols()
     vir = array([abs(s[2]*s[3]) for s in smpl])/(un.kB*T)
     nat = len(elems)
@@ -440,7 +440,7 @@ def plot_virial_stat(cryst, smpl, T):
     for n, el in enumerate(set(elems)):
         elmask = array(elems)==el
         plot_hist(vir[:, elmask, :].mean(axis=(-1,-2)), 
-                  el, n+1, normal=False, df=3*sum(elmask))
+                  el, n+1, normal=normal, df=3*sum(elmask))
     axvline(T/T, ls=':', color='C5', label=f'{T:.0f} K')
     xlim(m - 5*s, m + 7*s)
     legend()
@@ -458,7 +458,7 @@ def plot_acceptance_history(smpl):
     ylabel('Acceptance ratio (approx., %)');
 
 # %% ../15_monitor.ipynb 25
-def plot_dofmu_stat(cryst, dofmu, skip=10, window=10):
+def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
     symm = get_symmetry_dataset(cryst)
     dofmap = symm['mapping_to_primitive']
     dof = set(dofmap)
@@ -498,8 +498,8 @@ def plot_dofmu_stat(cryst, dofmu, skip=10, window=10):
     for i, el in enumerate(set(elmap[1])):
         elmask = elmap[1]==el
         m, s = plot_hist(xdof[skip:,elmask,:].mean((-2, -1)), 
-                         chemical_symbols[el], i,)
-                         # normal=False, df=3*sum(elmask))
+                         chemical_symbols[el], i,
+                         normal=normal, df=3*sum(elmask))
         if mi < 0 or mi > m-3*s:
             mi = m-3*s
         if ma < 0 or ma < m+4*s:
