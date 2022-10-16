@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = []
 
-# %% ../02_CLI.ipynb 4
+# %% ../02_CLI.ipynb 2
 import click
 from pathlib import Path
 import os
@@ -15,6 +15,12 @@ from hecss import *
 import hecss
 from hecss.util import write_dfset, calc_init_xscale
 from hecss.optimize import make_sampling
+
+# %% ../02_CLI.ipynb 4
+_version_message=("HECSS, version %(version)s\n"
+                  'High Efficiency Configuration Space Sampler\n'
+                  '(C) 2021-2022 by Paweł T. Jochym\n'
+                  '    License: GPL v3 or later')
 
 # %% ../02_CLI.ipynb 5
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
@@ -34,12 +40,6 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     return False
 
 # %% ../02_CLI.ipynb 6
-_version_message=("HECSS, version %(version)s\n"
-                  'High Efficiency Configuration Space Sampler\n'
-                  '(C) 2021-2022 by Paweł T. Jochym\n'
-                  '    License: GPL v3 or later')
-
-# %% ../02_CLI.ipynb 7
 @click.command()
 @click.argument('fname', type=click.Path(exists=True))            
 @click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
@@ -98,17 +98,16 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     if scale:
         xsl = []
 
-    xsi = None
-    if ampl:
-        xsi = loadtxt(ampl)
-
     wl = []
         
     sampler = HECSS(cryst, calculator, directory=workdir, width=width, pbar=pbar)
 
+    if ampl:
+        sampler.xscale_init = loadtxt(ampl)
+    
     if width is None and neta > 0:
         print('Estimating width scale (eta).')
-        eta, sigma = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
+        eta, sigma, xscale = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
         if nsamples <= 1:
             print(f'Width scale (eta) from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
             print('Eta estimation run (N<2). Not running sampling.')
@@ -122,7 +121,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
                                               'scale': scale,
                                               'xsl': xsl
                                              },
-                             xscale_init=xsi, xscale_list=xsl)
+                             xscale_list=xsl)
     # generate distribution centered at mean energy
     T_m = 2*array([s[-1] for s in samples]).mean()/3/un.kB
     print(f'Generating distribution centered at: {T_m:.3f} K')
@@ -139,7 +138,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
         
     return
 
-# %% ../02_CLI.ipynb 14
+# %% ../02_CLI.ipynb 15
 @click.command()
 @click.argument('supercell', type=click.Path(exists=True))
 @click.argument('scale', type=click.Path(exists=True))
@@ -158,7 +157,7 @@ def calculate_xscale(supercell, scale, output, skip):
     savetxt(output, xsi, fmt='%9.4f')
     print(f'Done. The initial scale saved to: {output}')
 
-# %% ../02_CLI.ipynb 19
+# %% ../02_CLI.ipynb 20
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -188,7 +187,7 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
         write_dfset(output, s)
     print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
 
-# %% ../02_CLI.ipynb 22
+# %% ../02_CLI.ipynb 23
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -222,7 +221,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 26
+# %% ../02_CLI.ipynb 27
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
