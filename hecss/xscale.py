@@ -24,7 +24,6 @@ def plot_virial_stat(cryst, smpl, normal=True):
     elmap = cryst.get_atomic_numbers()
     vir = np.array([abs(s[2]*s[3]) for s in smpl])
     vir /= vir.mean(axis=(-1,-2))[:,None,None]
-    print(vir.shape)
     nat = len(elems)
     xscale = np.ones(cryst.get_positions().shape)
     # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)

@@ -70,10 +70,11 @@ class HECSS:
         self.maxburn = maxburn
         self.w_search = w_search
         self.directory = directory
-        self.w_list = []
+        self._eta_list = []
         self._eta_samples = []
         self.w_scale = 1e-3 # Overall scale in w(T) function (Ang/sqrt(K))
         self.eta = width # width = eta * w_scale sqrt(T)
+        self.xscale_init = np.ones((len(self.cryst),3))
         
         self.Q = stats.norm
         try :
@@ -124,7 +125,7 @@ class HECSS:
 
 # %% ../11_core.ipynb 6
 @patch 
-def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=False, pbar=None):
+def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
     '''
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
@@ -142,7 +143,6 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
     * `n`    - number of sampling points
     * `Tmax` - max sampled temperature
     * `set_scale` - set scale parameter in the class after run
-    * `wm_out` - output additionally array of width vs. sqrt(E)
     * `pbar` - show progress bar during calculation
     
     #### Output
@@ -166,6 +166,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
                    pbc=True, 
                    calculator= self.calc() if callable(self.calc) 
                                            else self.calc)
+
     close_pbar = False
     
     if self.pbar and pbar is None:
@@ -175,10 +176,10 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
     if pbar:
         pbar.reset(n)
         pbar.set_postfix_str('eta estimation')
-        if self.w_list:
-            pbar.update(len(self.w_list))
+        if self._eta_list:
+            pbar.update(len(self._eta_list))
         
-    while len(self.w_list) < n:
+    while len(self._eta_list) < n:
         T = stats.uniform.rvs(0, Tmax) # Kelvin
         if not T:
             continue
@@ -186,38 +187,45 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, wm_out=Fals
         dx = self.Q.rvs(size=dim, scale=w)
         cr.set_positions(self.cryst.get_positions()+dx)
         try :
-            cr.calc.set(directory=f'{basedir}/w_est/{len(self.w_list):03d}')
+            cr.calc.set(directory=f'{basedir}/w_est/{len(self._eta_list):03d}')
         except AttributeError :
             # Calculator is not directory-based
             # Ignore the error
             pass
         E = cr.get_potential_energy()
-        i = len(self.w_list)
+        i = len(self._eta_list)
         self._eta_samples.append((i, i, dx, cr.get_forces(), (E-E0)/nat))
-        self.w_list.append([w, T, (E-E0)/nat])
+        self._eta_list.append([w, T, (E-E0)/nat])
         
         if pbar:
             pbar.update()
 
-    wm = np.array(self.w_list).T
+    wm = np.array(self._eta_list).T
     y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
     m = y.mean()
+    
+    xscale = np.ones(dim)
+    vir = np.array([abs(s[2]*s[3]) for s in self._eta_samples])
+    vir /= vir.mean(axis=(-1,-2))[:,None,None]
+
+    elems = self.cryst.get_chemical_symbols()
+    for n, el in enumerate(set(elems)):
+        elmask = np.array(elems)==el
+        xscale[elmask] = 1/np.sqrt(vir[:, elmask, :].mean())
     
     if pbar and close_pbar:
         pbar.close()
     
     if set_scale:
         self.eta = m
+        self.xscale_init = xscale
         
-    if wm_out:
-        return m, y.std(), wm
-    else :
-        return m, y.std()
+    return m, y.std(), xscale
 
 # %% ../11_core.ipynb 7
 @patch
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
-             eqdelta=0.05, eqsigma=0.2, xi=1, chi=1, xscale_init=None,
+             eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
              Ep0=None, modify=None, modify_args=None, symprec=1e-5,
              reuse_base=None, verb=True, 
              width_list=None, dofmu_list=None, xscale_list=None):
@@ -300,12 +308,9 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     dofmu = np.ones((len(dof), 3))
     mu = np.ones(dim)
 
-    if xscale_init is None:
-        xscale = np.ones(dim)
-    else :
-        xscale = np.array(xscale_init)
-        assert xscale.shape == dim
-    
+    xscale = np.array(self.xscale_init)
+    assert xscale.shape == dim
+
     # Initialise dofxs from data passed in xscale_init
     dofxs = np.array([xscale[dofmap==d,:].mean(axis=0) for d in dof])
     assert dofxs.shape == dofmu.shape
@@ -334,6 +339,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     w = self.eta * self.w_scale * np.sqrt(T_goal) 
     w_prev = w
 
+    
     if width_list is None :
         wl = []
     else :
@@ -513,7 +519,7 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
     * chi          : strength of the amplitude correction term mixing [0-1]
     * xscale_init  : Initial values of the amplitude correction coefficients.
                    Array with shape `cryst.get_positions().shape`.
-                   May be generated with `calc_init_xscale` function.
+                   May be also generated with `calc_init_xscale` function.
     * Ep0          : T=0 energy (base, no displacements), if None (default) calculate E0.
     * modify       : pass your own pre-processing function to modify the structure 
                    before calculation. The function must return a  (e, f) tuple
@@ -564,7 +570,7 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
         self._pbar = tqdm(total=N)
 
     if self.eta is None:
-        width, sigma = self.estimate_width_scale(2, T, pbar=self._pbar)
+        width, sigma, xscale = self.estimate_width_scale(2, T, pbar=self._pbar)
         if sigma > width/5 :
             print(f'Warning: low accuracy eta estimation: {width:.2g}±{sigma:.2g}')
 
