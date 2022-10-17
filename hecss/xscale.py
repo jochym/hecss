@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 from hecss.util import normalize_conf
 from hecss import *
 
-# %% ../17_xscale.ipynb 9
+# %% ../17_xscale.ipynb 4
 def plot_virial_stat(cryst, smpl, normal=True):
     elems = cryst.get_chemical_symbols()
     elmap = cryst.get_atomic_numbers()
@@ -29,7 +29,7 @@ def plot_virial_stat(cryst, smpl, normal=True):
     # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)
     mi = 1
     ma = 1
-    for n, el in enumerate(set(elems)):
+    for n, el in enumerate(sorted(set(elems))):
         elmask = np.array(elems)==el
         m, s = plot_hist(1/np.sqrt(vir[:, elmask, :].mean(axis=(-1,-2))), 
                          el, n+1, normal=normal, df=3*sum(elmask))
@@ -41,7 +41,7 @@ def plot_virial_stat(cryst, smpl, normal=True):
     plt.axvline(1, ls=':', color='C5', label='Equilibrium')
     plt.xlim(mi, ma)
     plt.legend()
-    plt.title('Virial distribution in the sample')
+    plt.title('Normalized Virial distribution in the sample')
     plt.ylabel('Probability density')
-    plt.xlabel('Virial/Temperature');
+    plt.xlabel('Normalized Virial');
     return xscale
