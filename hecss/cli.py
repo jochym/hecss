@@ -23,6 +23,14 @@ _version_message=("HECSS, version %(version)s\n"
                   '    License: GPL v3 or later')
 
 # %% ../02_CLI.ipynb 5
+def run_cli_cmd(cmd, args, prt_result=True):
+    print(f'$ {cmd.name} {args}\n')
+    run = CliRunner().invoke(cmd, args) 
+    print(run.output)
+    if prt_result:
+        print(run)
+
+# %% ../02_CLI.ipynb 6
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
     Write samples to the DFSET file in the workdir directory.
@@ -39,7 +47,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     # Important! Return False to keep iteration going
     return False
 
-# %% ../02_CLI.ipynb 6
+# %% ../02_CLI.ipynb 7
 @click.command()
 @click.argument('fname', type=click.Path(exists=True))            
 @click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
@@ -138,7 +146,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
         
     return
 
-# %% ../02_CLI.ipynb 15
+# %% ../02_CLI.ipynb 16
 @click.command()
 @click.argument('supercell', type=click.Path(exists=True))
 @click.argument('scale', type=click.Path(exists=True))
@@ -157,7 +165,7 @@ def calculate_xscale(supercell, scale, output, skip):
     savetxt(output, xsi, fmt='%9.4f')
     print(f'Done. The initial scale saved to: {output}')
 
-# %% ../02_CLI.ipynb 20
+# %% ../02_CLI.ipynb 21
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -187,7 +195,7 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
         write_dfset(output, s)
     print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
 
-# %% ../02_CLI.ipynb 23
+# %% ../02_CLI.ipynb 24
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -221,7 +229,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 27
+# %% ../02_CLI.ipynb 29
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')

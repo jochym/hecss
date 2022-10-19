@@ -14,4 +14,5 @@ website:
       - 13_planner.ipynb
       - 15_monitor.ipynb
       - 16_util.ipynb
+      - 17_xscale.ipynb
       - 99_mh.ipynb
