@@ -15,6 +15,7 @@ from hecss import *
 import hecss
 from hecss.util import write_dfset, calc_init_xscale
 from hecss.optimize import make_sampling
+import traceback
 
 # %% ../02_CLI.ipynb 4
 _version_message=("HECSS, version %(version)s\n"
@@ -23,12 +24,14 @@ _version_message=("HECSS, version %(version)s\n"
                   '    License: GPL v3 or later')
 
 # %% ../02_CLI.ipynb 5
-def run_cli_cmd(cmd, args, prt_result=True):
+def run_cli_cmd(cmd, args, prt_result=False):
     print(f'$ {cmd.name} {args}\n')
     run = CliRunner().invoke(cmd, args) 
     print(run.output)
-    if prt_result:
+    if prt_result or run.exit_code!=0:
         print(run)
+        if run.exit_code!=0:
+            traceback.print_tb(run.exc_info[-1])        
 
 # %% ../02_CLI.ipynb 6
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
@@ -62,7 +65,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-n', '--nodfset', is_flag=True, default=False, help='Do not write DFSET file for ALAMODE')
 @click.option('-d', '--dfset', default='DFSET.dat', help='Name of the DFSET file')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
-@click.option('-e', '--neta', default=2, type=int, help="Number of samples for eta estimation")
+@click.option('-e', '--neta', default=2, type=int, help="Number of samples for width scale estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
 @click.option('-p', '--pbar', is_flag=True, default=True, help="Show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
@@ -70,7 +73,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, neta, command, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
-    Read the docs at: https://jochym.gitlab.io/hecss/
+    Read the docs at: https://jochym.github.io/hecss/
     
     \b
     FNAME - Supercell structure file. The containing 
@@ -114,11 +117,11 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
         sampler.xscale_init = loadtxt(ampl)
     
     if width is None and neta > 0:
-        print('Estimating width scale (eta).')
+        print('Estimating width scale.')
         eta, sigma, xscale = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
         if nsamples <= 1:
-            print(f'Width scale (eta) from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
-            print('Eta estimation run (N<2). Not running sampling.')
+            print(f'Width scale from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
+            print('Width scale estimation run (N<2). Not running sampling.')
             return
 
     print('Sampling configurations')
@@ -137,7 +140,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     if len(wl)>1 :
         wl = array(wl).T
         # print(wl.shape)
-        print(f'Average eta ({len(wl[0])} pnts): {wl[0].mean():.3g}+/-{wl[0].std():.3g}')
+        print(f'Average width scale ({len(wl[0])} pnts): {wl[0].mean():.3g}+/-{wl[0].std():.3g}')
     
     if not nodfset:
         wd = Path(workdir)
