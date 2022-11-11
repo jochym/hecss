@@ -67,7 +67,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-e', '--neta', default=2, type=int, help="Number of samples for width scale estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
-@click.option('-p', '--pbar', is_flag=True, default=True, help="Show progress bar")
+@click.option('-p', '--pbar', is_flag=True, default=True, help="Do not show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
 def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, neta, command, pbar):
@@ -88,9 +88,10 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
           f'Calculator:     {calc}')
     
     src_path = Path(fname)
-    
+    Ep0 = None
     if calc=="VASP":
         calculator = Vasp(label=label, directory=src_path.parent, restart=True)
+        Ep0 = calculator.get_potential_energy()
         cryst = ase.Atoms(calculator.atoms)
         cryst.set_calculator(calculator)
         calculator.set(directory=workdir)
@@ -125,9 +126,11 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
             return
 
     print('Sampling configurations')
-    samples = sampler.sample(temp, nsamples, width_list = wl,
-                             sentinel = dfset_writer,
-                             sentinel_args = {'workdir': workdir,
+    samples = sampler.sample(temp, nsamples,
+                             Ep0=Ep0,
+                             width_list=wl, 
+                             sentinel=dfset_writer,
+                             sentinel_args={'workdir': workdir,
                                               'dfset': dfset,
                                               'scale': scale,
                                               'xsl': xsl
@@ -188,9 +191,9 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
     
     The procedure reads and produces a file with in the DFSET format.
     '''
-    import hecss.monitor as hm
+    from hecss.util import load_dfset
     p = Path(dfset)
-    smpl = hm.load_dfset(p.parent, p.name)
+    smpl = load_dfset(p)
     if t < 0:
         t = 2*array([s[-1] for s in smpl]).mean()/3/un.kB 
     dist = make_sampling(smpl, t, border=b, probTH=prob, Nmul=nmul, nonzero_w=w, debug=d)
@@ -215,13 +218,14 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
     Use T(K) as a reference target temperature. Optionally 
     write out the plot to the output graphics file.
     """
-    import hecss.monitor as hm
+    from hecss.util import load_dfset
+    from hecss.monitor import plot_stats
     import matplotlib.pylab as plt
 
     p = Path(dfset)
-    smpl = hm.load_dfset(p.parent, p.name)
+    smpl = load_dfset(p)
     plt.figure(figsize=(float(width), float(height)))
-    hm.plot_stats(smpl, T=t if t >0 else None, sqrN=sqrn, show=x)
+    plot_stats(smpl, T=t if t >0 else None, sqrN=sqrn, show=x)
     if output:
         plt.savefig(output)
     if sixel:

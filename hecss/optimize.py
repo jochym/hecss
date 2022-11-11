@@ -38,7 +38,7 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     mu = 3*T*un.kB/2
     sigma = np.sqrt(3/2)*un.kB*T/np.sqrt(nat)   
 
-    # Yuo can use slightly (10%) wider sigma to compensate 
+    # You can use slightly (10%) wider sigma to compensate 
     # for the missing tails below weight=1
     g = stats.norm(mu, sigma_scale*sigma)
     e = np.fromiter((s[-1] for s in data), float)

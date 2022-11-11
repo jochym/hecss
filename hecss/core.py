@@ -227,8 +227,8 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
              Ep0=None, modify=None, modify_args=None, symprec=1e-5,
-             reuse_base=None, verb=True, 
-             width_list=None, dofmu_list=None, xscale_list=None):
+             width_list=None, dofmu_list=None, xscale_list=None,
+             verb=True, ):
     '''
     The the core functionality of the module is implemented in this generator function 
     which yields samples of the prior distribution. This is an internal implementation 
@@ -266,12 +266,6 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     directory    : (only for VASP calculator) directory for calculations and generated samples. 
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated 
                    samples will be stored in the `smpl/{i:04d}` subdirectories.
-    reuse_base   : None or the base calculator created by restarting the ground 
-                   state config. If None the base will be recalculated at the start of the run.
-                   If the value is a calculator - the energy from this calculator will be used 
-                   as ground state energy for the calculation. Be careful to have the same setup 
-                   in calc and reuse_base, otherwise the ground state energy and distribution 
-                   will be wrong.
     verb         : print verbose progress messages for interactive use
     
     **Output parameters**
@@ -326,11 +320,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     assert 0 <= chi <= 1 
     
     if Ep0 is None:
-        if reuse_base is not None:
-            calc0 = reuse_base
-            Ep0 = calc0.get_potential_energy()
-        else:
-            Ep0 = self.cryst.get_potential_energy()
+        Ep0 = self.cryst.get_potential_energy()
     
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
