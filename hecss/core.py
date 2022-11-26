@@ -67,6 +67,7 @@ class HECSS:
         
         self.cryst = cryst
         self.calc = calc
+        self.Ep0 = None
         self.maxburn = maxburn
         self.w_search = w_search
         self.directory = directory
@@ -151,7 +152,9 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
     * wm - the nx3 array of: [width, Temperature, (E-E0)/nat]
     '''
 
-    E0 = self.cryst.get_potential_energy()
+    if self.Ep0 is None:
+        self.Ep0 = self.cryst.get_potential_energy()
+    E0 = self.Ep0
     nat = len(self.cryst)
     dim = (nat, 3)    
     
@@ -226,7 +229,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
 @patch
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
-             Ep0=None, modify=None, modify_args=None, symprec=1e-5,
+             modify=None, modify_args=None, symprec=1e-5,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, ):
     '''
@@ -319,8 +322,9 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 
     assert 0 <= chi <= 1 
     
-    if Ep0 is None:
-        Ep0 = self.cryst.get_potential_energy()
+    if self.Ep0 is None:
+        self.Ep0 = self.cryst.get_potential_energy()
+    Ep0 = self.Ep0
     
     E_goal = 3*T_goal*un.kB/2
     Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   

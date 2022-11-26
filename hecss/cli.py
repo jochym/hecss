@@ -113,7 +113,8 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
     wl = []
         
     sampler = HECSS(cryst, calculator, directory=workdir, width=width, pbar=pbar)
-
+    sampler.Ep0 = Ep0
+    
     if ampl:
         sampler.xscale_init = loadtxt(ampl)
     
@@ -127,10 +128,9 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
 
     print('Sampling configurations')
     samples = sampler.sample(temp, nsamples,
-                             Ep0=Ep0,
                              width_list=wl, 
                              sentinel=dfset_writer,
-                             sentinel_args={'workdir': workdir,
+                             sentinel_args={'workdir': f'{workdir}/T_{temp:.1f}K/',
                                               'dfset': dfset,
                                               'scale': scale,
                                               'xsl': xsl

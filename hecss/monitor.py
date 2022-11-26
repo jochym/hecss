@@ -66,8 +66,9 @@ def plot_bands_file(fn, units=THz, decorate=True, lbl=None, **kwargs):
 
 # %% ../15_monitor.ipynb 7
 def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../sc/CONTCAR',
-                o=1, n=0, c2=10, born=None, charge=None):
-    fit_cmd = f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt -p {prefix} -n {sc} -f {dfset} -o {o} --c2 {c2} -d {n}'.split()
+                o=1, n=0, c2=10, c3=6, born=None, charge=None, skip_fit=False):
+    fit_cmd = (f'/home/jochym/Projects/alamode-tools/devel/make-gen.py opt ' +
+               f'-p {prefix} -n {sc} -f {dfset} -o {o} --c2 {c2} --c3 {c3} -d {n}').split()
     b = ''
     if charge is None:
         charge = prefix
@@ -77,16 +78,22 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../s
     alm_cmd = f'/home/jochym/public/bin/alm {prefix}_fit.in'.split()
     anph_cmd = f'/home/jochym/public/bin/anphon {prefix}_phon.in'.split()
 
-    with open(f'{d}/{prefix}_fit.in', 'w') as ff:
-        fit = subprocess.run(fit_cmd, cwd=d, stdout=ff, stderr=subprocess.PIPE)
-
+    if not skip_fit:
+        with open(f'{d}/{prefix}_fit.in', 'w') as ff:
+            fit = subprocess.run(fit_cmd, cwd=d, stdout=ff, stderr=subprocess.PIPE)
+        alm = subprocess.run(alm_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else :
+        fit = None
+        alm = None
+    
     with open(f'{d}/{prefix}_phon.in', 'w') as ff:
         phon = subprocess.run(phon_cmd, cwd=d, stdout=ff, stderr=subprocess.PIPE)
 
-    alm = subprocess.run(alm_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     anph = subprocess.run(anph_cmd, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     for p, l in zip((fit, phon, alm, anph), ('fit', 'phon', 'alm', 'anphon')):
+        if p is None:
+            continue
         if p.stdout is not None:
             with open(f'{d}/{prefix}_{l}.log', 'wt') as lf:
                 lf.write(p.stdout.decode())
@@ -94,7 +101,8 @@ def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../s
             with open(f'{d}/{prefix}_{l}.err', 'wt') as lf:
                 lf.write(p.stderr.decode())
 
-    return all([r.returncode==0 for r in  (fit, phon, alm, anph)]), fit, phon, alm, anph
+    return (all([r.returncode==0 for r in (fit, phon, alm, anph) if r is not None]), 
+            fit, phon, alm, anph)
 
 # %% ../15_monitor.ipynb 8
 def show_dc_conv(bl, kpnts, max_plots=4):
