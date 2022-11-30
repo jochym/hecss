@@ -59,6 +59,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-w', '--width', default=None, type=float, help="Initial scale of the prior distribution")
 @click.option('-a', '--ampl', default='', type=click.Path(), help='Initialise amplitude correction from the file.')
 @click.option('-s', '--scale', default='', type=click.Path(), help='Save amplitude correction history')
+@click.option('-m', '--symprec', default=1e-5, type=float, help='Symmetry search tolerance.')
 @click.option('-C', '--calc', default="VASP", type=str, 
               help="ASE calculator to be used for the job. "
                       "Supported calculators: VASP (default)")
@@ -70,7 +71,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-p', '--pbar', is_flag=True, default=True, help="Do not show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset, dfset, nsamples, neta, command, pbar):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, nodfset, dfset, nsamples, neta, command, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.github.io/hecss/
@@ -135,7 +136,8 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, calc, nodfset
                                               'scale': scale,
                                               'xsl': xsl
                                              },
-                             xscale_list=xsl)
+                             xscale_list=xsl,
+                             symprec=symprec)
     # generate distribution centered at mean energy
     T_m = 2*array([s[-1] for s in samples]).mean()/3/un.kB
     print(f'Generating distribution centered at: {T_m:.3f} K')
