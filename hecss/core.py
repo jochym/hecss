@@ -445,7 +445,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
         if self.w_search :
             w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
             eta = w/(self.w_scale*np.sqrt(T_goal))
-            if i==0 and abs(e_star-E_goal) > sigma*Es :
+            if i==0 and abs(e_star-E_goal) > 3*sigma*Es :
                 # We are in w-search mode but still far from E_goal
                 # Continue
                 k += 1
