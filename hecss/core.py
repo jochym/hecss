@@ -5,6 +5,7 @@ __all__ = ['HECSS']
 
 # %% ../11_core.ipynb 3
 import sys
+import pathlib
 from fastcore.basics import patch
 
 import numpy as np
@@ -196,6 +197,11 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
             # Ignore the error
             pass
         E = cr.get_potential_energy()
+        if E <= E0:
+            print('Undistorted supercell energy is above the distorted cell energy!', file=sys.stderr)
+            print('Make sure the supercell is calculated as single point and with the same params.', file=sys.stderr)
+            assert E > E0
+        
         i = len(self._eta_list)
         self._eta_samples.append((i, i, dx, cr.get_forces(), (E-E0)/nat))
         self._eta_list.append([w, T, (E-E0)/nat])
@@ -204,6 +210,9 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
             pbar.update()
 
     wm = np.array(self._eta_list).T
+    pathlib.Path(f'{basedir}/w_est/').mkdir(parents=True, exist_ok=True)
+    np.savetxt(f'{basedir}/w_est/w_est.dat', wm.T, 
+               header=f'w, T, (E-E0)/nat ; Tmax: {Tmax} K ')
     y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
     m = y.mean()
     
