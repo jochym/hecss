@@ -7,10 +7,10 @@ weighting algorithm for probability distribution sampling. It provides
 an alternative way to create representations of systems at thermal
 equilibrium without running a very expensive molecular dynamics
 simulation. The theoretical foundation of the code are presented in the
-section [Background](00_Background.html) in the
+section [Background](background.html) in the
 [Documentation](https://jochym.github.io/hecss/). More detailed examples
-are included in the [LAMMPS](01_LAMMPS_Tutorial.html) and
-[VASP](01_VASP_Tutorial.html) tutorials.
+are included in the [LAMMPS](lammps_tutorial.html) and
+[VASP](vasp_tutorial.html) tutorials.
 
 You can try HECSS on binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/jochym%2Fhecss/devel?labpath=index.ipynb)
