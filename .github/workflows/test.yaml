@@ -7,7 +7,8 @@ jobs:
     steps: 
       - uses: actions/checkout@v3
       #- uses: fastai/workflows/nbdev-ci@master
-      - uses: mamba-org/provision-with-micromamba@main
+      #- uses: mamba-org/provision-with-micromamba@main
+      - uses: mamba-org/setup-micromamba@v1
         with: 
           environment-file: std_env.yaml
           environment-name: std_env
@@ -21,7 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: mamba-org/provision-with-micromamba@main
+      #- uses: mamba-org/provision-with-micromamba@main
+      - uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: asap_env.yaml
           environment-name: asap_env
