@@ -20,7 +20,7 @@ test:
   script:
     - echo "Running test with flags:" $NBDEV_TEST_FLAGS
     - nbdev_install
-    - nbdev_test --do-print --flags $NBDEV_TEST_FLAGS
+    - nbdev_test --do_print --flags $NBDEV_TEST_FLAGS
     - hecss_sampler --help
     - calculate_xscale --help
     - plot_stats --help
