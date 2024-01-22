@@ -9,6 +9,9 @@ example/*/*/calc
 example/*/*/phon/DFSET_*
 example/*/*/phon/cryst*.*
 example/VASP_3C-SiC_calculated/*/*/smpl
+slurm-*.out
+example/VASP_3C-SiC_calculated/calc_2x2x2/**/POTCAR
+example/**/CHG*
 calc/
 # -----------------------------------
 # End local part
