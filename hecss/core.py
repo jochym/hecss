@@ -127,7 +127,17 @@ class HECSS:
 
 # %% ../11_core.ipynb 6
 @patch 
-def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
+def __get_calculator(self: HECSS):
+    '''
+    Produce a new calculator each time it is called.
+    If constructor produces new calculator, just call it.
+    Otherwise pass the calc attribute.
+    '''
+    return self.calc() if callable(self.calc) else self.calc    
+
+# %% ../11_core.ipynb 7
+@patch 
+def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None, nwork=None):
     '''
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
@@ -146,6 +156,8 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
     * `Tmax` - max sampled temperature
     * `set_scale` - set scale parameter in the class after run
     * `pbar` - show progress bar during calculation
+    * `nwork` - if not None, number of parallel workers to use. 
+                Only supported for VASP, 0 => unlimited.
     
     #### Output
     * if wm_out :  mean(eta), std(eta), wm
@@ -153,6 +165,15 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
     * wm - the nx3 array of: [width, Temperature, (E-E0)/nat]
     '''
 
+    # Execute async/parallel version if possible
+    if nwork is not None:
+        if self.calc.name == 'vasp':
+            from hecss.parallel import __run_async
+            return __run_async(self.estimate_width_scale_aio, n, Tmax, set_scale, pbar, nwork)
+        else :
+            print('WARNING: Parallel execution only supported for VASP.')
+            print('Running serial version')
+    
     if self.Ep0 is None:
         self.Ep0 = self.cryst.get_potential_energy()
     E0 = self.Ep0
@@ -168,8 +189,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
                    cell=self.cryst.get_cell(),
                    scaled_positions=self.cryst.get_scaled_positions(),
                    pbc=True, 
-                   calculator= self.calc() if callable(self.calc) 
-                                           else self.calc)
+                   calculator= self.__get_calculator())
 
     close_pbar = False
     
@@ -234,7 +254,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
         
     return m, y.std(), xscale
 
-# %% ../11_core.ipynb 7
+# %% ../11_core.ipynb 8
 @patch
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
@@ -492,7 +512,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
             # print('Generator terminated')
             break
 
-# %% ../11_core.ipynb 8
+# %% ../11_core.ipynb 9
 @patch
 def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
     '''
@@ -600,10 +620,10 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
         self._pbar=None
     return smpls
 
-# %% ../11_core.ipynb 9
+# %% ../11_core.ipynb 10
 from hecss.optimize import make_sampling
 
-# %% ../11_core.ipynb 10
+# %% ../11_core.ipynb 11
 @patch
 def generate(self: HECSS, S, T=None, sigma_scale=1.0, border=False, probTH=0.25, 
                   Nmul=4, N=None, nonzero_w=True, debug=False):
