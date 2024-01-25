@@ -5,7 +5,7 @@ jobs:
   quick-test:
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       #- uses: fastai/workflows/nbdev-ci@master
       #- uses: mamba-org/provision-with-micromamba@main
       - uses: mamba-org/setup-micromamba@v1
@@ -21,7 +21,7 @@ jobs:
   asap-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       #- uses: mamba-org/provision-with-micromamba@main
       - uses: mamba-org/setup-micromamba@v1
         with:
