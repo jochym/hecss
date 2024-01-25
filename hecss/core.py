@@ -71,7 +71,10 @@ class HECSS:
         self.Ep0 = None
         self.maxburn = maxburn
         self.w_search = w_search
-        self.directory = directory
+        if directory is None :
+            self.directory = f'calc'
+        else :
+            self.directory = directory
         self._eta_list = []
         self._eta_samples = []
         self.w_scale = 1e-3 # Overall scale in w(T) function (Ang/sqrt(K))
@@ -137,6 +140,68 @@ def __get_calculator(self: HECSS):
 
 # %% ../11_core.ipynb 7
 @patch 
+def __estimate_width_scale_ser(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
+    '''
+    Serial version of w-estimator.
+    Estimate coefficient between temperature and displacement scale (eta).
+    Calculate energy increase from the `n` temperatures uniformly 
+    distributed between 0 and `Tmax` and calculate avarage $\sqrt{E-E0/T}$
+    which is a width scale for a given temperature:
+    $$
+        w = \\eta\\sqrt{T}
+    $$
+    which comes from the assumed approximate relationship:
+    $$
+        \\frac{E(w(T))-E_0}{T} \\approx \\mathrm{const} = \\eta^2.
+    $$
+    
+    #### Input
+    * `n`    - number of sampling points
+    * `Tmax` - max sampled temperature
+    * `set_scale` - set scale parameter in the class after run
+    * `pbar` - show progress bar during calculation
+    
+    '''
+
+    nat = len(self.cryst)
+    dim = (nat, 3)    
+    
+    cr = ase.Atoms(self.cryst.get_atomic_numbers(), 
+                   cell=self.cryst.get_cell(),
+                   scaled_positions=self.cryst.get_scaled_positions(),
+                   pbc=True, 
+                   calculator= self.__get_calculator())
+
+        
+    while len(self._eta_list) < n:
+        T = stats.uniform.rvs(0, Tmax) # Kelvin
+        if not T:
+            continue
+        w = self.w_scale * np.sqrt(T)
+        dx = self.Q.rvs(size=dim, scale=w)
+        cr.set_positions(self.cryst.get_positions()+dx)
+        try :
+            cr.calc.set(directory=f'{self.directory}/w_est/{len(self._eta_list):03d}')
+        except AttributeError :
+            # Calculator is not directory-based
+            # Ignore the error
+            pass
+        E = cr.get_potential_energy()
+        if E <= self.Ep0:
+            print('Undistorted supercell energy is above the distorted cell energy!', file=sys.stderr)
+            print('Make sure the supercell is calculated as single point and with the same params.', file=sys.stderr)
+            assert E > self.Ep0
+        
+        i = len(self._eta_list)
+        self._eta_samples.append((i, i, dx, cr.get_forces(), (E-self.Ep0)/nat))
+        self._eta_list.append([w, T, (E-self.Ep0)/nat])
+        
+        if pbar:
+            pbar.update()
+
+
+# %% ../11_core.ipynb 8
+@patch 
 def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None, nwork=None):
     '''
     Estimate coefficient between temperature and displacement scale (eta).
@@ -165,31 +230,9 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None, 
     * wm - the nx3 array of: [width, Temperature, (E-E0)/nat]
     '''
 
-    # Execute async/parallel version if possible
-    if nwork is not None:
-        if self.calc.name == 'vasp':
-            from hecss.parallel import __run_async
-            return __run_async(self.estimate_width_scale_aio, n, Tmax, set_scale, pbar, nwork)
-        else :
-            print('WARNING: Parallel execution only supported for VASP.')
-            print('Running serial version')
-    
     if self.Ep0 is None:
         self.Ep0 = self.cryst.get_potential_energy()
     E0 = self.Ep0
-    nat = len(self.cryst)
-    dim = (nat, 3)    
-    
-    if self.directory is None :
-        basedir = f'calc'
-    else :
-        basedir = self.directory
-        
-    cr = ase.Atoms(self.cryst.get_atomic_numbers(), 
-                   cell=self.cryst.get_cell(),
-                   scaled_positions=self.cryst.get_scaled_positions(),
-                   pbc=True, 
-                   calculator= self.__get_calculator())
 
     close_pbar = False
     
@@ -202,40 +245,28 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None, 
         pbar.set_postfix_str('eta estimation')
         if self._eta_list:
             pbar.update(len(self._eta_list))
-        
-    while len(self._eta_list) < n:
-        T = stats.uniform.rvs(0, Tmax) # Kelvin
-        if not T:
-            continue
-        w = self.w_scale * np.sqrt(T)
-        dx = self.Q.rvs(size=dim, scale=w)
-        cr.set_positions(self.cryst.get_positions()+dx)
-        try :
-            cr.calc.set(directory=f'{basedir}/w_est/{len(self._eta_list):03d}')
-        except AttributeError :
-            # Calculator is not directory-based
-            # Ignore the error
-            pass
-        E = cr.get_potential_energy()
-        if E <= E0:
-            print('Undistorted supercell energy is above the distorted cell energy!', file=sys.stderr)
-            print('Make sure the supercell is calculated as single point and with the same params.', file=sys.stderr)
-            assert E > E0
-        
-        i = len(self._eta_list)
-        self._eta_samples.append((i, i, dx, cr.get_forces(), (E-E0)/nat))
-        self._eta_list.append([w, T, (E-E0)/nat])
-        
-        if pbar:
-            pbar.update()
+
+    # Execute async/parallel version if possible
+    if nwork is not None:
+        if self.calc.name == 'vasp':
+            from hecss.parallel import __run_async
+            __run_async(self.__estimate_width_scale_aio, n, Tmax, set_scale, pbar, nwork)
+        else :
+            print('WARNING: Parallel execution only supported for VASP.')
+            print('Running serial version')
+    # Or serial for other calculators or if requested
+    else :
+        self.__estimate_width_scale_ser(n, Tmax, set_scale, pbar)
+    
 
     wm = np.array(self._eta_list).T
-    pathlib.Path(f'{basedir}/w_est/').mkdir(parents=True, exist_ok=True)
-    np.savetxt(f'{basedir}/w_est/w_est.dat', wm.T, 
+    pathlib.Path(f'{self.directory}/w_est/').mkdir(parents=True, exist_ok=True)
+    np.savetxt(f'{self.directory}/w_est/w_est.dat', wm.T, 
                header=f'w, T, (E-E0)/nat ; Tmax: {Tmax} K ')
     y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
     m = y.mean()
     
+    dim = (len(self.cryst), 3)    
     xscale = np.ones(dim)
     vir = np.array([abs(s[2]*s[3]) for s in self._eta_samples])
     vir /= vir.mean(axis=(-1,-2))[:,None,None]
@@ -254,7 +285,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None, 
         
     return m, y.std(), xscale
 
-# %% ../11_core.ipynb 8
+# %% ../11_core.ipynb 9
 @patch
 def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
@@ -512,7 +543,7 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
             # print('Generator terminated')
             break
 
-# %% ../11_core.ipynb 9
+# %% ../11_core.ipynb 10
 @patch
 def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
     '''
@@ -620,10 +651,10 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, **kwargs):
         self._pbar=None
     return smpls
 
-# %% ../11_core.ipynb 10
+# %% ../11_core.ipynb 11
 from hecss.optimize import make_sampling
 
-# %% ../11_core.ipynb 11
+# %% ../11_core.ipynb 12
 @patch
 def generate(self: HECSS, S, T=None, sigma_scale=1.0, border=False, probTH=0.25, 
                   Nmul=4, N=None, nonzero_w=True, debug=False):

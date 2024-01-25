@@ -16,14 +16,15 @@ import hecss
 from hecss.util import write_dfset, calc_init_xscale
 from hecss.optimize import make_sampling
 import traceback
+from tempfile import TemporaryDirectory
 
-# %% ../02_CLI.ipynb 4
+# %% ../02_CLI.ipynb 5
 _version_message=("HECSS, version %(version)s\n"
                   'High Efficiency Configuration Space Sampler\n'
                   '(C) 2021-2022 by Paweł T. Jochym\n'
                   '    License: GPL v3 or later')
 
-# %% ../02_CLI.ipynb 5
+# %% ../02_CLI.ipynb 6
 def run_cli_cmd(cmd, args, prt_result=False):
     print(f'$ {cmd.name} {args}\n')
     run = CliRunner().invoke(cmd, args) 
@@ -33,7 +34,7 @@ def run_cli_cmd(cmd, args, prt_result=False):
         if run.exit_code!=0:
             traceback.print_tb(run.exc_info[-1])        
 
-# %% ../02_CLI.ipynb 6
+# %% ../02_CLI.ipynb 7
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
     Write samples to the DFSET file in the workdir directory.
@@ -50,7 +51,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     # Important! Return False to keep iteration going
     return False
 
-# %% ../02_CLI.ipynb 7
+# %% ../02_CLI.ipynb 8
 @click.command()
 @click.argument('fname', type=click.Path(exists=True))            
 @click.option('-W', '--workdir', default="WORK", type=click.Path(exists=True), help="Work directory")
@@ -68,10 +69,11 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-e', '--neta', default=2, type=int, help="Number of samples for width scale estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
+@click.option('-k', '--nwork', default=None, type=int, help="Number of parallel workers to run (0=unlimited)")
 @click.option('-p', '--pbar', is_flag=True, default=True, help="Do not show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, nodfset, dfset, nsamples, neta, command, pbar):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, nodfset, dfset, nsamples, neta, command, nwork, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.github.io/hecss/
@@ -121,7 +123,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
     
     if width is None and neta > 0:
         print('Estimating width scale.')
-        eta, sigma, xscale = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar)
+        eta, sigma, xscale = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar, nwork=nwork)
         if nsamples <= 1:
             print(f'Width scale from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
             print('Width scale estimation run (N<2). Not running sampling.')
@@ -154,7 +156,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         
     return
 
-# %% ../02_CLI.ipynb 16
+# %% ../02_CLI.ipynb 17
 @click.command()
 @click.argument('supercell', type=click.Path(exists=True))
 @click.argument('scale', type=click.Path(exists=True))
@@ -173,7 +175,7 @@ def calculate_xscale(supercell, scale, output, skip):
     savetxt(output, xsi, fmt='%9.4f')
     print(f'Done. The initial scale saved to: {output}')
 
-# %% ../02_CLI.ipynb 21
+# %% ../02_CLI.ipynb 22
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -203,7 +205,7 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
         write_dfset(output, s)
     print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
 
-# %% ../02_CLI.ipynb 24
+# %% ../02_CLI.ipynb 25
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -238,7 +240,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 29
+# %% ../02_CLI.ipynb 30
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
