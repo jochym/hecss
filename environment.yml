@@ -7,7 +7,7 @@ dependencies:
   - fastcore
   - nbdev
   - tqdm
-  - spglib
+  - spglib<2.3
   - ase
   - asap3
   - openkim-models=2021.01.28
