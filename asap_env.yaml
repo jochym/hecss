@@ -5,7 +5,7 @@ channels:
 dependencies:
   - fastcore
   - nbdev
-  - spglib
+  - spglib<2.3
   - ase
   - asap3
   - openkim-models=2021.01.28=h2cc385e_1
