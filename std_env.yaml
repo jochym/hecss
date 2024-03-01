@@ -5,7 +5,7 @@ channels:
 dependencies:
   - fastcore
   - nbdev
-  - spglib<2.3
+  - spglib
   - ase
   - matplotlib
   - numpy
