@@ -19,7 +19,7 @@ from scipy import stats
 import sys
 from spglib import find_primitive, get_symmetry_dataset
 from collections import Counter
-from hecss.util import load_dfset, get_dfset_len
+from hecss.util import load_dfset, get_dfset_len, get_cell_data
 
 # %% ../15_monitor.ipynb 3
 from ase.data import chemical_symbols
@@ -433,7 +433,7 @@ def plot_acceptance_history(smpl):
 
 # %% ../15_monitor.ipynb 22
 def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
-    symm = get_symmetry_dataset(cryst)
+    symm = get_symmetry_dataset(get_cell_data(cryst))
     dofmap = symm['mapping_to_primitive']
     dof = set(dofmap)
     dofmul = Counter(symm['mapping_to_primitive'])
@@ -487,7 +487,7 @@ def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
 
 # %% ../15_monitor.ipynb 23
 def plot_xs_stat(cryst, xsl, skip=10, window=10):
-    symm = get_symmetry_dataset(cryst)
+    symm = get_symmetry_dataset(get_cell_data(cryst))
     dofmap = symm['mapping_to_primitive']
     dof = set(dofmap)
     dofmul = Counter(symm['mapping_to_primitive'])

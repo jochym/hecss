@@ -23,6 +23,7 @@ import ase
 import ase.units as un
 from ase.calculators import calculator
 from ase.data import chemical_symbols
+from hecss.util import get_cell_data
 import spglib
 from spglib import find_primitive, get_symmetry_dataset
 
@@ -358,8 +359,10 @@ def _sampler(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
         
     nat = len(self.cryst)
     dim = (nat, 3)
-    
-    symm = get_symmetry_dataset(self.cryst, symprec=symprec)
+    # lattice = np.array(cell.get_cell().T, dtype="double", order="C")
+    # positions = np.array(cell.get_scaled_positions(), dtype="double", order="C")
+    # numbers = np.array(cell.get_atomic_numbers(), dtype="intc")
+    symm = get_symmetry_dataset(get_cell_data(self.cryst), symprec=symprec)
     dofmap = symm['mapping_to_primitive']
     dof = list(sorted(set(dofmap)))
     dofmu = np.ones((len(dof), 3))

@@ -17,6 +17,7 @@ from tqdm.auto import tqdm
 from itertools import islice
 from spglib import find_primitive, get_symmetry_dataset
 import spglib
+from hecss.util import get_cell_data
 from collections import Counter
 from ase.data import chemical_symbols
 from matplotlib import pyplot as plt
@@ -190,7 +191,7 @@ def HECSS_MH_Sampler(cryst, calc, T_goal, width=1, maxburn=20,
     nat = len(cryst)
     dim = (nat, 3)
     
-    symm = get_symmetry_dataset(cryst, symprec=symprec)
+    symm = get_symmetry_dataset(get_cell_data(cryst), symprec=symprec)
     dofmap = symm['mapping_to_primitive']
     dof = list(sorted(set(dofmap)))
     dofmu = np.ones((len(dof), 3))

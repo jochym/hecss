@@ -4,7 +4,7 @@
 __all__ = ['normalize_conf', 'load_dfset', 'get_dfset_len', 'write_dfset', 'calc_init_xscale']
 
 # %% ../16_util.ipynb 2
-from numpy import dot, loadtxt, allclose
+from numpy import dot, loadtxt, allclose, array
 from spglib import find_primitive, get_symmetry_dataset
 from ase import units as un
 import itertools
@@ -169,3 +169,15 @@ def calc_init_xscale(cryst, xsl, skip=None):
     for i, el in enumerate(set(elmap)):
         xscale[elmap==el] = xs[:,elmap==el,:].mean()
     return xscale
+
+# %% ../16_util.ipynb 15
+def get_cell_data(cell):
+    '''
+    Create new spglib style of cell data from ase cell.
+    '''
+    
+    lattice = array(cell.get_cell().T, dtype="double", order="C")
+    positions = array(cell.get_scaled_positions(), dtype="double", order="C")
+    numbers = array(cell.get_atomic_numbers(), dtype="intc")
+    
+    return (lattice, positions, numbers)

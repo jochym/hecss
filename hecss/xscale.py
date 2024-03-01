@@ -15,7 +15,7 @@ import spglib
 from spglib import find_primitive, get_symmetry_dataset
 from glob import glob
 from matplotlib import pyplot as plt
-from hecss.util import normalize_conf
+from hecss.util import normalize_conf, get_cell_data
 from hecss.monitor import plot_hist
 from hecss import *
 
