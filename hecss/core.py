@@ -197,8 +197,17 @@ def _estimate_width_scale_ser(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=N
         if E <= self.Ep0:
             print('Undistorted supercell energy is above the distorted cell energy!', file=sys.stderr)
             print('Make sure the supercell is calculated as single point and with the same params.', file=sys.stderr)
-            assert E > self.Ep0
         
+        assert E > self.Ep0
+        try :
+            if not cr.calc.converged:
+                print(f'The calculation in {cr.calc.directory} did not converge.', file=sys.stderr)
+                print('Ignoring and replacing with new displacement.', file=sys.stderr)
+                continue
+        except AttributeError:
+            # convergence not supported in calculator
+            pass
+            
         i = len(self._eta_list)
         self._eta_samples.append((i, i, dx, cr.get_forces(), (E-self.Ep0)/nat))
         self._eta_list.append([w, T, (E-self.Ep0)/nat])
@@ -370,7 +379,7 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     # positions = np.array(cell.get_scaled_positions(), dtype="double", order="C")
     # numbers = np.array(cell.get_atomic_numbers(), dtype="intc")
     symm = get_symmetry_dataset(get_cell_data(self.cryst), symprec=symprec)
-    dofmap = symm['mapping_to_primitive']
+    dofmap = symm.mapping_to_primitive
     dof = list(sorted(set(dofmap)))
     dofmu = np.ones((len(dof), 3))
     mu = np.ones(dim)
@@ -466,9 +475,16 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
             else:
                 e_star = cr.get_potential_energy()
                 f_star = cr.get_forces()
+                if not cr.calc.converged:
+                    print(f"Calculator in {cr.calc.directory} did not converge.\n", file=sys.stderr)
+                    print("Replacing with next displacement.", file=sys.stderr)
+                    continue
+        except AttributeError:
+            # convergence not supported in calculator
+            pass
         except calculator.CalculatorError:
             print(f"Calculator in {cr.calc.directory} faild.\n", file=sys.stderr)
-            print("Ignoring. Generating next displacement.", file=sys.stderr)
+            print("Replacing with next displacement.", file=sys.stderr)
             continue
 
         e_star = (e_star-Ep0)/nat
@@ -999,6 +1015,8 @@ def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
         raise NotImplementedError
 
 # %% ../11_parwidth.ipynb 8
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from hecss.parallel import __run_async
 from hecss.parallel import __calculate_aio
 

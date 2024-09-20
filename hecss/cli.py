@@ -98,7 +98,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         calculator = Vasp(label=label, directory=src_path.parent, restart=True)
         Ep0 = calculator.get_potential_energy()
         cryst = ase.Atoms(calculator.atoms)
-        cryst.set_calculator(calculator)
+        cryst.calc = calculator
         calculator.set(directory=workdir)
         command = Path(command)
         calculator.set(command=f'{command.absolute()} {label}')
@@ -185,10 +185,11 @@ def calculate_xscale(supercell, scale, output, skip):
 @click.option('-p', '--prob', type=float, default=0.25, help='Probability treshold')
 @click.option('-w', is_flag=True, default=True, help='Force non-zero weights')
 @click.option('-b', is_flag=True, default=False, help='Border samples account for the rest of domain')
+@click.option('-c', '--check', type=click.Path(), default="", help='Check and skip unconverged samples in calc directory.')
 @click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
 @click.option('-d', is_flag=True, default=False, help='Plot debug plots')
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
-def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
+def reshape_sample(dfset, t, nmul, prob, w, check, b, output, d):
     '''
     Reshape the sample to the normal distribution centered around mean energy (temperature),
     or around provided temperature T (Kelvin). The reshaping is done by adjusting weighting
@@ -196,10 +197,19 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
     The parameters are the variants of the weighting algorithm (see the docs).\b
     
     The procedure reads and produces a file with in the DFSET format.
+    For the 'check' function to work the parameter must point to the root directory 
+    of the calculated samples. The checked directories will be in the form: '{root}/nnnn'.  
     '''
     from hecss.util import load_dfset
     p = Path(dfset)
     smpl = load_dfset(p)
+    if check :
+        print(f"Checking convergence in {check}/nnnn")
+        configs = {i for n, i, x, f, e in smpl}
+        converged = {i for i in configs
+                     if Vasp(restart=True, directory=f'{check}/{i:04d}').converged}
+        print(f"Number of converged calculations: {len(converged)}/{len(configs)}")
+        smpl = [s for s in smpl if s[1] in converged]
     if t < 0:
         t = 2*array([s[-1] for s in smpl]).mean()/3/un.kB 
     dist = make_sampling(smpl, t, border=b, probTH=prob, Nmul=nmul, nonzero_w=w, debug=d)
@@ -207,7 +217,7 @@ def reshape_sample(dfset, t, nmul, prob, w, b, output, d):
         write_dfset(output, s)
     print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
 
-# %% ../02_CLI.ipynb 25
+# %% ../02_CLI.ipynb 26
 @click.command()
 @click.argument('dfset', type=click.Path(exists=True))
 @click.argument('T', default=-1, type=float)
@@ -242,7 +252,7 @@ def plot_stats( dfset, t, output, x, sixel, sqrn, width, height):
             return
         sixelplot.show()
 
-# %% ../02_CLI.ipynb 30
+# %% ../02_CLI.ipynb 31
 @click.command()
 @click.argument('bands', type=click.Path(exists=True), nargs=-1)
 @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')

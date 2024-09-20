@@ -53,7 +53,7 @@ from the OpenKIM database and ASAP3 implementation of the calculator.
 model = select_asap_model('SiC')
 cryst = bulk('SiC', crystalstructure='zincblende', 
              a=4.38120844, cubic=True).repeat((3,3,3))
-cryst.set_calculator(create_asap_calculator(model))
+cryst.calc = create_asap_calculator(model)
 ```
 
 Then we define the sampler parameters (N – number of samples, T –

@@ -436,10 +436,10 @@ def plot_acceptance_history(smpl):
 # %% ../15_monitor.ipynb 22
 def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
     symm = get_symmetry_dataset(get_cell_data(cryst))
-    dofmap = symm['mapping_to_primitive']
+    dofmap = symm.mapping_to_primitive
     dof = set(dofmap)
-    dofmul = Counter(symm['mapping_to_primitive'])
-    elems = dict(zip(symm['std_mapping_to_primitive'],symm['std_types']))
+    dofmul = Counter(symm.mapping_to_primitive)
+    elems = dict(zip(symm.std_mapping_to_primitive, symm.std_types))
     elmap = array(sorted(elems.items())).T
     xdof = array(dofmu)
     skip = min(skip, len(dofmu)//2)
@@ -490,10 +490,10 @@ def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
 # %% ../15_monitor.ipynb 23
 def plot_xs_stat(cryst, xsl, skip=10, window=10):
     symm = get_symmetry_dataset(get_cell_data(cryst))
-    dofmap = symm['mapping_to_primitive']
+    dofmap = symm.mapping_to_primitive
     dof = set(dofmap)
-    dofmul = Counter(symm['mapping_to_primitive'])
-    elems = dict(zip(symm['std_mapping_to_primitive'],symm['std_types']))
+    dofmul = Counter(symm.mapping_to_primitive)
+    elems = dict(zip(symm.std_mapping_to_primitive,symm.std_types))
     elmap = array(sorted(elems.items())).T
     elmap = cryst.get_atomic_numbers()
     xdof = array(xsl)
