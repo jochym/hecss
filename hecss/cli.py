@@ -125,7 +125,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
     
     if width is None and neta > 0:
         print('Estimating width scale.')
-        eta, sigma, xscale = sampler.estimate_width_scale(neta, temp, pbar=sampler._pbar, nwork=nwork)
+        eta, sigma, xscale = sampler.estimate_width_scale(neta, Tmin=temp/2, Tmax=temp, pbar=sampler._pbar, nwork=nwork)
         if nsamples <= 1:
             print(f'Width scale from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
             print('Width scale estimation run (N<2). Not running sampling.')
@@ -204,9 +204,10 @@ def reshape_sample(dfset, t, nmul, prob, w, check, b, output, d):
     p = Path(dfset)
     smpl = load_dfset(p)
     if check :
+        from tqdm.auto import tqdm
         print(f"Checking convergence in {check}/nnnn")
         configs = {i for n, i, x, f, e in smpl}
-        converged = {i for i in configs
+        converged = {i for i in tqdm(configs)
                      if Vasp(restart=True, directory=f'{check}/{i:04d}').converged}
         print(f"Number of converged calculations: {len(converged)}/{len(configs)}")
         smpl = [s for s in smpl if s[1] in converged]

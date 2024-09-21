@@ -147,7 +147,7 @@ def __get_calculator(self: HECSS):
 
 # %% ../11_core.ipynb 8
 @patch 
-def _estimate_width_scale_ser(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=None):
+def _estimate_width_scale_ser(self: HECSS, n=1, Tmin=0, Tmax=600, set_scale=True, pbar=None):
     '''
     Serial version of w-estimator.
     Estimate coefficient between temperature and displacement scale (eta).
@@ -181,7 +181,7 @@ def _estimate_width_scale_ser(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=N
 
         
     while len(self._eta_list) < n:
-        T = stats.uniform.rvs(0, Tmax) # Kelvin
+        T = stats.uniform.rvs(Tmin, Tmax-Tmin) # Kelvin
         if not T:
             continue
         w = self.w_scale * np.sqrt(T)
@@ -218,7 +218,7 @@ def _estimate_width_scale_ser(self: HECSS, n=1, Tmax=600, set_scale=True, pbar=N
 
 # %% ../11_core.ipynb 9
 @patch 
-def estimate_width_scale(self: HECSS, n=1, Tmax=600, 
+def estimate_width_scale(self: HECSS, n=1, Tmin=0, Tmax=600, 
                          set_scale=True, pbar=None, nwork=None):
     '''
     Estimate coefficient between temperature and displacement scale (eta).
@@ -235,6 +235,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600,
     
     #### Input
     * `n`    - number of sampling points
+    * `Tmin` - min sampled temperature
     * `Tmax` - max sampled temperature
     * `set_scale` - set scale parameter in the class after run
     * `pbar` - show progress bar during calculation
@@ -267,14 +268,14 @@ def estimate_width_scale(self: HECSS, n=1, Tmax=600,
     try :
         # Rises NotImplementedError exception for unsupported calculators
         # and for nwork=None call (i.e. serial version)
-        self._estimate_width_scale_aio(n, Tmax, set_scale, pbar, nwork)
+        self._estimate_width_scale_aio(n, Tmin, Tmax, set_scale, pbar, nwork)
     except NotImplementedError:
         if nwork is not None:
             # Warn if the call was for parallel version with unsupported
             # calculator. Silent, if the call was for serial version. 
             print('WARNING: Parallel execution only supported for VASP.')
             print('Running serial version')
-        self._estimate_width_scale_ser(n, Tmax, set_scale, pbar)           
+        self._estimate_width_scale_ser(n, Tmin, Tmax, set_scale, pbar)           
 
     wm = np.array(self._eta_list).T
     pathlib.Path(f'{self.directory}/w_est/').mkdir(parents=True, exist_ok=True)
@@ -1022,7 +1023,7 @@ from hecss.parallel import __calculate_aio
 
 # %% ../11_parwidth.ipynb 9
 @patch 
-async def __estimate_width_scale_aio(self: HECSS, n=1, Tmax=600, 
+async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600, 
                                      set_scale=True, pbar=None, nwork=5):
     '''
     Async/parallel version of w-estimator. Only supported for VASP.
@@ -1129,7 +1130,7 @@ async def __estimate_width_scale_aio(self: HECSS, n=1, Tmax=600,
 
 # %% ../11_parwidth.ipynb 10
 @patch 
-def _estimate_width_scale_aio(self: HECSS, n=1, Tmax=600, 
+def _estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600, 
                               set_scale=True, pbar=None, nwork=5):
     '''
     Runner for the asynchronous version of width estimator.
@@ -1140,7 +1141,7 @@ def _estimate_width_scale_aio(self: HECSS, n=1, Tmax=600,
         # Silent. This is parallel version. Use serial instead.
         raise NotImplementedError
     if self.calc.name in ('vasp',):
-        __run_async(self.__estimate_width_scale_aio, n, Tmax, set_scale, pbar, nwork)
+        __run_async(self.__estimate_width_scale_aio, n, Tmin, Tmax, set_scale, pbar, nwork)
     else :
         # Warn if the call was for parallel version with unsupported
         # calculator. Silent, if the call was for serial version. 
