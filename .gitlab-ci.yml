@@ -7,6 +7,8 @@ cache:
 clean:
   stage: build
   script:
+    - ls -lR 
+    - git config --global --add safe.directory /builds/jochym/hecss
     - echo "Check we are starting with clean git checkout"
     - if [ -n "$(git status -uno -s)" ]; then echo "git status is not clean"; false; fi
     - echo "Trying to strip out notebooks"
