@@ -5,7 +5,7 @@
 # %% auto 0
 __all__ = []
 
-# %% ../11_parallel.ipynb 2
+# %% ../11_parallel.ipynb 3
 from fastcore.basics import patch
 
 import ase
@@ -16,7 +16,7 @@ from ase.calculators.vasp.vasp import check_atoms
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-# %% ../11_parallel.ipynb 3
+# %% ../11_parallel.ipynb 4
 def __run_async(func, *args, **kwargs):
     '''
     Run async methods detecting running loop in jupyter.
@@ -36,7 +36,7 @@ def __run_async(func, *args, **kwargs):
         result = asyncio.run(func(*args, **kwargs))
     return result
 
-# %% ../11_parallel.ipynb 4
+# %% ../11_parallel.ipynb 5
 @patch
 async def _arun(self: Vasp, command=None, out=None, directory=None):
     """
@@ -68,7 +68,7 @@ async def _arun(self: Vasp, command=None, out=None, directory=None):
     
     return proc.returncode
 
-# %% ../11_parallel.ipynb 5
+# %% ../11_parallel.ipynb 6
 @patch
 async def __calculate_aio(self: Vasp,
                         atoms=None,

@@ -23,7 +23,7 @@ from tempfile import TemporaryDirectory
 # %% ../02_CLI.ipynb 5
 _version_message=("HECSS, version %(version)s\n"
                   'High Efficiency Configuration Space Sampler\n'
-                  '(C) 2021-2022 by Paweł T. Jochym\n'
+                  '(C) 2021-2024 by Paweł T. Jochym\n'
                   '    License: GPL v3 or later')
 
 # %% ../02_CLI.ipynb 6
