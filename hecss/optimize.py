@@ -141,7 +141,7 @@ def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25,
         # Don't remove low probability data, rise weights above probTH
         # This will deform (rise) the wings of the histogram
         iw[np.logical_and(probTH<iw, iw<1)]=1
-    iw = np.round(iw)
+    iw = np.rint(iw)
 
     # Weight the data by multiplication of data points
     # The output will be in energy order!
