@@ -199,10 +199,13 @@ def reshape_sample(dfset, t, nmul, prob, w, check, b, output, d):
     The procedure reads and produces a file with in the DFSET format.
     For the 'check' function to work the parameter must point to the root directory 
     of the calculated samples. The checked directories will be in the form: '{root}/nnnn'.  
+
+    In check mode the raw file is *not* reshaped, just filtered.
     '''
     from hecss.util import load_dfset
     p = Path(dfset)
     smpl = load_dfset(p)
+
     if check :
         from tqdm.auto import tqdm
         print(f"Checking convergence in {check}/nnnn")
@@ -210,13 +213,18 @@ def reshape_sample(dfset, t, nmul, prob, w, check, b, output, d):
         converged = {i for i in tqdm(configs)
                      if Vasp(restart=True, directory=f'{check}/{i:04d}').converged}
         print(f"Number of converged calculations: {len(converged)}/{len(configs)}")
-        smpl = [s for s in smpl if s[1] in converged]
-    if t < 0:
-        t = 2*array([s[-1] for s in smpl]).mean()/3/un.kB 
-    dist = make_sampling(smpl, t, border=b, probTH=prob, Nmul=nmul, nonzero_w=w, debug=d)
+        dist = [s for s in smpl if s[1] in converged]
+        print(f"Rewriting the raw dfset (skipping reshape).")
+    else :
+        if t < 0:
+            t = 2*array([s[-1] for s in smpl]).mean()/3/un.kB 
+        dist = make_sampling(smpl, t, border=b, probTH=prob, Nmul=nmul, nonzero_w=w, debug=d)
+        print(f'Done. Distribution reshaped to {t:.2f} K.')
+
+    print(f'Done. Saving to: {output}')
     for s in dist:
         write_dfset(output, s)
-    print(f'Done. Distribution reshaped to {t:.2f} K saved to: {output}')
+
 
 # %% ../02_CLI.ipynb 26
 @click.command()
