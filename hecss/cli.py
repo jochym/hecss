@@ -19,6 +19,7 @@ from hecss.util import write_dfset, calc_init_xscale
 from hecss.optimize import make_sampling
 import traceback
 from tempfile import TemporaryDirectory
+import ast
 
 # %% ../02_CLI.ipynb 5
 _version_message=("HECSS, version %(version)s\n"
@@ -66,6 +67,11 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-C', '--calc', default="VASP", type=str, 
               help="ASE calculator to be used for the job. "
                       "Supported calculators: VASP (default)")
+@click.option('-S', '--setups', default="guess", type=str,
+              help="setups parameter of the calculator to force use of the "
+                   "particular variants of pseudopotentials in the calculations. "
+                   "By default pseudopotentials are guessed from the POTCAR in "
+                   "the supercell directory.")
 @click.option('-n', '--nodfset', is_flag=True, default=False, help='Do not write DFSET file for ALAMODE')
 @click.option('-d', '--dfset', default='DFSET.dat', help='Name of the DFSET file')
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
@@ -75,7 +81,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-p', '--pbar', is_flag=True, default=True, help="Do not show progress bar")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
-def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, nodfset, dfset, nsamples, neta, command, nwork, pbar):
+def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, setups, nodfset, dfset, nsamples, neta, command, nwork, pbar):
     '''
     Run HECSS sampler on the structure in the provided file (FNAME).\b
     Read the docs at: https://jochym.github.io/hecss/
@@ -103,6 +109,28 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         command = Path(command)
         calculator.set(command=f'{command.absolute()} {label}')
         calculator.set(nsw=0)
+        if setups :
+            if setups=='guess':
+                setups = {}
+                with open(src_path.parent / Path("POTCAR"), "r") as pf:
+                    for l in pf.readlines():
+                        if "TITEL" in l:
+                            l = l.strip().split()[3].split("_")
+                            el = l[0]
+                            st = ""
+                            if len(l)>1:
+                                st = f"_{l[1]}"
+                            setups[el] = st
+                print(f"Setups guessed from {src_path.parent / Path('POTCAR')}: {setups}")
+            else :
+                if setups in {'recommended', 'minimal', 'gw'}:
+                # We do not need to parse these. Just use as is
+                    pass
+                else :
+                # Parse into dict
+                    setups = ast.literal_eval(setups)
+                print(f"Setups forced: {setups}")
+            calculator.set(setups=setups)
     else:
         print(f'The {calc} calculator is not supported.')
         return

@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - fastai
 dependencies:
+  - setuptools
   - python=3.10
   - fastcore
   - nbdev
