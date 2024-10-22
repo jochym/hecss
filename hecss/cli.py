@@ -102,6 +102,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         calculator.set(directory=workdir)
         command = Path(command)
         calculator.set(command=f'{command.absolute()} {label}')
+        calculator.set(nsw=0)
     else:
         print(f'The {calc} calculator is not supported.')
         return
