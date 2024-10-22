@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The core functionality of the HECSS module is provided by the HECSS class which encapsulates the _sampler generator and exposes sample and generate as public API.">
+
+<title>Core – hecss</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Core – hecss">
+<meta property="og:description" content="The core functionality of the HECSS module is provided by the HECSS class which encapsulates the _sampler generator and exposes sample and generate as public API.">
+<meta property="og:site_name" content="hecss">
+<meta name="twitter:title" content="Core – hecss">
+<meta name="twitter:description" content="The core functionality of the HECSS module is provided by the HECSS class which encapsulates the _sampler generator and exposes sample and generate as public API.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">hecss</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">Core</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HECSS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lammps_tutorial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LAMMPS Tutorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vasp_tutorial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VASP Tutorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CLI</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor_stats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sampling statistics monitoring</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor_phonons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phonon convergence monitoring</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vasp_workflow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VASP workflow</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Background</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel calculations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parsample.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel sampler</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parwidth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel width estimator</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optimize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distribution reshape</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./planner.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Temperature scan planner</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitor</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./util.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xscale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Amplitude correction extraction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dof_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapping of DOFs to minimal set</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MH (Metropolis-Hastings)</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#hecss-class" id="toc-hecss-class" class="nav-link active" data-scroll-target="#hecss-class"><code>HECSS</code> class</a>
+  <ul class="collapse">
+  <li><a href="#hecss" id="toc-hecss" class="nav-link" data-scroll-target="#hecss">HECSS</a></li>
+  <li><a href="#hecss.estimate_width_scale" id="toc-hecss.estimate_width_scale" class="nav-link" data-scroll-target="#hecss.estimate_width_scale">HECSS.estimate_width_scale</a></li>
+  <li><a href="#hecss.sample" id="toc-hecss.sample" class="nav-link" data-scroll-target="#hecss.sample">HECSS.sample</a></li>
+  <li><a href="#hecss.generate" id="toc-hecss.generate" class="nav-link" data-scroll-target="#hecss.generate">HECSS.generate</a></li>
+  <li><a href="#the-calculator-option-in-sampler" id="toc-the-calculator-option-in-sampler" class="nav-link" data-scroll-target="#the-calculator-option-in-sampler">The calculator option in sampler</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jochym/hecss/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Core</h1>
+</div>
+
+<div>
+  <div class="description">
+    The core functionality of the HECSS module is provided by the <code>HECSS</code> class which encapsulates the <code>_sampler</code> generator and exposes <code>sample</code> and <code>generate</code> as public API.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="hecss-class" class="level2">
+<h2 class="anchored" data-anchor-id="hecss-class"><a href="https://jochym.github.io/hecss/core.html#hecss"><code>HECSS</code></a> class</h2>
+<p>Standard interface to the HECSS library. This class encapsulates the actual sampler implemented in the <code>sample</code> method and provides main functionality of the library through the <code>generate</code> method.</p>
+<hr>
+<p><a href="https://github.com/jochym/hecss/blob/devel/hecss/core.py#L47" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="hecss" class="level3">
+<h3 class="anchored" data-anchor-id="hecss">HECSS</h3>
+<blockquote class="blockquote">
+<pre><code> HECSS (cryst, calc, width=None, maxburn=20, w_search=True,
+        disp_dist='normal', directory=None, pbar=False)</code></pre>
+</blockquote>
+<p>*Class encapsulating the sampling and weight generation for the HECSS algorithm.</p>
+<p>Create the HECSS sampling object. It is intendet to be a single object per crystal <code>cryst</code> used to run samplers for one or more temperatures. The object holds data common to all samplers (structure, calculator etc.). The other parameters are set per sampler. The set of samplers, indexed by temperature is hold inside the <a href="https://jochym.github.io/hecss/core.html#hecss"><code>HECSS</code></a> object in the <code>samplers</code> dictionary.</p>
+<section id="arguments" class="level4">
+<h4 class="anchored" data-anchor-id="arguments">Arguments</h4>
+<ul>
+<li>cryst : crystal structure (ASE <code>Atoms</code> object)</li>
+<li>calc : calculator, must be re-usable, otherwise must be calculator generator</li>
+<li>width : eta, displacement scaling parameter, approx 1.0</li>
+<li>maxburn : max. number of initial burn-in samples</li>
+<li>w_search : use width/eta searching algorithm (default True)</li>
+<li>disp_dist : use different distribution instead of <code>stats.norm</code> as the displacement distribution.</li>
+<li>directory : basic calculation directory used by directory based calculators</li>
+<li>pbar : show progress bar during calculations*</li>
+</ul>
+<hr>
+<p><a href="https://github.com/jochym/hecss/blob/devel/hecss/core.py#L221" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="hecss.estimate_width_scale" class="level3">
+<h3 class="anchored" data-anchor-id="hecss.estimate_width_scale">HECSS.estimate_width_scale</h3>
+<blockquote class="blockquote">
+<pre><code> HECSS.estimate_width_scale (n=1, Tmin=0, Tmax=600, set_scale=True,
+                             pbar=None, nwork=None)</code></pre>
+</blockquote>
+<p>*Estimate coefficient between temperature and displacement scale (eta). Calculate energy increase from the <code>n</code> temperatures uniformly distributed between 0 and <code>Tmax</code> and calculate avarage <span class="math inline">\(\sqrt{E-E0/T}\)</span> which is a width scale for a given temperature: <span class="math display">\[
+    w = \eta\sqrt{T}
+\]</span> which comes from the assumed approximate relationship: <span class="math display">\[
+    \frac{E(w(T))-E_0}{T} \approx \mathrm{const} = \eta^2.
+\]</span></p>
+<section id="input" class="level4">
+<h4 class="anchored" data-anchor-id="input">Input</h4>
+<ul>
+<li><code>n</code> - number of sampling points</li>
+<li><code>Tmin</code> - min sampled temperature</li>
+<li><code>Tmax</code> - max sampled temperature</li>
+<li><code>set_scale</code> - set scale parameter in the class after run</li>
+<li><code>pbar</code> - show progress bar during calculation</li>
+<li><code>nwork</code> - if not None, number of parallel workers to use. Only supported for VASP, 0 =&gt; unlimited.</li>
+</ul>
+</section>
+<section id="output" class="level4">
+<h4 class="anchored" data-anchor-id="output">Output</h4>
+<ul>
+<li>if wm_out : mean(eta), std(eta), wm</li>
+<li>else : mean(eta), std(eta)</li>
+<li>wm - the nx3 array of: [width, Temperature, (E-E0)/nat]*</li>
+</ul>
+<hr>
+<p><a href="https://github.com/jochym/hecss/blob/devel/hecss/core.py#L575" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="hecss.sample" class="level3">
+<h3 class="anchored" data-anchor-id="hecss.sample">HECSS.sample</h3>
+<blockquote class="blockquote">
+<pre><code> HECSS.sample (T, N, sentinel=None, sentinel_args={}, nwork=None,
+               **kwargs)</code></pre>
+</blockquote>
+<p><em>Generate N samples using <code>HECSS._sampler_(ser/aio)</code> generator. <code>sentinel</code> parameter is a call-back function which is called on every sample to decide if the iteration should be stopped early. If it returns True the iteration will be stopped and the current list of samples is returned. The sentinel is called </em>after* generating each sample (i.e.&nbsp;first time after first sample is produced). This may take considerable time at the start since first initial and burn-in samples must be produced.</p>
+<p>The sampling loop may be run for <code>N</code> iterations or indefinitely.</p>
+<section id="input-1" class="level4">
+<h4 class="anchored" data-anchor-id="input-1">INPUT</h4>
+<ul>
+<li>T : Target temperature in Kelvin</li>
+<li>N : Number of iterations.</li>
+<li>sentinel :</li>
+<li>delta_sample : Prior width adaptation rate. The default is sufficient in most cases.</li>
+<li>sigma : Range around E0 in sigmas to stop w-serach mode</li>
+<li>eqdelta : Max. speed of amplitude correction from step to step (0.05=5%)</li>
+<li>eqsigma : Half width of linear part of amplitude correction function.</li>
+<li>xi : strength of the amplitude correction term [0-1]</li>
+<li>chi : strength of the amplitude correction term mixing [0-1]</li>
+<li>xscale_init : Initial values of the amplitude correction coefficients. Array with shape <code>cryst.get_positions().shape</code>. May be also generated with <a href="https://jochym.github.io/hecss/util.html#calc_init_xscale"><code>calc_init_xscale</code></a> function.</li>
+<li>Ep0 : T=0 energy (base, no displacements), if None (default) calculate E0.</li>
+<li>modify : pass your own pre-processing function to modify the structure before calculation. The function must return a (e, f) tuple with energy of the structure (e, scalar) and forces (f, array).</li>
+<li>modify_args : dictionary of extra arguments to pass to modify function</li>
+<li>symprec : symmetry detection treshold for spglib functions</li>
+<li>directory : (only for VASP calculator) directory for calculations and generated samples. If left as None, the <code>calc/{T_goal:.1f}K/</code> will be used and the generated samples will be stored in the <code>smpl/{i:04d}</code> subdirectories.</li>
+<li>reuse_base : None or the base calculator created by restarting the ground state config. If None the base will be recalculated at the start of the run. If the value is a calculator - the energy from this calculator will be used as ground state energy for the calculation. Be careful to have the same setup in calc and reuse_base, otherwise the ground state energy and distribution will be wrong.</li>
+<li>verb : print verbose progress messages for interactive use</li>
+</ul>
+<p><strong>Output parameters</strong></p>
+<ul>
+<li>width_list : Output parameter. If not None, store in passed list the sequence of widths.</li>
+<li>dofmu_list : Output parameter. If not None, store in passed list the array of DOF virials relative to temperature (T_goal).</li>
+<li>xscale_list : Output parameter. If not None, store in passed list the array of amplitude correction coefficients (normalized). May be used to generate <code>xscale_init</code> values with the help of <a href="https://jochym.github.io/hecss/util.html#calc_init_xscale"><code>calc_init_xscale</code></a> function.</li>
+</ul>
+</section>
+<section id="output-1" class="level4">
+<h4 class="anchored" data-anchor-id="output-1">OUTPUT</h4>
+<p>The returns a list of samples from the prior distribution at T=T_goal as list of tuples (number, index, displacement, forces, energy):</p>
+<ul>
+<li>number : sample number, always increasing</li>
+<li>index : integer numbering the samples in the <code>smpl</code> subdirectory. Index repeats if the sample must be repeated in the sequence.</li>
+<li>displacement : set of atomic displacements (in A) in the sample (numpy array)</li>
+<li>forces : set of forces (in eV/A) generated by the displacement</li>
+<li>energy : potential energy of the configuration*</li>
+</ul>
+<hr>
+<p><a href="https://github.com/jochym/hecss/blob/devel/hecss/core.py#L693" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="hecss.generate" class="level3">
+<h3 class="anchored" data-anchor-id="hecss.generate">HECSS.generate</h3>
+<blockquote class="blockquote">
+<pre><code> HECSS.generate (S, T=None, sigma_scale=1.0, border=False, probTH=0.25,
+                 Nmul=4, N=None, nonzero_w=True, debug=False)</code></pre>
+</blockquote>
+<p>*Generate new sample with normal energy probability distribution corresponding to temperature <code>T</code> and size of the system inferred from data. The output is generated by multiplying samples passed in <code>S</code> proportionally to the wegihts generated by <a href="https://jochym.github.io/hecss/optimize.html#get_sample_weights"><code>get_sample_weights</code></a> and assuming the final dataset will be <code>Nmul</code> times longer (or the length <code>N</code> which takes precedence). If <code>nonzero_w</code> is <code>True</code> the data multiplyers in the range (probTH, 1) will be clamped to 1, to avoid losing low-probability data. This will obviously deform the distribution but may be beneficial for the interaction model constructed from the data. The data on output will be ordered in increasing energy and re-numbered. The configuration index is retained. The work is directly delegated to the <a href="https://jochym.github.io/hecss/optimize.html#make_sampling"><code>make_sampling</code></a> function.</p>
+<section id="input-2" class="level4">
+<h4 class="anchored" data-anchor-id="input-2">Input</h4>
+<ul>
+<li><code>data</code> - list of samples generated by HECSS sampler ([n, i, x, f, e])</li>
+<li><code>T</code> - temperature in kelvin, mean energy by default</li>
+<li><code>sigma_scale</code> - scaling factor for variance. Defaults to 1.0.</li>
+<li><code>border</code> - make border samples account for unrepresented part of domain</li>
+<li><code>probTH</code> - threshold for probability (N*weight) clamping.</li>
+<li><code>Nmul</code> - data multiplication factor. The lenght of output data will be approximately <code>Nmul*len(data)</code>.</li>
+<li><code>N</code> - approximate output data length. Takes precedence over <code>Nmul</code></li>
+<li><code>nonzero_w</code> - prevent zero weights for data with weights in (probTH, 1) range</li>
+<li><code>debug</code> - plot diagnostic plots</li>
+</ul>
+</section>
+<section id="output-2" class="level4">
+<h4 class="anchored" data-anchor-id="output-2">Output</h4>
+<p>Weighted, sorted by energy and re-numbered samples as a new list. The data in the list is just reference-duplicated, not copied. Thus the data elements should not be modified. The format is the same as the data produced by <a href="https://jochym.github.io/hecss/core.html#hecss"><code>HECSS</code></a> sampler.*</p>
+</section>
+</section>
+<section id="the-calculator-option-in-sampler" class="level3">
+<h3 class="anchored" data-anchor-id="the-calculator-option-in-sampler">The calculator option in sampler</h3>
+<p>The sampler needs to create a new <code>Atoms</code> object for distorted structures and needs a new calculator for this object. Most calculators support re-usage of the calculator object so you can pass just a calculator created for this purpose. Other, notably <code>asap3.OpenKIMcalculator</code>, modify the calculator object in-place and make it non-reusable. For such cases you need to pass a generator function in this argument which creates a fresh calculator on each call. The simplest variant is to just use lambda to create the anonymous generator (see examples below).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> HECSS(SiC, <span class="kw">lambda</span> : create_asap_calculator(model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+<section id="cubic-silica-carbide-3c-sic" class="level4">
+<h4 class="anchored" data-anchor-id="cubic-silica-carbide-3c-sic">Cubic Silica Carbide (3C-SiC)</h4>
+<div id="cell-10" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> hecss.core <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> hecss.monitor <span class="im">import</span> plot_stats, plot_virial_stat, plot_xs_stat, plot_hist</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> hecss.monitor <span class="im">import</span> plot_acceptance_history, plot_dofmu_stat</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> hecss.util <span class="im">import</span> select_asap_model, create_asap_calculator, calc_init_xscale</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ase.build <span class="im">import</span> bulk</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ase.spacegroup <span class="im">import</span> crystal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> select_asap_model(<span class="st">'SiC'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sys_size <span class="op">=</span> <span class="st">'1x1x1'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>sys_size <span class="op">=</span> <span class="st">'2x2x2'</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>sys_size <span class="op">=</span> <span class="st">'3x3x3'</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>sys_size <span class="op">=</span> <span class="st">'4x4x4'</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>sys_size <span class="op">=</span> <span class="st">'5x5x5'</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>sc <span class="op">=</span> [<span class="bu">int</span>(v) <span class="cf">for</span> v <span class="kw">in</span> sys_size.split(<span class="st">'x'</span>)]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>SiC <span class="op">=</span> bulk(<span class="st">'SiC'</span>, crystalstructure<span class="op">=</span><span class="st">'zincblende'</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                 a<span class="op">=</span><span class="fl">4.38120844</span>, cubic<span class="op">=</span><span class="va">True</span>).repeat(<span class="bu">tuple</span>(sc))</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>SiC.calc <span class="op">=</span> create_asap_calculator(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> HECSS(SiC, <span class="kw">lambda</span> : create_asap_calculator(model), pbar<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-13" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sampler.w_list <span class="op">=</span> []</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>m, s, xscl <span class="op">=</span> sampler.estimate_width_scale(<span class="dv">500</span>, Tmin<span class="op">=</span><span class="dv">300</span>, Tmax<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>wm <span class="op">=</span> np.array(sampler._eta_list).T</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sqrt((<span class="dv">3</span><span class="op">*</span>wm[<span class="dv">1</span>]<span class="op">*</span>un.kB)<span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>wm[<span class="dv">2</span>]))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plot_hist(y, <span class="st">''</span>, <span class="dv">0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"098632a1c7334f818d1c0291d3f3dd05","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-14" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plt.plot(wm[<span class="dv">1</span>], y, <span class="st">'.'</span>)<span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> linspace(<span class="dv">0</span>, <span class="fl">1.05</span><span class="op">*</span>wm[<span class="dv">1</span>].<span class="bu">max</span>(), <span class="dv">2</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> np.polyfit(wm[<span class="dv">1</span>], y, <span class="dv">1</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.plot(x, np.polyval(fit, x), <span class="st">':'</span>, label<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>fit[<span class="dv">1</span>]<span class="sc">:.3g}</span><span class="ss"> + </span><span class="sc">{</span>fit[<span class="dv">0</span>]<span class="sc">:.3g}</span><span class="ss"> T'</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.axhline(m, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>m<span class="sc">:.3g}</span><span class="ss">±</span><span class="sc">{</span>s<span class="sc">:.3g}</span><span class="ss">'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.axhspan(m<span class="op">-</span>s, m<span class="op">+</span>s, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.ylim(m<span class="op">-</span><span class="dv">4</span><span class="op">*</span>s, m<span class="op">+</span><span class="dv">4</span><span class="op">*</span>s)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Temperature (K)'</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'width scale ($</span><span class="ch">\\</span><span class="st">AA/</span><span class="ch">\\</span><span class="st">sqrt</span><span class="sc">{K}</span><span class="st">$)'</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>plt.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-15" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>sampler.w_list <span class="op">=</span> []</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>plt.semilogx()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> n <span class="op">&lt;</span> <span class="dv">500</span> :</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    m, s, xscl <span class="op">=</span> sampler.estimate_width_scale(<span class="bu">int</span>(n), Tmax<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    plt.errorbar(n, m, yerr<span class="op">=</span>s, fmt<span class="op">=</span><span class="st">'o'</span>, color<span class="op">=</span><span class="st">'C0'</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    n <span class="op">*=</span> <span class="dv">2</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>plt.ylim(m<span class="op">-</span><span class="dv">3</span><span class="op">*</span>s,m<span class="op">+</span><span class="dv">3</span><span class="op">*</span>s)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of samples'</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Width'</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Width estimation convergence'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f32d5c7f59054dfbb7e14914afc2bcbf","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d29fdbd79ec040dc9bb8a3a0e2796523","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"347a032fe2a94b379089d872ffb74cd3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7ce53664c36d49f78b5f5d4f6ea264c2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"337db14326794dfcac72370451a17ef7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"189376485ff441738352759517cd41cb","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8f3984baaec74148a1ffcf1c9283de61","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"34e46a10fa2c4098b33ffab6ab9b6a98","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4b0d066f7f2642d48a497061810aad18","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-11-output-10.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sampler.w_list <span class="op">=</span> []</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> sampler.sample(T, N)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>plot_stats(samples, T, sqrN<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7c5ae3754d64406b9685a9bccb3189c0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-12-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-17" class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>distrib <span class="op">=</span> make_sampling(samples, T, nonzero_w<span class="op">=</span><span class="va">False</span>, debug<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plot_stats(distrib, T, sqrN<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-18" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>distrib <span class="op">=</span> sampler.generate(samples, T, <span class="dv">3</span><span class="op">*</span>N)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>plot_stats(distrib, T, sqrN<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="olivine-in-the-cubic-spinel-structure-gamma-phase" class="level4">
+<h4 class="anchored" data-anchor-id="olivine-in-the-cubic-spinel-structure-gamma-phase">Olivine in the cubic spinel structure (gamma phase)</h4>
+<div id="cell-20" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>omodel <span class="op">=</span> select_asap_model(<span class="st">'Universal'</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Using potential model: </span><span class="sc">{</span>omodel<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>oliv <span class="op">=</span> ase.io.read(<span class="st">'data/spinel.POSCAR'</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>oliv.calc <span class="op">=</span> create_asap_calculator(omodel)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Space group: </span><span class="sc">{</span>spglib<span class="sc">.</span>get_spacegroup(get_cell_data(oliv))<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Degrees of freedom in supercell:'</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sym, cnt <span class="kw">in</span> Counter(oliv.get_chemical_symbols()).items():</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'   </span><span class="sc">{</span>sym<span class="sc">:2}</span><span class="ss">: </span><span class="sc">{</span>cnt<span class="sc">:3d}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Using potential model: LJ_ElliottAkerson_2015_Universal__MO_959249795837_003
+Space group: Fd-3m (227)
+Degrees of freedom in supercell:
+   Mg:  16
+   O :  32
+   Si:   8</code></pre>
+</div>
+</div>
+<div id="cell-21" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Max. stress: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>(oliv.get_stress()[:<span class="dv">3</span>])<span class="sc">.</span><span class="bu">max</span>()<span class="op">/</span>un<span class="sc">.</span>GPa<span class="sc">:.3f}</span><span class="ss"> GPa'</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Max. force : </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>(oliv.get_forces())<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.3f}</span><span class="ss"> eV/A'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Max. stress: 0.881 GPa
+Max. force : 0.002 eV/A</code></pre>
+</div>
+</div>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dofmu <span class="op">=</span> []</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>xsl <span class="op">=</span> []</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>xi <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>chi <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>osampler <span class="op">=</span> HECSS(oliv, <span class="kw">lambda</span> : create_asap_calculator(omodel))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-23" class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sampler.w_list <span class="op">=</span> []</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>m, s, xscl <span class="op">=</span> osampler.estimate_width_scale(<span class="dv">500</span>, Tmax<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>wm <span class="op">=</span> np.array(osampler._eta_list).T</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sqrt((<span class="dv">3</span><span class="op">*</span>wm[<span class="dv">1</span>]<span class="op">*</span>un.kB)<span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>wm[<span class="dv">2</span>]))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>plot_hist(y, <span class="st">''</span>, <span class="dv">0</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-24" class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plt.plot(wm[<span class="dv">1</span>], y, <span class="st">'.'</span>)<span class="op">;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> linspace(<span class="dv">0</span>, <span class="fl">1.05</span><span class="op">*</span>wm[<span class="dv">1</span>].<span class="bu">max</span>(), <span class="dv">2</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> np.polyfit(wm[<span class="dv">1</span>], y, <span class="dv">1</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>plt.plot(x, np.polyval(fit, x), <span class="st">':'</span>, label<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>fit[<span class="dv">1</span>]<span class="sc">:.3g}</span><span class="ss"> + </span><span class="sc">{</span>fit[<span class="dv">0</span>]<span class="sc">:.3g}</span><span class="ss"> T'</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>plt.axhline(m, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="ss">f'</span><span class="sc">{</span>m<span class="sc">:.3g}</span><span class="ss">±</span><span class="sc">{</span>s<span class="sc">:.3g}</span><span class="ss">'</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>plt.axhspan(m<span class="op">-</span>s, m<span class="op">+</span>s, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>plt.ylim(m<span class="op">-</span><span class="dv">4</span><span class="op">*</span>s, m<span class="op">+</span><span class="dv">4</span><span class="op">*</span>s)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Temperature (K)'</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'width scale ($</span><span class="ch">\\</span><span class="st">AA/</span><span class="ch">\\</span><span class="st">sqrt</span><span class="sc">{K}</span><span class="st">$)'</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>plt.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-25" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>osampler.w_list <span class="op">=</span> []</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>plt.semilogx()</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> n <span class="op">&lt;</span> <span class="dv">500</span> :</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    m, s, xscl <span class="op">=</span> osampler.estimate_width_scale(<span class="bu">int</span>(n), Tmax<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    plt.errorbar(n, m, yerr<span class="op">=</span>s, fmt<span class="op">=</span><span class="st">'o'</span>, color<span class="op">=</span><span class="st">'C0'</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    n <span class="op">*=</span> <span class="dv">2</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>plt.ylim(m<span class="op">-</span><span class="dv">3</span><span class="op">*</span>s,m<span class="op">+</span><span class="dv">3</span><span class="op">*</span>s)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="fl">0.9</span>,<span class="va">None</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of samples'</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Width'</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Width estimation convergence'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-20-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-26" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">5_00</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>osamples <span class="op">=</span> [s <span class="cf">for</span> s <span class="kw">in</span> tqdm(osampler._sampler_ser(T, N, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                                            dofmu_list<span class="op">=</span>dofmu, xscale_list<span class="op">=</span>xsl), total<span class="op">=</span>N)]</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>plot_stats(osamples, T, sqrN<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"83de03ee3a4348be82d455326cf05841","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="11_core_files/figure-html/cell-21-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="continuation-of-the-earlier-calculation" class="level4">
+<h4 class="anchored" data-anchor-id="continuation-of-the-earlier-calculation">Continuation of the earlier calculation</h4>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/jochym\.github\.io\/\/hecss\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jochym/hecss/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

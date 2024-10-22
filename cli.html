@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The command line interface for the HECSS sampler">
+
+<title>CLI – hecss</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="CLI – hecss">
+<meta property="og:description" content="The command line interface for the HECSS sampler">
+<meta property="og:site_name" content="hecss">
+<meta name="twitter:title" content="CLI – hecss">
+<meta name="twitter:description" content="The command line interface for the HECSS sampler">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">hecss</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cli.html">CLI</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HECSS</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Setup</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lammps_tutorial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LAMMPS Tutorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vasp_tutorial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VASP Tutorial</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cli.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">CLI</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor_stats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sampling statistics monitoring</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor_phonons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Phonon convergence monitoring</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vasp_workflow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VASP workflow</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Background</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel calculations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parsample.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel sampler</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./parwidth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parallel width estimator</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optimize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distribution reshape</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./planner.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Temperature scan planner</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./monitor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitor</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./util.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility functions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./xscale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Amplitude correction extraction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dof_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapping of DOFs to minimal set</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mh.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MH (Metropolis-Hastings)</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#command-line-hecss-sampler" id="toc-command-line-hecss-sampler" class="nav-link active" data-scroll-target="#command-line-hecss-sampler">Command line hecss sampler</a></li>
+  <li><a href="#width-scale-estimation" id="toc-width-scale-estimation" class="nav-link" data-scroll-target="#width-scale-estimation">Width scale estimation</a></li>
+  <li><a href="#calculating-amplitude-correction-data" id="toc-calculating-amplitude-correction-data" class="nav-link" data-scroll-target="#calculating-amplitude-correction-data">Calculating amplitude correction data</a></li>
+  <li><a href="#calculate-initial-amplitude-correction" id="toc-calculate-initial-amplitude-correction" class="nav-link" data-scroll-target="#calculate-initial-amplitude-correction">Calculate initial amplitude correction</a></li>
+  <li><a href="#continue-the-calculation" id="toc-continue-the-calculation" class="nav-link" data-scroll-target="#continue-the-calculation">Continue the calculation</a></li>
+  <li><a href="#sampling-re-shaping" id="toc-sampling-re-shaping" class="nav-link" data-scroll-target="#sampling-re-shaping">Sampling re-shaping</a></li>
+  <li><a href="#command-line-statistics-monitoring" id="toc-command-line-statistics-monitoring" class="nav-link" data-scroll-target="#command-line-statistics-monitoring">Command line statistics monitoring</a></li>
+  <li><a href="#command-line-phonon-monitoring" id="toc-command-line-phonon-monitoring" class="nav-link" data-scroll-target="#command-line-phonon-monitoring">Command line phonon monitoring</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jochym/hecss/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CLI</h1>
+</div>
+
+<div>
+  <div class="description">
+    The command line interface for the HECSS sampler
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="command-line-hecss-sampler" class="level2">
+<h2 class="anchored" data-anchor-id="command-line-hecss-sampler">Command line hecss sampler</h2>
+<p>The HECSS sampler can be also used from the command line using <code>hecss-sampler</code> command:</p>
+<div id="cell-4" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ hecss-sampler -V
+
+HECSS, version 0.5.26
+High Efficiency Configuration Space Sampler
+(C) 2021-2024 by Paweł T. Jochym
+    License: GPL v3 or later
+
+$ hecss-sampler --help
+
+Usage: hecss-sampler [OPTIONS] FNAME
+
+  Run HECSS sampler on the structure in the provided file (FNAME) Read the
+  docs at: https://jochym.github.io/hecss/
+
+  FNAME - Supercell structure file. The containing 
+          directory must be readable by Vasp(restart).
+          Usually this is a CONTCAR file for a supercell.
+
+Options:
+  -W, --workdir PATH      Work directory
+  -l, --label TEXT        Label for the calculations.
+  -T, --temp FLOAT        Target temperature in Kelvin.
+  -w, --width FLOAT       Initial scale of the prior distribution
+  -a, --ampl PATH         Initialise amplitude correction from the file.
+  -s, --scale PATH        Save amplitude correction history
+  -m, --symprec FLOAT     Symmetry search tolerance.
+  -C, --calc TEXT         ASE calculator to be used for the job. Supported
+                          calculators: VASP (default)
+  -S, --setups TEXT       setups parameter of the calculator to force use of the
+                          particular variants of pseudopotentials in the
+                          calculations. By default pseudopotentials are guessed
+                          from the POTCAR in the supercell directory.
+  -n, --nodfset           Do not write DFSET file for ALAMODE
+  -d, --dfset TEXT        Name of the DFSET file
+  -N, --nsamples INTEGER  Number of samples to be generated
+  -e, --neta INTEGER      Number of samples for width scale estimation
+  -c, --command TEXT      Command to run calculator
+  -k, --nwork INTEGER     Number of parallel workers to run (0=unlimited)
+  -p, --pbar              Do not show progress bar
+  -V, --version           Show the version and exit.
+  -h, --help              Show this message and exit.
+</code></pre>
+</div>
+</div>
+<p>To use it you need to prepare:</p>
+<ol type="1">
+<li><code>run-calc</code> script which should start the VASP calculation. You need to put this script in the root of your project tree. The example of such a script is included in the source as <code>run-calc.example</code>. :</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This script should run vasp in current directory </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># and wait for the run to finish.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># A generic line using SLURM would look like this:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># sbatch [job_params] -W vasp_running_script</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># The "-W" param makes the sbatch command wait for the job to finish.</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="va">JN</span><span class="op">=</span><span class="kw">`</span><span class="bu">pwd</span><span class="kw">`</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="va">JN</span><span class="op">=</span><span class="kw">`</span><span class="fu">basename</span> <span class="va">${JN}</span><span class="kw">`</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Partition of the cluster</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="va">PART</span><span class="op">=</span>small</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of nodes</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="va">N</span><span class="op">=</span>1</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of MPI tasks</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="va">ntask</span><span class="op">=</span>64</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Name the job after directory if no label is passed as first argument</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">${1}</span><span class="st">."</span> <span class="ot">!=</span> <span class="st">"."</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="va">JN</span><span class="op">=</span><span class="va">${1}</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-W</span> <span class="at">-J</span> <span class="va">${JN}</span> <span class="at">-p</span> <span class="va">$PART</span> <span class="at">-N</span> <span class="va">$N</span> <span class="at">-n</span> <span class="va">$ntask</span> run-vasp-script</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="1">
+<li><p>A directory with fully converged and optimized supercell structure which can be read in by the ASE <code>Vasp(restart=...)</code> command</p></li>
+<li><p>A directory for the generated samples.</p></li>
+</ol>
+<p>The directory tree may look like this:</p>
+<pre><code>my_project ----- sc
+             |
+             +-- T_100
+             |
+             +-- T_200
+             |
+             +-- ...
+             |
+             +-- run-calc</code></pre>
+<p>You execute the sampler from the <code>my_project</code> directory (remember to activate your virtual environment first). Generation of N=30 samples at T=100K:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~$</span> cd my_project</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">~$</span> hecss_sampler <span class="at">-W</span> T_100 <span class="at">-T</span> 100 <span class="at">-N</span> 30 <span class="at">-c</span> ./run-calc sc/CONTCAR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The above command will put the generated samples inside the <code>T_100</code> directory, together with the DFSET file with displacement-force data extracted from the calculation. The calculation may take a long time. Thus it is advisable to execute the hecss command inside <code>screen</code> (or some similar terminal multiplexer) to prevent the break of the calculation in case of session disconnection. The <code>hecss</code> command shows a progress to guide you through the calculation (ETA, time/it, data about last sample etc.). The example run is included at the bottom of this document.</p>
+</section>
+<section id="width-scale-estimation" class="level2">
+<h2 class="anchored" data-anchor-id="width-scale-estimation">Width scale estimation</h2>
+<p>Calling the sampler with N=0 runs only width scale (eta) estimation procedure for the temperature range 0-T Kelvin. The calculated value may be used as the -w parameter in subsequent calculations. Possibly even for temperatures outside of this range.</p>
+<div id="cell-7" class="cell">
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"4d8da67639d14ac3995fc422283ea493","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$ hecss-sampler -W TMP/tmp300lbafg -T 1000 -N 0 -e 10 -c ./run-calc.sh -k 0  example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+
+HECSS (0.5.26)
+Supercell:      example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+Temperature:    1000.0K
+Work directory: TMP/tmp300lbafg
+Calculator:     VASP
+Setups guessed from example/VASP_3C-SiC/1x1x1/sc_1x1x1/POTCAR: {'C': '', 'Si': ''}
+Estimating width scale.
+Width scale from 10 pts.: 1.83+/-0.27
+Width scale estimation run (N&lt;2). Not running sampling.
+</code></pre>
+</div>
+</div>
+</section>
+<section id="calculating-amplitude-correction-data" class="level2">
+<h2 class="anchored" data-anchor-id="calculating-amplitude-correction-data">Calculating amplitude correction data</h2>
+<p>The amplitude correction data can be saved into the file (-s parameter) and used in subsequent calculations (see below). This will speed up the initial equilibration of the degrees of freedom. This will be merged with eta estimation in future versions.</p>
+<div id="cell-9" class="cell">
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"42eb190fe66943cc90738ab4bafb111d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$ hecss-sampler -W TMP/tmp300lbafg -T 300 -N 10 -w 1.85 -c ./run-calc.sh -s scale.dat example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+
+HECSS (0.5.26)
+Supercell:      example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+Temperature:    300.0K
+Work directory: TMP/tmp300lbafg
+Calculator:     VASP
+Setups guessed from example/VASP_3C-SiC/1x1x1/sc_1x1x1/POTCAR: {'C': '', 'Si': ''}
+Sampling configurations
+Generating distribution centered at: 291.342 K
+Average width scale (9 pnts): 1.8+/-0.00404
+</code></pre>
+</div>
+</div>
+</section>
+<section id="calculate-initial-amplitude-correction" class="level2">
+<h2 class="anchored" data-anchor-id="calculate-initial-amplitude-correction">Calculate initial amplitude correction</h2>
+<p>By saving the amplitude correction coefficients into the file with <code>-s</code> option of the sampler we can initialise following calculations with proper relations of relative displacement amplitudes. This may be also used to continue the calculations with minimal startup overhead.</p>
+<div id="cell-11" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ calculate-xscale --help
+
+Usage: calculate-xscale [OPTIONS] SUPERCELL SCALE
+
+  Calculate initial values for amplitude correction coefficients  from the scale
+  file data for the specified supercell.
+
+Options:
+  -o, --output PATH   Write output to the file.
+  -s, --skip INTEGER  Skip this number of samples at the beginning
+  -V, --version       Show the version and exit.
+  -h, --help          Show this message and exit.
+
+$ calculate-xscale -o TMP/tmp300lbafg/iscale.dat -s 10 example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR TMP/tmp300lbafg/T_300.0K/scale.dat
+
+Done. The initial scale saved to: TMP/tmp300lbafg/iscale.dat
+</code></pre>
+</div>
+</div>
+</section>
+<section id="continue-the-calculation" class="level2">
+<h2 class="anchored" data-anchor-id="continue-the-calculation">Continue the calculation</h2>
+<div id="cell-13" class="cell">
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"378d9f1a81e549d2951fd252a36580b8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$ hecss-sampler -W TMP/tmp_jaucdpz -T 300 -N 10 -w 1.85 -c ./run-calc.sh -s scale.dat -a TMP/tmp300lbafg/iscale.dat example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+
+HECSS (0.5.26)
+Supercell:      example/VASP_3C-SiC/1x1x1/sc_1x1x1/CONTCAR
+Temperature:    300.0K
+Work directory: TMP/tmp_jaucdpz
+Calculator:     VASP
+Setups guessed from example/VASP_3C-SiC/1x1x1/sc_1x1x1/POTCAR: {'C': '', 'Si': ''}
+Sampling configurations
+Generating distribution centered at: 322.607 K
+Average width scale (9 pnts): 1.87+/-0.00431
+</code></pre>
+</div>
+</div>
+</section>
+<section id="sampling-re-shaping" class="level2">
+<h2 class="anchored" data-anchor-id="sampling-re-shaping">Sampling re-shaping</h2>
+<p>The reshaper of the sample set to any given temperature.</p>
+<div id="cell-15" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ reshape-sample --help
+
+Usage: reshape-sample [OPTIONS] DFSET [T]
+
+  Reshape the sample to the normal distribution centered around mean energy
+  (temperature), or around provided temperature T (Kelvin). The reshaping is
+  done by adjusting weighting of the samples by repeating the ones which should
+  be up-weighted.  The parameters are the variants of the weighting algorithm
+  (see the docs)
+
+  The procedure reads and produces a file with in the DFSET format. For the
+  'check' function to work the parameter must point to the root directory  of
+  the calculated samples. The checked directories will be in the form:
+  '{root}/nnnn'.
+
+  In check mode the raw file is *not* reshaped, just filtered.
+
+Options:
+  -N, --nmul INTEGER  Sample length multiplier (default: 4)
+  -p, --prob FLOAT    Probability treshold (default: 0.25)
+  -w                  Force non-zero weights for samples above probability
+                      treshold. (default: True)
+  -b                  Border samples account for the rest of domain
+  -c, --check PATH    Check and skip unconverged samples in calc directory.
+  -o, --output PATH   Write output to the file.
+  -d                  Plot debug plots
+  -V, --version       Show the version and exit.
+  --help              Show this message and exit.
+
+$ reshape-sample  -d -o TMP/DFSET.dat TMP/DFSET_raw.dat
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Done. Distribution reshaped to 306.97 K.
+Done. Saving to: TMP/DFSET.dat
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-7-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-16" class="cell">
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f33ed3fdf8124493b3c60b8551519e03","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$ reshape-sample  -N 1 -w -d -o TMP/tmp300lbafg/T_300.0K/DFSET.dat --check TMP/tmp300lbafg/T_300.0K/smpl TMP/tmp300lbafg/T_300.0K/DFSET.dat.raw
+
+Checking convergence in TMP/tmp300lbafg/T_300.0K/smpl/nnnn
+Number of converged calculations: 10/10
+Rewriting the raw dfset (skipping reshape).
+Done. Saving to: TMP/tmp300lbafg/T_300.0K/DFSET.dat
+</code></pre>
+</div>
+</div>
+</section>
+<section id="command-line-statistics-monitoring" class="level2">
+<h2 class="anchored" data-anchor-id="command-line-statistics-monitoring">Command line statistics monitoring</h2>
+<p>This simple command line interface to the statistics plotting function allows for quick monitoring of the running calculation. If the sixelplot package is installed it is even possible to plot hi-res plots in the remote terminal supporting sixel standard (e.g.&nbsp;mlterm, xterm on Linux, iterm2 on OSX).</p>
+<div id="cell-18" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ plot-stats --help
+
+Usage: plot-stats [OPTIONS] DFSET [T]
+
+  Plot the statistics of the samples from the DFSET file. Use T(K) as a
+  reference target temperature. Optionally  write out the plot to the output
+  graphics file.
+
+Options:
+  -n, --sqrn          Show sqrt(N) bars on the histogram.
+  -s, --sixel         Use SixEl driver for terminal graphics.
+  -w, --width FLOAT   Width of the figure.
+  -h, --height FLOAT  Height of the figure.
+  -o, --output PATH   Write output to the file.
+  -x                  Make plot in an interactive window
+  -V, --version       Show the version and exit.
+  --help              Show this message and exit.
+
+$ plot-stats -n -w 7 -h 4 TMP/DFSET_raw.dat 300
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-19" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ plot-stats -n -w 7 -h 4 TMP/DFSET.dat 
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-10-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-20" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ plot-stats -n -w 7 -h 4 example/VASP_3C-SiC_calculated/2x2x2/T_1200K/DFSET.dat 1200
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="command-line-phonon-monitoring" class="level2">
+<h2 class="anchored" data-anchor-id="command-line-phonon-monitoring">Command line phonon monitoring</h2>
+<p>This simple command line interface to the phonon plotting function allows for quick monitoring of the phonon calculation. If the sixelplot package is installed it is even possible to plot hi-res plots in the remote terminal supporting sixel standard (e.g.&nbsp;mlterm, xterm on Linux, iterm2 on OSX).</p>
+<div id="cell-22" class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$ plot-bands --help
+
+Usage: plot-bands [OPTIONS] [BANDS]...
+
+  Plot the phonon dispersion from the file generated by ALAMODE. Optionally
+  write out the plot to the output graphics file.
+
+Options:
+  -s, --sixel         Use SixEl driver for terminal graphics.
+  -n, --nodecor       Decorate the plot.
+  -w, --width FLOAT   Width of the figure.
+  -h, --height FLOAT  Height of the figure.
+  -o, --output PATH   Write output to the file.
+  -l, --label TEXT    Label(s) for the plot. Comma-separated list
+  -x                  Make plot in an interactive window
+  -V, --version       Show the version and exit.
+  --help              Show this message and exit.
+
+$ plot-bands -w 7 -h 4 -l '300K,600K,3000K' example/VASP_3C-SiC_calculated/2x2x2/T_300K/phon/cryst.bands example/VASP_3C-SiC_calculated/2x2x2/T_600K/phon/cryst.bands example/VASP_3C-SiC_calculated/2x2x2/T_3000K/phon/cryst.bands 
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_CLI_files/figure-html/cell-12-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/jochym\.github\.io\/\/hecss\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jochym/hecss/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
