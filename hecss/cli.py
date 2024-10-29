@@ -12,7 +12,7 @@ import os
 import ase
 from ase.calculators.vasp import Vasp
 from ase import units as un
-from numpy import savetxt, loadtxt, array
+from numpy import savetxt, loadtxt, array, sqrt
 from hecss import *
 import hecss
 from hecss.util import write_dfset, calc_init_xscale
@@ -99,6 +99,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
           f'Calculator:     {calc}')
     
     src_path = Path(fname)
+    workdir = Path(workdir)
     Ep0 = None
     if calc=="VASP":
         calculator = Vasp(label=label, directory=src_path.parent, restart=True)
@@ -153,12 +154,30 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         sampler.xscale_init = loadtxt(ampl)
     
     if width is None and neta > 0:
+        if (workdir/'w_est').exists() :
+            print(f'Directory {workdir/"w_est"} exists.')
+            print('Make sure you specified correct working directory.')
+            print('I refuse to overwrite existing calculations.')
+            print(f'Either specify w on the command line, \n'
+                  f'or remove w_est directory from {workdir}.')
+            if (workdir/'w_est/w_est.dat').exists():
+                wm = loadtxt(workdir/'w_est/w_est.dat').T
+                y = sqrt((3*wm[1]*un.kB)/(2*wm[2]))
+                print(f'Width scale from {workdir/"w_est/w_est.dat"} data: {y.mean():.3g}+/-{y.std():.3g}')
+            return
         print('Estimating width scale.')
         eta, sigma, xscale = sampler.estimate_width_scale(neta, Tmin=temp/2, Tmax=temp, pbar=sampler._pbar, nwork=nwork)
         if nsamples <= 1:
             print(f'Width scale from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
             print('Width scale estimation run (N<2). Not running sampling.')
             return
+
+    if (workdir/f"T_{temp:.1f}K").exists():
+        print(f'Directory {workdir/f"T_{temp:.1f}K"} exists.')
+        print('Make sure you specified correct working directory.')
+        print('I refuse to overwrite existing calculations.')
+        print(f'Correct your workdir or move {workdir/f"T_{temp:.1f}K"} to a different location.')
+        return
 
     print('Sampling configurations')
     samples = sampler.sample(temp, nsamples,
