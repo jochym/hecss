@@ -36,6 +36,8 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     * index       - indexing array which sorts samples by energy
     
     '''
+    assert len(data)>=2
+    
     nat = data[0][2].shape[0]
     mu = 3*T*un.kB/2
     sigma = np.sqrt(3/2)*un.kB*T/np.sqrt(nat)   
@@ -121,6 +123,11 @@ def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25,
     The format is the same as the data produced by `HECSS` sampler.
     
     '''
+    if len(data)<2:
+        print('WARNING: You need at least 2 samples to generate waighted sampling.')
+        print('Returning unchanged data')
+        return data
+    
     if N is None:
         N = int(Nmul*len(data))
         

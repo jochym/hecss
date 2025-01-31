@@ -152,6 +152,21 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
     
     if ampl:
         sampler.xscale_init = loadtxt(ampl)
+
+    if width is not None and neta > 0:
+        print('Conflicting parameters: -w and -e')
+        print('Either specify width or run the estimation.')
+        print('Refusing the job.')
+        return
+
+    if nsamples < 2 and scale:
+        print('Need at least 2 samples (-N 2) to calculate amplitudes (-s).')
+        print('Refusing the job.')
+        return
+
+    if nsamples < 1:
+        print('WARNING: No samples will be generated (N=0)')
+        print('Continue with the job')
     
     if width is None and neta > 0:
         if (workdir/'w_est').exists() :
@@ -167,7 +182,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
             return
         print('Estimating width scale.')
         eta, sigma, xscale = sampler.estimate_width_scale(neta, Tmin=temp/2, Tmax=temp, pbar=sampler._pbar, nwork=nwork)
-        if nsamples <= 1:
+        if nsamples < 2:
             print(f'Width scale from {neta} pts.: {eta:.3g}+/-{sigma:.3g}')
             print('Width scale estimation run (N<2). Not running sampling.')
             return
