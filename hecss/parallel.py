@@ -9,6 +9,7 @@ __all__ = []
 from fastcore.basics import patch
 
 import ase
+from ase.utils import workdir
 from ase.calculators.vasp import Vasp
 from ase.calculators import calculator
 from ase.calculators.vasp.vasp import check_atoms
@@ -94,6 +95,9 @@ async def __calculate_aio(self: Vasp,
         self.atoms = atoms.copy()
     
     command = self.make_command(self.command)
+    # Make sure the working directory exists
+    with workdir(self.directory, mkdir=True):
+        pass
     self.write_input(self.atoms, properties, system_changes)
     
     with self._txt_outstream() as out:

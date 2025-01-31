@@ -1017,6 +1017,7 @@ def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 
 # %% ../11_parwidth.ipynb 8
 import asyncio
+import traceback
 from concurrent.futures import ThreadPoolExecutor
 from hecss.parallel import __run_async
 from hecss.parallel import __calculate_aio
@@ -1065,6 +1066,7 @@ async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                     pbar.update()
             except Exception as e:
                 print(f"Error executing task: {e}")
+                traceback.print_exc() 
 
     
     # print('Parallel estimate_width_scale')

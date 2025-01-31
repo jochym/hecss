@@ -6,6 +6,11 @@
 __all__ = ['plot_virial_stat']
 
 # %% ../17_xscale.ipynb 2
+from hecss import HECSS
+from hecss.util import normalize_conf, get_cell_data
+from hecss.monitor import plot_hist
+
+# %% ../17_xscale.ipynb 3
 import numpy as np
 from scipy.special import expit
 from scipy.stats import chi2, chi, norm
@@ -17,11 +22,8 @@ import spglib
 from spglib import find_primitive, get_symmetry_dataset
 from glob import glob
 from matplotlib import pyplot as plt
-from hecss.util import normalize_conf, get_cell_data
-from hecss.monitor import plot_hist
-from hecss import *
 
-# %% ../17_xscale.ipynb 4
+# %% ../17_xscale.ipynb 5
 def plot_virial_stat(cryst, smpl, normal=True):
     elems = cryst.get_chemical_symbols()
     elmap = cryst.get_atomic_numbers()
