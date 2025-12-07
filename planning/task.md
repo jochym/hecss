@@ -1,0 +1,14 @@
+- [x] Analyze codebase structure and status <!-- id: 0 -->
+- [x] Create detailed work plan <!-- id: 5 -->
+- [/] Set up Local Environment (Phase 0) <!-- id: 14 -->
+    - [x] Create `planning` directory and sync artifacts <!-- id: 15 -->
+    - [x] Configure `environment.yml` (Conda + Dev tools) <!-- id: 16 -->
+    - [x] Verify `alamode` dependency availability <!-- id: 17 -->
+    - [ ] Install `nbdev` hooks (User action) <!-- id: 18 -->
+- [/] Reorganize Repository (Phase 1) <!-- id: 11 -->
+    - [x] Move notebooks and config to `nbs/` <!-- id: 19 -->
+    - [x] Update `settings.ini` <!-- id: 20 -->
+    - [ ] Verify `nbdev_export` (User action) <!-- id: 21 -->
+    - [x] Analyze package manager options (Decided: Conda) <!-- id: 12 -->
+    - [x] Analyze remote execution strategies (Target: Option C) <!-- id: 13 -->
+- [ ] Verify functionality (Execution phase) <!-- id: 9 -->

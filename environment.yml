@@ -1,15 +1,28 @@
-name: hecss-binder
+name: hecss-dev
 channels:
   - conda-forge
   - fastai
 dependencies:
-  - setuptools
   - python=3.10
-  - fastcore
-  - nbdev
-  - tqdm
-  - spglib
+  - pip
+  - setuptools
+  # Core Library Dependencies
+  - fastcore>=1.5
+  - numpy
+  - scipy
   - ase
-  - asap3
+  - spglib
+  - tqdm
+  - click
+  - matplotlib
+  - ipython
+  # Domain Specific
+  - alamode
   - openkim-models=2021.01.28
-
+  - asap3
+  # Development Tools
+  - nbdev
+  - jupyterlab
+  - pre-commit
+  - pip:
+    - -e .
