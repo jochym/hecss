@@ -113,7 +113,7 @@ conda install -c conda-forge hecss
 ### Example data
 
 Example data and notebooks can be downloaded directly from the [source
-repository](https://github.com/jochym/hecss/tree/master/example) or
+repository](https://github.com/jochym/hecss/tree/master/examples) or
 accessed through the Binder link above.
 
 ## Development

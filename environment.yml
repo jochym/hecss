@@ -23,6 +23,8 @@ dependencies:
   # Development Tools
   - nbdev
   - jupyterlab
+  - ipywidgets
   - pre-commit
+  - quarto
   - pip:
     - -e .

@@ -34,10 +34,16 @@ After the recent refactoring, the project follows this structure:
 hecss/
 ├── nbs/              # All Jupyter notebooks (source of truth)
 ├── hecss/            # Generated Python modules (DO NOT EDIT)
-├── _docs/            # Generated documentation
-├── data/             # Example data files
-├── example/          # Example scripts and workflows
-└── planning/         # Development planning documents
+├── _docs/            # Generated documentation (gitignored)
+├── examples/         # Example data, scripts and workflows
+│   ├── data/         # Example data files (spinel.POSCAR, etc.)
+│   ├── scripts/      # Example execution scripts
+│   └── VASP_*/       # VASP example workflows
+├── scripts/          # Development and build scripts
+├── planning/         # Development planning documents
+├── gui/              # GUI mockups and future implementation
+├── .tmp/             # Temporary test working directory (gitignored)
+└── .local/           # User-specific local files (gitignored)
 ```
 
 ### Setting Up Development Environment
@@ -100,8 +106,9 @@ Tests in notebooks can be marked with flags to control when they run:
 ### Important Notes
 
 - **Never edit files in `hecss/` directory directly** - they are auto-generated from notebooks
-- **Paths in notebooks:** Since notebooks are in `nbs/`, use `../` prefix for accessing files in root directory (e.g., `../data/spinel.POSCAR`)
+- **Paths in notebooks:** Since notebooks are in `nbs/`, use `../` prefix for accessing files in root directory (e.g., `../examples/data/spinel.POSCAR`)
 - **Documentation changes:** Edit the corresponding notebook in `nbs/`, not the HTML files in `_docs/`
+- **Test working directory:** Use `.tmp/` for temporary test files (automatically gitignored)
 
 ### Useful Commands
 

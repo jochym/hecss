@@ -1,22 +1,41 @@
 # -----------------------------------
 # Start local part
 # -----------------------------------
-/AUX/
-/TMP/
+# Temporary and working directories
+.tmp/*
+!.tmp/.gitkeep
+TMP/
+tmp*/
+
+# Local user files
+.local/*
+!.local/.gitkeep
+local/
+
+# Build output
+AUX/
+calc/
+
+# Local configuration
 dot.*
 run-calc.sh
-example/*/*/calc
-example/*/*/phon/DFSET_*
-example/*/*/phon/cryst*.*
-example/VASP_3C-SiC_calculated/*/*/smpl
+.envrc
+
+# Example calculation results
+examples/*/*/calc
+examples/*/*/phon/DFSET_*
+examples/*/*/phon/cryst*.*
+examples/VASP_3C-SiC_calculated/*/*/smpl
+examples/scripts/run-calc.conf
+examples/VASP_3C-SiC_calculated/calc_2x2x2/**/POTCAR
+examples/VASP_3C-SiC_calculated/calc_2x2x2/**/OUTCAR
+examples/VASP_3C-SiC_calculated/calc_2x2x2/**/EIGENVAL
+examples/VASP_3C-SiC_calculated/calc_2x2x2/**/DOSCAR
+examples/**/CHG*
+
+# SLURM and VASP output
 slurm-*.out
 vasp.out
-example/VASP_3C-SiC_calculated/calc_2x2x2/**/POTCAR
-example/VASP_3C-SiC_calculated/calc_2x2x2/**/OUTCAR
-example/VASP_3C-SiC_calculated/calc_2x2x2/**/EIGENVAL
-example/VASP_3C-SiC_calculated/calc_2x2x2/**/DOSCAR
-example/**/CHG*
-calc/
 # -----------------------------------
 # End local part
 # -----------------------------------

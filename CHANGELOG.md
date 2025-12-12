@@ -8,14 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - AG Branch
 
 ### Changed
-- **Project Structure Reorganization**: All Jupyter notebooks moved to `nbs/` directory
+- **Project Structure Reorganization**: Complete restructuring for better organization
+  - All Jupyter notebooks moved to `nbs/` directory
   - Updated `settings.ini` to reflect new notebook path (`nbs_path = nbs`)
   - Updated all auto-generated file headers to reference `nbs/` directory
-  - All example data and resources remain in root-level directories
+  - Renamed `example/` → `examples/` for consistency
+  - Moved `data/` → `examples/data/` for logical grouping
+  - Created `scripts/` directory for development scripts
+  - Created `.tmp/` for test working directory (gitignored)
+  - Created `.local/` for user-specific files (gitignored)
+  - Moved `local/` → `.local/` to hide from main view
   
 - **Path Fixes in Tests**: 
   - Fixed relative paths in notebooks to use `../` prefix for accessing root-level directories
-  - Added `../` to data file paths (e.g., `../data/spinel.POSCAR`)
+  - Updated paths: `../data/` → `../examples/data/`
   - Added `../` to output directory paths (e.g., `../AUX/`)
   
 - **Import Fixes**:
@@ -40,22 +46,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New development notebooks:
   - `90_Development.ipynb`
   - `98_ase_smoketest.ipynb`
-- Integration test infrastructure (`test_integration.py`)
-- Helper scripts for documentation maintenance:
-  - `append_docs_instruction.py`
-  - `fix_cli_indentation.py`
-  - `fix_cli_paths.py`
-  - `fix_index_formatting.py`
-  - `verify_imports.py`
+- Development scripts in `scripts/` directory:
+  - `test_integration.py` - integration test infrastructure
+  - `append_docs_instruction.py` - documentation helper
+  - `fix_cli_indentation.py` - code formatting helper
+  - `fix_cli_paths.py` - path fixing helper
+  - `fix_index_formatting.py` - index formatting helper
+  - `verify_imports.py` - import verification
+  - `mock_vasp.sh` - mock VASP for testing
 - Example scripts for remote execution:
-  - `example/scripts/run-calc-ssh.sh`
-  - `example/scripts/test-*.sh`
-- Mock VASP script for testing (`mock_vasp.sh`)
+  - `examples/scripts/run-calc-ssh.sh`
+  - `examples/scripts/test-*.sh`
+- New directory structure:
+  - `.tmp/` - temporary test working directory
+  - `.local/` - user-specific local files
+  - `scripts/` - development and build scripts
+
+### Removed
+- Removed obsolete environment files (`asap_env.yaml`, `std_env.yaml`)
+- Cleaned up cache directories (`TMP/`, `_proc/`, `index_files/`, `hecss.egg-info/`)
+- Removed temporary test directory (`integration_test_workdir/`)
 
 ### Fixed
 - Relative path issues in test execution due to notebook relocation
 - Missing imports causing test failures
 - Path references in auto-generated Python modules
+- Updated all data paths from `data/` to `examples/data/`
 
 ## [Previous Versions]
 

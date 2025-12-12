@@ -20,4 +20,6 @@ website:
       - 16_util.ipynb
       - 17_xscale.ipynb
       - 72_DOF_map.ipynb
+      - 90_Development.ipynb
+      - 98_ase_smoketest.ipynb
       - 99_mh.ipynb
