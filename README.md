@@ -14,7 +14,7 @@ are included in the [LAMMPS](lammps_tutorial.html) and
 [VASP](vasp_tutorial.html) tutorials.
 
 You can try HECSS on binder:
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/jochym%2Fhecss/devel?labpath=index.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/jochym%2Fhecss/devel?labpath=nbs/index.ipynb)
 
 [![PVersion
 Badge](https://img.shields.io/pypi/v/hecss.svg)](https://pypi.org/project/hecss/)
@@ -80,61 +80,77 @@ plot_stats(distrib, T, sqrN=True)
 
 ![](index_files/figure-commonmark/cell-5-output-1.png)
 
-## Install
+## Installation
 
-The HECSS package is available on pypi and conda-forge additionally the
-package is present also in my personal anaconda channel (jochym).
-Installation is simple, but requires a number of other packages to be
-installed as well. Package managers handle these dependencies
-automatically.
+The HECSS package is available on PyPI and conda-forge. Installation is
+straightforward and handles all dependencies automatically through
+package managers.
 
 ### Install with pip
 
-It is advisable to install in a dedicated virtual environment e.g.:
+It is advisable to install in a dedicated virtual environment:
 
 ``` bash
 python3 -m venv venv
-. venv/bin/activate
-```
-
-then install with `pip`:
-
-``` bash
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install hecss
 ```
 
 ### Install with conda
 
-Also installation with conda should be performed for dedicated or some
-other non-base environment. To create dedicated environment you can
-invoke `conda create`:
+Installation with conda should be performed in a dedicated or existing
+non-base environment:
 
 ``` bash
+# Create a new environment with hecss
 conda create -n hecss -c conda-forge hecss
+conda activate hecss
+
+# Or install in an existing environment
+conda install -c conda-forge hecss
 ```
 
-or you can install in some working environment `venv`:
+### Example data
 
-``` bash
-conda install -n venv -c conda-forge hecss
-```
+Example data and notebooks can be downloaded directly from the [source
+repository](https://github.com/jochym/hecss/tree/master/example) or
+accessed through the Binder link above.
 
-### Example data archive
+## Development
 
-The example subdirectory from the source may be downloaded directly from
-the source repository:
-[hecss-examples.zip](https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip?path=example)
+1.  **Clone the repository:**
 
-### The source code
+    ``` bash
+    git clone https://gitlab.com/jochym/hecss.git
+    cd hecss
+    ```
 
-The source is published at the [Gitlab hecss
-repository](https://gitlab.com/jochym/hecss). You can access it with git
-(recommended, particularly if you want to contribute to the
-development):
+2.  **Create the environment:** The repository includes an
+    `environment.yml` file for creating a Conda environment with all
+    dependencies and the package installed in editable mode.
 
-``` bash
-git clone https://gitlab.com/jochym/hecss.git
-```
+    ``` bash
+    conda env create -f environment.yml
+    conda activate hecss-dev
+    ```
 
-or you can download the whole distribution as a zip archive:
-[hecss.zip](https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip)
+3.  **Workflow:** This project uses `nbdev`. All code changes should be
+    made in the notebooks located in the `nbs/` directory.
+
+    - After modifying notebooks, run:
+
+      ``` bash
+      nbdev_export
+      ```
+
+    - To update the README, modify `nbs/index.ipynb` and run:
+
+      ``` bash
+      nbdev_readme
+      ```
+
+    - To generate full documentation locally, run:
+
+      ``` bash
+      nbdev_docs
+      ```
