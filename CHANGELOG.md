@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - AG Branch
 
+### Status
+- ✅ All basic tests passing: `nbdev_test --flags asap` (Success)
+- ✅ All quick tests passing: `nbdev_test --flags quick` (Success)
+- ✅ ASE+VASP smoke test passing: `nbdev_test --flags vasp_ase` (Success)
+- ⚠️ VASP tests require actual VASP installation (not available in hecss-dev environment)
+- 📚 Documentation generation: `nbdev_docs` successfully renders 22 notebooks to HTML
+
 ### Changed
 - **Project Structure Reorganization**: Complete restructuring for better organization
   - All Jupyter notebooks moved to `nbs/` directory
@@ -18,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Created `.tmp/` for test working directory (gitignored)
   - Created `.local/` for user-specific files (gitignored)
   - Moved `local/` → `.local/` to hide from main view
+  - Updated `run-calc.sh` to reference `examples/scripts/run-calc-ssh.sh`
   
 - **Path Fixes in Tests**: 
   - Fixed relative paths in notebooks to use `../` prefix for accessing root-level directories
@@ -72,6 +80,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Missing imports causing test failures
 - Path references in auto-generated Python modules
 - Updated all data paths from `data/` to `examples/data/`
+- Fixed path reference in `run-calc.sh` from `example/` to `examples/`
+- Fixed temporary directory paths from `../TMP` to `../.tmp` in notebooks
+- Resolved smoketest notebook output rendering (executed successfully)
+
+### Git History
+- Rebased AG branch to create linear history:
+  - `55e6225` - docs: Comprehensive documentation update
+  - `60e090d` - refactor: Major project structure reorganization
+  - `155879b` - fix: Update smoketest notebook and documentation rendering
+- Force-pushed to origin to maintain linear commit history
 
 ## [Previous Versions]
 

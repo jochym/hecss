@@ -118,6 +118,25 @@ accessed through the Binder link above.
 
 ## Development
 
+### Project Status (AG Branch)
+
+- ✅ **Test Suite**: All basic tests passing
+  - `nbdev_test --flags asap` - Success
+  - `nbdev_test --flags quick` - Success  
+  - `nbdev_test --flags vasp_ase` - Success (requires VASP for full validation)
+  
+- ✅ **Documentation**: All 22 notebooks render successfully
+  - Run `nbdev_docs` to generate HTML documentation
+  - Documentation available at `_docs/index.html`
+  
+- ✅ **Structure**: Major project reorganization completed
+  - Notebooks consolidated in `nbs/` directory
+  - Example data in `examples/` directory
+  - Development tools in `scripts/` directory
+  - Linear commit history established
+
+### Setup & Workflow
+
 1.  **Clone the repository:**
 
     ``` bash
@@ -153,4 +172,17 @@ accessed through the Binder link above.
 
       ``` bash
       nbdev_docs
+      ```
+    
+    - To run tests:
+    
+      ``` bash
+      # Quick tests (no VASP/ASAP required)
+      nbdev_test --flags quick
+      
+      # ASAP tests
+      nbdev_test --flags asap
+      
+      # ASE+VASP smoke test (requires VASP mock or actual VASP)
+      nbdev_test --flags vasp_ase
       ```
