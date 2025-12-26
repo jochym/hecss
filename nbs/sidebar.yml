@@ -1,0 +1,25 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_Setup.ipynb
+      - 01_LAMMPS_Tutorial.ipynb
+      - 01_VASP_Tutorial.ipynb
+      - 02_CLI.ipynb
+      - 03_monitor_stats.ipynb
+      - 04_monitor_phonons.ipynb
+      - 05_vasp_workflow.ipynb
+      - 10_Background.ipynb
+      - 11_core.ipynb
+      - 11_parallel.ipynb
+      - 11_parsample.ipynb
+      - 11_parwidth.ipynb
+      - 12_optimize.ipynb
+      - 13_planner.ipynb
+      - 15_monitor.ipynb
+      - 16_util.ipynb
+      - 17_xscale.ipynb
+      - 72_DOF_map.ipynb
+      - 90_Development.ipynb
+      - 98_ase_smoketest.ipynb
+      - 99_mh.ipynb

@@ -1,0 +1,52 @@
+# run-calc.conf - Configuration for remote VASP calculations
+# Copy this file to ~/run-calc.conf or to current directory and edit.
+# Environment variables (HECSS_*) override file settings.
+
+# =============================================================================
+# Required Settings
+# =============================================================================
+
+# Remote host - SSH alias (from ~/.ssh/config) or user@hostname
+HECSS_REMOTE_HOST=cluster_alias
+
+# Base directory on remote system for calculations
+HECSS_REMOTE_BASE=/scratch/user/hecss_work
+
+# =============================================================================
+# SLURM Settings (only used when HECSS_USE_SLURM=true)
+# =============================================================================
+
+# Use SLURM for job submission (true/false)
+HECSS_USE_SLURM=true
+
+# SLURM partition
+HECSS_PARTITION=standard
+
+# Number of MPI tasks
+HECSS_TASKS=64
+
+# Number of nodes
+HECSS_NODES=1
+
+# Remote command/script to run (path on remote system)
+# For SLURM: this is passed to sbatch
+# For direct: this is executed directly
+HECSS_REMOTE_CMD=run-vasp-script
+
+# =============================================================================
+# File Transfer Settings
+# =============================================================================
+
+# Input files to transfer (space-separated, supports globs)
+HECSS_INPUT_FILES="POSCAR INCAR POTCAR KPOINTS"
+
+# Files to exclude from sync back (space-separated)
+HECSS_EXCLUDE_SYNC="WAVECAR CHGCAR"
+
+# =============================================================================
+# Cleanup Settings
+# =============================================================================
+
+# Remove remote directory after syncing results back (true/false)
+# Set to false if you want to keep remote files for inspection/debugging
+HECSS_CLEANUP_REMOTE=true

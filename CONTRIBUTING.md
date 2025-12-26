@@ -22,5 +22,99 @@
 
 ## Do you want to contribute to the documentation?
 
-* Docs are automatically created from the notebooks in the root folder.
+* Docs are automatically created from the notebooks in the `nbs/` folder.
+
+## Development Setup
+
+### Project Structure
+
+After the recent refactoring, the project follows this structure:
+
+```
+hecss/
+├── nbs/              # All Jupyter notebooks (source of truth)
+├── hecss/            # Generated Python modules (DO NOT EDIT)
+├── _docs/            # Generated documentation (gitignored)
+├── examples/         # Example data, scripts and workflows
+│   ├── data/         # Example data files (spinel.POSCAR, etc.)
+│   ├── scripts/      # Example execution scripts
+│   └── VASP_*/       # VASP example workflows
+├── scripts/          # Development and build scripts
+├── planning/         # Development planning documents
+├── gui/              # GUI mockups and future implementation
+├── .tmp/             # Temporary test working directory (gitignored)
+└── .local/           # User-specific local files (gitignored)
+```
+
+### Setting Up Development Environment
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/jochym/hecss.git
+   cd hecss
+   ```
+
+2. **Create the conda environment:**
+   The repository includes an `environment.yml` file with all dependencies:
+   ```bash
+   conda env create -f environment.yml
+   conda activate hecss-dev
+   ```
+
+3. **Install in editable mode:**
+   The package is automatically installed in editable mode when creating the environment.
+
+### Development Workflow
+
+This project uses [nbdev](https://nbdev.fast.ai/). **All code changes must be made in notebooks** located in the `nbs/` directory.
+
+#### After modifying notebooks:
+
+1. **Export to Python modules:**
+   ```bash
+   nbdev_export
+   ```
+
+2. **Update README:**
+   If you modified `nbs/index.ipynb`:
+   ```bash
+   nbdev_readme
+   ```
+
+3. **Generate documentation:**
+   ```bash
+   nbdev_docs
+   ```
+
+4. **Run tests:**
+   ```bash
+   nbdev_test           # Run all tests
+   nbdev_test --flags asap  # Run only tests marked with #| asap
+   ```
+
+#### Test Flags
+
+Tests in notebooks can be marked with flags to control when they run:
+
+- `#| asap` - Fast tests using ASAP3/OpenKIM calculators
+- `#| vasp` - Tests requiring VASP
+- `#| vasp_ase` - Tests using VASP through ASE
+- `#| slow` - Long-running tests
+- `#| interactive` - Tests requiring user interaction
+- `#| quick` - Quick validation tests
+
+### Important Notes
+
+- **Never edit files in `hecss/` directory directly** - they are auto-generated from notebooks
+- **Paths in notebooks:** Since notebooks are in `nbs/`, use `../` prefix for accessing files in root directory (e.g., `../examples/data/spinel.POSCAR`)
+- **Documentation changes:** Edit the corresponding notebook in `nbs/`, not the HTML files in `_docs/`
+- **Test working directory:** Use `.tmp/` for temporary test files (automatically gitignored)
+
+### Useful Commands
+
+```bash
+nbdev_preview        # Preview documentation locally
+nbdev_clean          # Clean notebooks (remove outputs)
+nbdev_install_hooks  # Install git hooks for automatic cleaning
+```
 

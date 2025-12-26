@@ -1,0 +1,30 @@
+name: asap_env
+channels:
+  - conda-forge
+  - fastai
+dependencies:
+  - python=3.10
+  - pip
+  - setuptools
+  # Core Library Dependencies
+  - fastcore>=1.5
+  - numpy
+  - scipy
+  - ase
+  - spglib
+  - tqdm
+  - click
+  - matplotlib
+  - ipython
+  # Domain Specific (including asap3 and openkim-models for ASAP tests)
+  - alamode
+  - openkim-models=2021.01.28
+  - asap3
+  # Development Tools
+  - nbdev
+  - jupyterlab
+  - ipywidgets
+  - pre-commit
+  - quarto
+  - pip:
+    - -e .
