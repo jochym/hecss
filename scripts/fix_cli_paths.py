@@ -15,12 +15,12 @@ for cell in nb['cells']:
             original_line = line
             
             # Fix example paths
-            # Replace "example/" with "../example/" but avoid double dots if already correct
+            # Replace "example/" with "../examples/" but avoid double dots if already correct
             # We use a negative lookbehind or just simple replacement if we are careful.
-            # Simple replacement: " example/" -> " ../example/" can be safer?
-            # Or better: "example/VASP" -> "../example/VASP"
-            if "example/" in line and "../example/" not in line:
-                line = line.replace("example/", "../example/")
+            # Simple replacement: " example/" -> " ../examples/" can be safer?
+            # Or better: "example/VASP" -> "../examples/VASP"
+            if "example/" in line and "../examples/" not in line:
+                line = line.replace("example/", "../examples/")
                 
             # user mentioned "file CLI are numerous errors caused by changing paths to files. Convert absolute paths to relative."
             # and "Maybe TMP folder should be inside nbs?"
