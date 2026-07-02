@@ -1,7 +1,10 @@
-from pkg_resources import parse_version
 from configparser import ConfigParser
 import setuptools
 assert parse_version(setuptools.__version__)>=parse_version('36.2')
+
+# Compare version without obsolate pkg_resources
+st_version = tuple(map(int, setuptools.__version__.split('.')[:2]))
+assert st_version >= (36, 2), "Wymagany setuptools >= 36.2"
 
 # note: all settings are in settings.ini; edit there, not here
 config = ConfigParser(delimiters=['='])
@@ -19,7 +22,7 @@ licenses = {
 }
 statuses = [ '1 - Planning', '2 - Pre-Alpha', '3 - Alpha',
     '4 - Beta', '5 - Production/Stable', '6 - Mature', '7 - Inactive' ]
-py_versions = '2.0 2.1 2.2 2.3 2.4 2.5 2.6 2.7 3.0 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8'.split()
+py_versions = ' 3.6 3.7 3.8 3.9 3.10 3.11 3.12 3.13'.split()
 
 requirements = cfg.get('requirements','').split()
 lic = licenses[cfg['license']]
