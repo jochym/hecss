@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hecss"
+version = "0.5.29"
+description = "High Efficiency Configuration Space Sampler"
+authors = [
+    {name = "Paweł T. Jochym", email = "pawel.jochym@ifj.edu.pl"}
+]
+keywords = ["physics"]
+license = {text = "GPL-3.0-or-later"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
+dependencies = [
+    "fastcore>=1.5",
+    "numpy",
+    "scipy",
+    "ase",
+    "spglib",
+    "tqdm",
+    "click",
+    "matplotlib",
+    "ipython",
+]
+requires-python = ">=3.7"
+
+[project.scripts]
+hecss_sampler = "hecss.cli:hecss_sampler"
+plot_stats = "hecss.cli:plot_stats"
+plot_bands = "hecss.cli:plot_bands"
+calculate_xscale = "hecss.cli:calculate_xscale"
+reshape_sample = "hecss.cli:reshape_sample"
+
+[tool.nbdev]
+nbs_path = "."
+lib_path = "hecss"
+doc_path = "_docs"
+host = "github"
+user = "jochym"
+branch = "devel"
+url = "https://github.com/jochym/hecss/"
+doc_host = "https://jochym.github.io/"
+doc_baseurl = "/hecss/"
+title = "hecss"
+monospace_docstrings = true
+recursive = true
+black_formatting = false
+readme_nb = "index.ipynb"
+allowed_metadata_keys = []
+allowed_cell_metadata_keys = []
+jupyter_hooks = true
+clean_ids = true
+clear_all = false
+put_version_in_init = true
+cell_number = true
+skip_procs = []
