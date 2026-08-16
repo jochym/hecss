@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v4
-      #- uses: fastai/workflows/nbdev-ci@master
-      #- uses: mamba-org/provision-with-micromamba@main
       - uses: mamba-org/setup-micromamba@v1
         with: 
           environment-file: std_env.yaml
@@ -15,7 +13,7 @@ jobs:
       - name: Run nbdev_test
         shell: bash -l {0}
         run: |
-          nbdev_test --do_print
+          nbdev-test --do_print
 
   
   asap-test:
@@ -31,4 +29,4 @@ jobs:
       - name: Run nbdev_test_asap
         shell: bash -l {0}
         run: |
-          nbdev_test --do_print --flags asap
+          nbdev-test --do_print --flags asap
