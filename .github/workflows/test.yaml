@@ -10,12 +10,16 @@ jobs:
         with: 
           environment-file: std_env.yaml
           environment-name: std_env
+      - name: Install nbdev3
+        shell: bash -l {0}
+        run: |
+          pip install -U nbdev
       - name: Run nbdev_test
         shell: bash -l {0}
         run: |
           nbdev-test --do_print
 
-  
+   
   asap-test:
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +29,10 @@ jobs:
         with:
           environment-file: asap_env.yaml
           environment-name: asap_env
-
+      - name: Install nbdev3
+        shell: bash -l {0}
+        run: |
+          pip install -U nbdev
       - name: Run nbdev_test_asap
         shell: bash -l {0}
         run: |
