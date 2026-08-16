@@ -8,6 +8,7 @@ dependencies:
   - nbdev
   - spglib
   - ase
+  - asap3
   - matplotlib
   - numpy
   - scipy
