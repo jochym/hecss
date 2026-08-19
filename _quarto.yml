@@ -18,3 +18,18 @@ website:
     style: floating
 
 metadata-files: [nbdev.yml, sidebar.yml]
+
+quartodoc:
+  style: pkgdown
+  package: hecss
+  version: 0.5.29
+  dir: reference
+  title: Function reference
+  source_dir: "."
+  parser: google
+  sections:
+    - kind: section
+      title: Core
+      contents:
+        - kind: auto
+          name: HECSS
