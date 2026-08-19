@@ -174,3 +174,19 @@ checklink/cookies.txt
 .quarto
 
 /.quarto/
+
+# Phase 0 test artifacts
+test*.qmd
+test*.html
+test*_files/
+test_pipeline.*
+objects.json
+
+**/*.quarto_ipynb
+
+# Generated documentation
+_quarto/
+reference/
+_site/
+_docs/
+uv.lock
