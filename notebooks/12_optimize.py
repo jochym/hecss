@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp optimize
 
 
 @app.cell
@@ -32,6 +33,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from scipy import stats
     from matplotlib import pylab as plt
     import ase.units as un
@@ -42,6 +45,8 @@ def _():
 
 @app.cell
 def _(flatten, np, plt, stats):
+    #| hide
+    #| hide
     def refit(data, mu, sigma, sigma_scale=1.0, probTH=0.25, Nmul=4, N=None, Nb=None, target=stats.norm):
         """
         Re-shaper of the data distribution.
@@ -107,6 +112,8 @@ def _(refit, stats):
 
 @app.cell
 def _(mo):
+    #| hide
+    #| hide
     from hecss.monitor import plot_stats, plot_virial_stat, plot_xs_stat
     from hecss.monitor import plot_acceptance_history, plot_dofmu_stat
     from hecss.util import select_asap_model, create_asap_calculator
@@ -118,6 +125,8 @@ def _(mo):
 
 @app.cell
 def _(bulk, create_asap_calculator, select_asap_model):
+    #| hide
+    #| hide
     model = select_asap_model('SiC')
     print(f'Using potential model: {model}')
 
@@ -135,6 +144,8 @@ def _(bulk, create_asap_calculator, select_asap_model):
 
 @app.cell
 def _(HECSS, create_asap_calculator, cryst, model, plot_stats, plt):
+    #| hide
+    #| hide
     T = 600
     N_1 = 500
     hecss = HECSS(cryst, lambda: create_asap_calculator(model), disp_dist='laplace', width=1.05, pbar=True, w_search=False)
@@ -146,6 +157,8 @@ def _(HECSS, create_asap_calculator, cryst, model, plot_stats, plt):
 
 @app.cell
 def _(np, plt, stats, un):
+    #| export
+    #| export
     def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
         """
         Generate data weights making the probability distribution of `data` in 
@@ -210,6 +223,8 @@ def _(np, plt, stats, un):
 
 @app.cell
 def _(T, get_sample_weights, np, plt, smpls, un):
+    #| export
+    #| export
     Tmu = np.fromiter((s[-1] for s in smpls), float).mean()
     # Calculate the mean of the sample
     # We do not care too much about which temperature we got
@@ -226,6 +241,8 @@ def _(T, get_sample_weights, np, plt, smpls, un):
 
 @app.cell
 def _(get_sample_weights, np, plt, stats, un):
+    #| export
+    #| export
     def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25, Nmul=4, N=None, nonzero_w=True, debug=False):
         """
         Generate new sample with normal energy probability distribution
@@ -308,6 +325,8 @@ def _(get_sample_weights, np, plt, stats, un):
 
 @app.cell
 def _(T, make_sampling, smpls):
+    #| hide
+    #| hide
     wd_1 = make_sampling(smpls, T, probTH=0, Nmul=1 / len(smpls), nonzero_w=True, border=False, debug=False)
     assert len(wd_1) == len(smpls)
     return
@@ -335,6 +354,8 @@ def _(mo):
 
 @app.cell
 def _(T, make_sampling, plot_stats, plt, smpls):
+    #| export
+    #| export
     wd_2 = make_sampling(smpls, T, probTH=0.25, Nmul=4, nonzero_w=True, border=False, debug=True)
     plt.show()
     # plt.savefig('AUX/hecss_post.pdf', bbox_inches='tight')
@@ -352,6 +373,8 @@ def _(mo):
 
 @app.cell
 def _(Tmu, make_sampling, plot_stats, plt, smpls):
+    #| export
+    #| export
     wd_3 = make_sampling(smpls, Tmu, probTH=0.25, Nmul=4, nonzero_w=True, border=False, debug=True)
     plt.show()
     # plt.savefig('AUX/hecss_post.pdf', bbox_inches='tight')
@@ -371,12 +394,16 @@ def _(mo):
 
 @app.cell
 def _(N_1, hecss):
+    #| export
+    #| export
     uni = {TT: hecss.sample(TT, N_1) for TT in (260, 300, 340)}
     return (uni,)
 
 
 @app.cell
 def _(np, plt, uni):
+    #| export
+    #| export
     e_dist = {t: np.array([s[-1] for s in d]) for t, d in uni.items()}
     e_uni = np.concatenate(tuple(e_dist.values()))
     usmp = []
@@ -391,6 +418,8 @@ def _(np, plt, uni):
 
 @app.cell
 def _(N_1, T, make_sampling, plot_stats, plt, usmp):
+    #| export
+    #| export
     wd_4 = make_sampling(usmp, T=280, N=4 * N_1, nonzero_w=True, debug=True)
     print(len(usmp), len(wd_4))
     plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.95))

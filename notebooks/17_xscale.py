@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp xscale
 
 
 @app.cell
@@ -22,6 +23,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from hecss import HECSS
     from hecss.util import normalize_conf, get_cell_data
     from hecss.monitor import plot_hist
@@ -30,6 +33,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| export
     import numpy as np
     from scipy.special import expit
     from scipy.stats import chi2, chi, norm
@@ -55,6 +60,8 @@ def _(mo):
 
 @app.cell
 def _(np, plot_hist, plt):
+    #| export
+    #| export
     def plot_virial_stat(cryst, smpl, normal=True):
         elems = cryst.get_chemical_symbols()
         elmap = cryst.get_atomic_numbers()
@@ -85,6 +92,8 @@ def _(np, plot_hist, plt):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from hecss.monitor import plot_stats, plot_xs_stat
     from hecss.monitor import plot_acceptance_history, plot_dofmu_stat
     from hecss.util import select_asap_model, create_asap_calculator
@@ -101,6 +110,8 @@ def _():
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
+    #| export
+    #| export
     model = select_asap_model('Universal')
     print(f'Using potential model: {model}')
 
@@ -121,6 +132,8 @@ def _(HECSS, create_asap_calculator, model, oliv):
 
 @app.cell
 def _(np, oliv, plot_hist, plt, sampler, un):
+    #| export
+    #| export
     wm = np.array(sampler._eta_list).T
     y = np.sqrt((3 * wm[1] * un.kB) / (2 * wm[2]))
     plot_hist(y, '', 0, normal=False, df=3 * len(oliv))
@@ -131,6 +144,8 @@ def _(np, oliv, plot_hist, plt, sampler, un):
 
 @app.cell
 def _(oliv, plot_virial_stat, plt, sampler):
+    #| export
+    #| export
     plt.semilogx()
     plot_virial_stat(oliv, sampler._eta_samples, normal=False)
     return
@@ -138,6 +153,8 @@ def _(oliv, plot_virial_stat, plt, sampler):
 
 @app.cell
 def _(sampler, xscl):
+    #| export
+    #| export
     T = 600
     N_1 = 1000
     dofmu = []
@@ -149,18 +166,24 @@ def _(sampler, xscl):
 
 @app.cell
 def _(oliv, osamples, plot_virial_stat):
+    #| export
+    #| export
     plot_virial_stat(oliv, osamples, normal=False)
     return
 
 
 @app.cell
 def _(dofmu, oliv, plot_dofmu_stat):
+    #| export
+    #| export
     plot_dofmu_stat(oliv, dofmu, skip=0, window=10)
     return
 
 
 @app.cell
 def _(oliv, plot_xs_stat, xsl):
+    #| export
+    #| export
     plot_xs_stat(oliv, xsl, skip=0, window=10)
     return
 

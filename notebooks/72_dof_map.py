@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp dof_map
 
 
 @app.cell
@@ -127,6 +128,8 @@ def _(cryst, dc):
 
 @app.cell
 def _(at_map, dx):
+    #| hide
+    #| hide
     d_avg = {ai: dx[at_map == ai] for ai in set(at_map)}
     return (d_avg,)
 

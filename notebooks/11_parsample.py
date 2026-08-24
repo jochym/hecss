@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp parsample
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 
@@ -22,12 +25,16 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from fastcore.basics import patch
     return (patch,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import ase
     from ase.calculators.vasp import Vasp
     from ase.calculators import calculator
@@ -43,12 +50,16 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from hecss.core import HECSS
     return (HECSS,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from hecss.util import write_dfset, calc_init_xscale
     from hecss.optimize import make_sampling
     return
@@ -56,6 +67,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from glob import glob
     from tempfile import TemporaryDirectory
     import os
@@ -311,6 +324,8 @@ def _(
 
 @app.cell
 def _(HECSS, patch):
+    #| export
+    #| export
     @patch
     def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
                  eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,

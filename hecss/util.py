@@ -1,4 +1,4 @@
-"""Generated from notebooks/util.py by build_package.py"""
+"""Generated from notebooks/util.py by build.py"""
 
 from __future__ import annotations
 
@@ -186,5 +186,6 @@ def write_dfset(fn, c, comment=''):
                 print((3*'%15.7f ' + '     ' + 3*'%15.8e ') % 
                             (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), 
                             file=dfset)
+
 
 __all__ = ["select_asap_model", "create_asap_calculator", "normalize_conf", "load_dfset", "get_dfset_len", "write_dfset", "calc_init_xscale", "get_cell_data", "flatten"]

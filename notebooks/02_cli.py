@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp cli
 
 
 @app.cell
@@ -28,6 +29,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import click
     from pathlib import Path
     import os
@@ -52,6 +55,8 @@ def _():
 
 @app.cell
 def _(TemporaryDirectory):
+    #| hide
+    #| hide
     calc_dir = TemporaryDirectory(dir='TMP')
     calc_dir_2 = TemporaryDirectory(dir='TMP')
     return calc_dir, calc_dir_2
@@ -67,6 +72,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     _version_message = ("HECSS, version %(version)s\n"
                         'High Efficiency Configuration Space Sampler\n'
                         '(C) 2021-2024 by Paweł T. Jochym\n'
@@ -76,6 +83,8 @@ def _():
 
 @app.cell
 def _(CliRunner, traceback):
+    #| hide
+    #| hide
     def run_cli_cmd(cmd, args, prt_result=False):
         print(f'$ {cmd.name} {args}\n')
         run = CliRunner().invoke(cmd, args)
@@ -90,6 +99,8 @@ def _(CliRunner, traceback):
 
 @app.cell
 def _(Path, savetxt, write_dfset):
+    #| hide
+    #| hide
     def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
         '''
         Write samples to the DFSET file in the workdir directory.
@@ -301,6 +312,8 @@ def _(mo):
 
 @app.cell
 def _(hecss_sampler, run_cli_cmd):
+    #| hide
+    #| hide
     run_cli_cmd(hecss_sampler, '-V')
     run_cli_cmd(hecss_sampler, '--help')
     return
@@ -386,6 +399,8 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, hecss_sampler, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(hecss_sampler,
                 f"-W {calc_dir.name} "
                 "-T 1000 -N 0 -e 10 "
@@ -407,6 +422,8 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, hecss_sampler, run_cli_cmd):
+    #| export
+    #| export
     open(f'{calc_dir.name}/DFSET.dat', 'wt').close()
     open(f'{calc_dir.name}/DFSET.dat.raw', 'wt').close()
 
@@ -432,6 +449,8 @@ def _(mo):
 
 @app.cell
 def _(ase, calc_init_xscale, click, hecss, loadtxt, savetxt, _version_message):
+    #| hide
+    #| hide
     @click.command()
     @click.argument('supercell', type=click.Path(exists=True))
     @click.argument('scale', type=click.Path(exists=True))
@@ -455,6 +474,8 @@ def _(ase, calc_init_xscale, click, hecss, loadtxt, savetxt, _version_message):
 
 @app.cell
 def _(calc_dir, calculate_xscale, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(calculate_xscale, "--help")
     run_cli_cmd(calculate_xscale,
                 f"-o {calc_dir.name}/iscale.dat -s 10 "
@@ -473,6 +494,8 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, calc_dir_2, hecss_sampler, run_cli_cmd):
+    #| export
+    #| export
     open(f'{calc_dir_2.name}/DFSET.dat', 'wt').close()
     open(f'{calc_dir_2.name}/DFSET.dat.raw', 'wt').close()
 
@@ -495,6 +518,8 @@ def _(mo):
 
 @app.cell
 def _(Path, Vasp, array, click, hecss, make_sampling, un, write_dfset, _version_message):
+    #| hide
+    #| hide
     @click.command()
     @click.argument('dfset', type=click.Path(exists=True))
     @click.argument('T', default=-1, type=float)
@@ -558,6 +583,8 @@ def _(reshape_sample, run_cli_cmd, subprocess, calc_dir, calc_dir_2):
 
 @app.cell
 def _(calc_dir, reshape_sample, run_cli_cmd, subprocess):
+    #| export
+    #| export
     subprocess.call(['rm', '-f', f'{calc_dir.name}/T_300.0K/DFSET.dat'])
     run_cli_cmd(reshape_sample,
                 f" -N 1 -w -d -o {calc_dir.name}/T_300.0K/DFSET.dat"
@@ -578,6 +605,8 @@ def _(mo):
 
 @app.cell
 def _(Path, click, hecss, _version_message):
+    #| hide
+    #| hide
     @click.command()
     @click.argument('dfset', type=click.Path(exists=True))
     @click.argument('T', default=-1, type=float)
@@ -617,6 +646,8 @@ def _(Path, click, hecss, _version_message):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(plot_stats, "--help")
 
     run_cli_cmd(plot_stats,
@@ -629,6 +660,8 @@ def _(plot_stats, run_cli_cmd):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(plot_stats,
                 "-n "
                 "-w 7 -h 4 "
@@ -638,6 +671,8 @@ def _(plot_stats, run_cli_cmd):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(plot_stats,
                 "-n "
                 "-w 7 -h 4 "
@@ -658,6 +693,8 @@ def _(mo):
 
 @app.cell
 def _(Path, click, hecss, os, _version_message):
+    #| hide
+    #| hide
     @click.command()
     @click.argument('bands', type=click.Path(exists=True), nargs=-1)
     @click.option('-s', '--sixel', is_flag=True, help='Use SixEl driver for terminal graphics.')
@@ -711,6 +748,8 @@ def _(Path, click, hecss, os, _version_message):
 
 @app.cell
 def _(plot_bands, run_cli_cmd):
+    #| export
+    #| export
     run_cli_cmd(plot_bands, "--help")
     run_cli_cmd(plot_bands,
                    "-w 7 -h 4 -l '300K,600K,3000K' "
@@ -722,12 +761,16 @@ def _(plot_bands, run_cli_cmd):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     CLEANUP = False
     return (CLEANUP,)
 
 
 @app.cell
 def _(CLEANUP, calc_dir, calc_dir_2):
+    #| hide
+    #| hide
     _ = None
     try:
         _ = CLEANUP
@@ -739,6 +782,8 @@ def _(CLEANUP, calc_dir, calc_dir_2):
 
 @app.cell
 def _(CLEANUP):
+    #| hide
+    #| hide
     try:
         del CLEANUP
     except NameError:

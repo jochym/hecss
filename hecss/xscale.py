@@ -1,4 +1,4 @@
-"""Generated from notebooks/xscale.py by build_package.py"""
+"""Generated from notebooks/xscale.py by build.py"""
 
 from __future__ import annotations
 
@@ -47,5 +47,6 @@ def plot_virial_stat(cryst, smpl, normal=True):
         plt.ylabel('Probability density')
         plt.xlabel('Normalized Virial')
         return xscale
+
 
 __all__ = ["plot_virial_stat"]

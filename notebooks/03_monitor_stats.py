@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp monitor_stats
 
 
 @app.cell
@@ -42,6 +43,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from hecss.monitor import monitor_stats, plot_stats, load_dfset
     return load_dfset, monitor_stats, plot_stats
 
@@ -75,6 +78,8 @@ def _(mo):
 
 @app.cell
 def _(monitor_stats):
+    #| export
+    #| export
     T_1 = 600
     supercell_1 = '1x1x1'
     monitor_stats(T=T_1, dfset=f'example/VASP_3C-SiC_calculated/{supercell_1}/T_{T_1:.0f}K/DFSET.dat', once=True)

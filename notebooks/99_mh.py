@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp mh
 
 
 @app.cell
@@ -102,6 +103,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     import sys
     import ase
     import ase.units as un
@@ -141,6 +144,8 @@ def _():
 
 @app.cell
 def _(un):
+    #| export
+    #| export
     def write_dfset(fn, c):
         '''
         Append displacement-force data from the conf to the fn file.
@@ -161,6 +166,8 @@ def _(un):
 
 @app.cell
 def _():
+    #| export
+    #| export
     def calc_init_xscale(cryst, xsl, skip=None):
         '''
         Calculate initial xscale amplitude correction coefficients
@@ -449,6 +456,8 @@ def _(
 
 @app.cell
 def _(expit, linspace, plt):
+    #| hide
+    #| hide
     x = linspace(0, 2, 100)
     ampl = 0.05
     wdth = 0.25
@@ -462,6 +471,8 @@ def _(expit, linspace, plt):
 
 @app.cell
 def _(HECSS_MH_Sampler, tqdm):
+    #| export
+    #| export
     class HECSS_MH:
         """
         Class facilitating more traditional use of the `HECSS_Sampler` generator.
@@ -519,6 +530,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from ase.build import bulk
     from ase.spacegroup import crystal
     from hecss.monitor import plot_stats, plot_virial_stat, plot_xs_stat
@@ -556,6 +569,8 @@ def _(bulk, create_asap_calculator, select_asap_model):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, cryst, model):
+    #| export
+    #| export
     T = 600
     xsl = []
     dofmu = []
@@ -570,6 +585,8 @@ def _(HECSS_MH, create_asap_calculator, cryst, model):
 
 @app.cell
 def _(T, plot_stats, sampler):
+    #| export
+    #| export
     N = 1_000
     samples = sampler.generate(N)
     plot_stats(samples, T, sqrN=True)
@@ -578,6 +595,8 @@ def _(T, plot_stats, sampler):
 
 @app.cell
 def _(cryst, np, plt, xsl):
+    #| export
+    #| export
     plt.figure(figsize=(10, 4))
     for n, el in enumerate(set(cryst.get_chemical_symbols())):
         elmap = np.array(cryst.get_chemical_symbols()) == el
@@ -587,6 +606,8 @@ def _(cryst, np, plt, xsl):
 
 @app.cell
 def _(
+    #| hide
+    #| hide
     T,
     cryst,
     dofmu,
@@ -606,6 +627,8 @@ def _(
 
 @app.cell
 def _(N, T, cryst, np, samples, un):
+    #| hide
+    #| hide
     m = np.mean([_[-1] for _ in samples])
     s = np.std([_[-1] for _ in samples])
 
@@ -627,6 +650,8 @@ def _(mo):
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
+    #| export
+    #| export
     omodel = select_asap_model('Universal')
     print(f'Using potential model: {omodel}')
 
@@ -638,6 +663,8 @@ def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
 
 @app.cell
 def _(np, oliv, un):
+    #| export
+    #| export
     print(f'Max. stress: {np.abs(oliv.get_stress()[:3]).max()/un.GPa:.3f} GPa')
     print(f'Max. force : {np.abs(oliv.get_forces()).max():.3f} eV/A')
     return
@@ -645,6 +672,8 @@ def _(np, oliv, un):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, oliv, omodel, plot_stats):
+    #| export
+    #| export
     T_1 = 600
     dofmu_1 = []
     xsl_1 = []
@@ -659,6 +688,8 @@ def _(HECSS_MH, create_asap_calculator, oliv, omodel, plot_stats):
 
 @app.cell
 def _(
+    #| hide
+    #| hide
     T_1,
     dofmu_1,
     oliv,
@@ -678,6 +709,8 @@ def _(
 
 @app.cell
 def _(N_1, T_1, np, oliv, osamples, un):
+    #| hide
+    #| hide
     m_1 = np.mean([_[-1] for _ in osamples])
     s_1 = np.std([_[-1] for _ in osamples])
     s_target_1 = np.sqrt(3 / 2) * un.kB * T_1 / np.sqrt(len(oliv))
@@ -697,6 +730,8 @@ def _(mo):
 
 @app.cell
 def _(
+    #| hide
+    #| hide
     HECSS_MH,
     T_1,
     chi_1,
@@ -716,6 +751,8 @@ def _(
 
 @app.cell
 def _(
+    #| hide
+    #| hide
     T_1,
     dofmu_1,
     oliv,
@@ -737,6 +774,8 @@ def _(
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, cryst, model):
+    #| hide
+    #| hide
     T_2 = 300
     N_3 = 100
     sampler_1 = HECSS_MH(cryst, create_asap_calculator(model), T_2, N=N_3)
@@ -745,6 +784,8 @@ def _(HECSS_MH, create_asap_calculator, cryst, model):
 
 @app.cell
 def _(N_3, sampler_1):
+    #| hide
+    #| hide
     smpl = sampler_1.generate()
     smpl = smpl + sampler_1.generate()
     smpl = smpl + sampler_1.generate(20)

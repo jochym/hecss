@@ -1,4 +1,4 @@
-"""Generated from notebooks/parallel.py by build.py"""
+"""Generated from notebooks/parsample.py by build.py"""
 
 from __future__ import annotations
 

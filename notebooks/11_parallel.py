@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp parallel
 
 
 @app.cell
@@ -12,6 +13,8 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
+    #| hide
+    #| hide
     mo.md(r"""
     # Parallel calculations
 
@@ -30,6 +33,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from fastcore.basics import patch
     import ase
     from ase.utils import workdir
@@ -51,6 +56,8 @@ def _():
 
 @app.cell
 def _(ThreadPoolExecutor, asyncio):
+    #| export
+    #| export
     def __run_async(func, *args, **kwargs):
         '''
         Run async methods detecting running loop in jupyter.
@@ -72,6 +79,8 @@ def _(ThreadPoolExecutor, asyncio):
 
 @app.cell
 def _(Vasp, asyncio, patch):
+    #| export
+    #| export
     @patch
     async def _arun(self: Vasp, command=None, out=None, directory=None):
         """
@@ -98,6 +107,8 @@ def _(Vasp, asyncio, patch):
 
 @app.cell
 def _(Vasp, calculator, check_atoms, patch, workdir):
+    #| export
+    #| export
     @patch
     async def __calculate_aio(self: Vasp,
                             atoms=None,

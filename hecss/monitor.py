@@ -1,4 +1,4 @@
-"""Generated from notebooks/monitor.py by build_package.py"""
+"""Generated from notebooks/monitor.py by build.py"""
 
 from __future__ import annotations
 
@@ -469,5 +469,6 @@ def show_dc_conv(bl, kpnts, max_plots=4):
                 break
         ylim(y_lims)
         legend()
+
 
 __all__ = ["plot_band_set", "plot_bands", "plot_bands_file", "show_dc_conv", "build_bnd_lst", "build_omega", "plot_omega", "monitor_phonons", "plot_stats", "monitor_stats", "moving_average", "ewma", "plot_hist", "plot_virial_stat", "plot_acceptance_history", "plot_dofmu_stat", "plot_xs_stat", "THz"]

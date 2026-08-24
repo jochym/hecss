@@ -1,4 +1,4 @@
-"""Generated from notebooks/planner.py by build_package.py"""
+"""Generated from notebooks/planner.py by build.py"""
 
 from __future__ import annotations
 
@@ -59,5 +59,6 @@ def plan_T_scan(Tlo, Thi, nat, N=1, plot_dist=True):
             plt.ylabel('Relative density')
             plt.title('Temperature scan. N=relative number of samples')
         return r
+
 
 __all__ = ["plan_T_scan"]

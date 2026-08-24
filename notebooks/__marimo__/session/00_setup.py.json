@@ -1,0 +1,80 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.24.0",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "7e8ca8225ad0b5bb9db930cdf039a2de",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"setup\">Setup</h1>\n<blockquote>\n<span class=\"paragraph\">At the moment the HECSS sampler supports only VASP and ASAP3/OpenKIM calculators. However, it is explicitly written in such a way that it should be quite easy to extend it to other calculators (e.g. QE, AbInit). The VASP and ASAP calculators are simply the only ones tested so far. The following instructions cover only VASP. Contributions extending support to other calculators are welcomed and will be included in the distribution.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "0747b2ef6ac2c1e7f7f78795d60d6b7b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"install\">Install</h2>\n<span class=\"paragraph\">The HECSS package is available on pypi and conda-forge additionally the package is present also in my personal anaconda channel (jochym). Installation is simple, but requires a number of other packages to be installed as well. Package managers handle these dependencies automatically.</span>\n<h3 id=\"install-with-pip\">Install with pip</h3>\n<span class=\"paragraph\">It is advisable to install in a dedicated virtual environment e.g.:\n<div class=\"language-bash codehilite\"><pre><span></span><code>python3<span class=\"w\"> </span>-m<span class=\"w\"> </span>venv<span class=\"w\"> </span>venv\n.<span class=\"w\"> </span>venv/bin/activate\n</code></pre></div>\nthen install with <code>pip</code>:\n<div class=\"language-bash codehilite\"><pre><span></span><code>pip<span class=\"w\"> </span>install<span class=\"w\"> </span>hecss\n</code></pre></div></span>\n<h3 id=\"install-with-conda\">Install with conda</h3>\n<span class=\"paragraph\">Also installation with conda should be performed for dedicated or some other non-base environment. To create dedicated environment you can invoke <code>conda create</code>:\n<div class=\"language-bash codehilite\"><pre><span></span><code>conda<span class=\"w\"> </span>create<span class=\"w\"> </span>-n<span class=\"w\"> </span>hecss<span class=\"w\"> </span>-c<span class=\"w\"> </span>conda-forge<span class=\"w\"> </span>hecss\n</code></pre></div>\nor you can install in some working environment <code>venv</code>:\n<div class=\"language-bash codehilite\"><pre><span></span><code>conda<span class=\"w\"> </span>install<span class=\"w\"> </span>-n<span class=\"w\"> </span>venv<span class=\"w\"> </span>-c<span class=\"w\"> </span>conda-forge<span class=\"w\"> </span>hecss\n</code></pre></div></span>\n<h3 id=\"example-data-archive\">Example data archive</h3>\n<span class=\"paragraph\">The example data is not distributed within the library package. However, when you learn the software it is usefull to have some pre-calculated results and template configs to have a starting point. The <code>example</code> directory in the source distribution contains template configuration files for a calculation (<code>VASP_3C-SiC</code> subdirectory) and the example data calculated for the same systems (<code>VASP_3C-SiC_calculated</code> subdirectory).\nAs the name suggests these are 1x1x1 and 2x2x2 supercells of the 3C-SiC (cubic silicon carbide) calculated with VASP DFT calculator.</span>\n<span class=\"paragraph\">To obtain the data you need to download the zip archive from the source repository: <a href=\"https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip?path=example\" rel=\"noopener noreferrer\" target=\"_blank\">hecss-examples.zip</a></span>\n<span class=\"paragraph\">The source is published at the <a href=\"https://gitlab.com/jochym/hecss\" rel=\"noopener noreferrer\" target=\"_blank\">Gitlab hecss repository</a>.\nYou can access it with git (recommended, particularly if you want to contribute to the development):\n<div class=\"language-bash codehilite\"><pre><span></span><code>git<span class=\"w\"> </span>clone<span class=\"w\"> </span>https://gitlab.com/jochym/hecss.git\n</code></pre></div>\nor you can download the whole distribution as a zip archive: <a href=\"https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip\" rel=\"noopener noreferrer\" target=\"_blank\">hecss.zip</a>\nThe example subdirectory from the source may be downloaded directly from the source repository: <a href=\"https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip?path=example\" rel=\"noopener noreferrer\" target=\"_blank\">hecss-examples.zip</a></span>\n<h3 id=\"the-source-code\">The source code</h3>\n<span class=\"paragraph\">The source is published at the <a href=\"https://gitlab.com/jochym/hecss\" rel=\"noopener noreferrer\" target=\"_blank\">Gitlab hecss repository</a>.\nYou can access it with git (recommended, particularly if you want to contribute to the development):\n<div class=\"language-bash codehilite\"><pre><span></span><code>git<span class=\"w\"> </span>clone<span class=\"w\"> </span>https://gitlab.com/jochym/hecss.git\n</code></pre></div>\nor you can download the whole distribution as a zip archive: <a href=\"https://gitlab.com/jochym/hecss/-/archive/master/hecss-master.zip\" rel=\"noopener noreferrer\" target=\"_blank\">hecss.zip</a></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "b8cd5266d0726e45cb85e1e8adb85af2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"calculators\">Calculators</h2>\n<span class=\"paragraph\">To use HECSS you need some code for calculation of energies and forces in the form of ASE calculator. At this moment two calculators are supported: ASAP/LAMMPS/OpenKIM and VASP. The first is a free, fast, effective potential calculator which can be used for testing and experimentation. It is also used in HECSS test suite. VASP is a non-free, high quality, academic DFT code which you can use for research-grade calculations. Other calculators are available in ASE (abInit, gpaw and many others). There is no reason for other ASE calculators to not work with HECSS, these two are just supported and tested for now. The next in line will be probably abInit - since this is also a high-quality, research-grade DFT code which happen to be also free.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "2bc5c2dec812edbc6674e3fe822df0be",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"asaplammpsopenkim\">ASAP/LAMMPS/OpenKIM</h3>\n<span class=\"paragraph\">The ASAP calculator is not installed by default with HECSS package, to not force it's installation on users which are not going to use it and to avoid blocking simple HECSS installation on systems where ASAP is not supported at the moment (e.g. Windows).\nTo install ASAP in your conda environment run:\n<div class=\"language-bash codehilite\"><pre><span></span><code>conda<span class=\"w\"> </span>install<span class=\"w\"> </span>-c<span class=\"w\"> </span>conda-forge<span class=\"w\"> </span>asap3<span class=\"w\"> </span>openkim-models<span class=\"o\">=</span><span class=\"m\">2021</span>.01.28\n</code></pre></div>\nNo further configuration is required for this calculator.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "8d1cb8ac9fa5dd021a5802c0000f9036",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"vasp\">VASP</h3>\n<span class=\"paragraph\">The installation of VASP is beyond the scope of this manual. We assume that you have a working VASP setup and just installed HECSS package with its dependencies.</span>\n<span class=\"paragraph\">To enable use of the VASP calculator in ASE you need to configure it. This involves configuring ASE (Atomistic Simulation Environment) to be able to generate VASP input files. Refer to <a href=\"https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html\" rel=\"noopener noreferrer\" target=\"_blank\">ASE documentation</a> for details.</span>\n<span class=\"paragraph\">Usually you need to:</span>\n<ol>\n<li>Put your pseudopotential files in a dedicated directory tree as described  in the docs. My setup contains a directory with three subdirs for LDA, GGA, and PBE pseudopotentials:</li>\n</ol>\n<div class=\"language-bash codehilite\"><pre><span></span><code>potpaw\npotpaw_GGA\npotpaw_PBE\n</code></pre></div>\n<ol start=\"2\">\n<li>Setting the <code>VASP_PP_PATH</code> environment variable to the location of this directory</li>\n<li>Preparing the <code>run-calc</code> script to execute vasp in your setup. The script <em>must</em> wait for the calculation to finish before it returns. The example script is included in the source and for SLURM queue manager may look similar to the following code:</li>\n</ol>\n<div class=\"language-bash codehilite\"><pre><span></span><code><span class=\"ch\">#!/bin/bash</span>\n\n<span class=\"c1\"># This script should run vasp in current directory</span>\n<span class=\"c1\"># and wait for the run to finish.</span>\n<span class=\"c1\">#</span>\n<span class=\"c1\"># A generic line using SLURM would look like this:</span>\n<span class=\"c1\">#</span>\n<span class=\"c1\"># sbatch [job_params] -W vasp_running_script</span>\n<span class=\"c1\">#</span>\n<span class=\"c1\"># The \"-W\" param makes the sbatch command wait for the job to finish.</span>\n\n<span class=\"nv\">JN</span><span class=\"o\">=</span><span class=\"sb\">`</span><span class=\"nb\">pwd</span><span class=\"sb\">`</span>\n<span class=\"nv\">JN</span><span class=\"o\">=</span><span class=\"sb\">`</span>basename<span class=\"w\"> </span><span class=\"si\">${</span><span class=\"nv\">JN</span><span class=\"si\">}</span><span class=\"sb\">`</span>\n\n<span class=\"c1\"># Partition of the cluster</span>\n<span class=\"nv\">PART</span><span class=\"o\">=</span>small\n\n<span class=\"c1\"># Number of nodes</span>\n<span class=\"nv\">N</span><span class=\"o\">=</span><span class=\"m\">1</span>\n\n<span class=\"c1\"># Number of MPI tasks</span>\n<span class=\"nv\">ntask</span><span class=\"o\">=</span><span class=\"m\">64</span>\n\n<span class=\"c1\"># Name the job after directory if no label is passed as first argument</span>\n<span class=\"k\">if</span><span class=\"w\"> </span><span class=\"o\">[</span><span class=\"w\"> </span><span class=\"s2\">\"</span><span class=\"si\">${</span><span class=\"nv\">1</span><span class=\"si\">}</span><span class=\"s2\">.\"</span><span class=\"w\"> </span>!<span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s2\">\".\"</span><span class=\"w\"> </span><span class=\"o\">]</span><span class=\"p\">;</span><span class=\"w\"> </span><span class=\"k\">then</span>\n<span class=\"w\">  </span><span class=\"nv\">JN</span><span class=\"o\">=</span><span class=\"si\">${</span><span class=\"nv\">1</span><span class=\"si\">}</span>\n<span class=\"k\">fi</span>\n\nsbatch<span class=\"w\"> </span>-W<span class=\"w\"> </span>-J<span class=\"w\"> </span><span class=\"si\">${</span><span class=\"nv\">JN</span><span class=\"si\">}</span><span class=\"w\"> </span>-p<span class=\"w\"> </span><span class=\"nv\">$PART</span><span class=\"w\"> </span>-N<span class=\"w\"> </span><span class=\"nv\">$N</span><span class=\"w\"> </span>-n<span class=\"w\"> </span><span class=\"nv\">$ntask</span><span class=\"w\"> </span>run-vasp-script\n</code></pre></div>\n<span class=\"paragraph\">You need to adapt the script to your setup. The script works properly if you can go to the directory with the prepared VASP configuration and execute <code>run-calc</code> and have it run vasp in the directory and finish after the VASP job ends.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

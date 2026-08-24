@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp parwidth
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 
@@ -22,12 +25,16 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from fastcore.basics import patch
     return (patch,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import ase
     from ase.calculators.vasp import Vasp
     from ase.calculators import calculator
@@ -41,12 +48,16 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from hecss import HECSS
     return (HECSS,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from hecss.util import write_dfset, calc_init_xscale
     from hecss.optimize import make_sampling
     return
@@ -54,6 +65,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from glob import glob
     from tempfile import TemporaryDirectory
     import os
@@ -65,6 +78,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import asyncio
     import traceback
     from concurrent.futures import ThreadPoolExecutor
@@ -75,6 +90,8 @@ def _():
 
 @app.cell
 def _(HECSS, ase, asyncio, np, patch, stats, traceback):
+    #| export
+    #| export
     @patch
     async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                                          set_scale=True, pbar=None, nwork=5):
@@ -171,6 +188,8 @@ def _(HECSS, ase, asyncio, np, patch, stats, traceback):
 
 @app.cell
 def _(HECSS, __run_async, patch):
+    #| export
+    #| export
     @patch
     def _estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                                   set_scale=True, pbar=None, nwork=5):
@@ -193,24 +212,32 @@ def _(HECSS, __run_async, patch):
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell = '1x1x1'
     return
 
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell_1 = '2x2x2'
     return
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     supercell_2 = '1x1x1'
     return (supercell_2,)
 
 
 @app.cell
 def _(TemporaryDirectory, supercell_2):
+    #| export
+    #| export
     base_dir = f'example/VASP_3C-SiC_calculated/{supercell_2}/'
     calc_dir = TemporaryDirectory(dir='TMP')
     return base_dir, calc_dir
@@ -218,6 +245,8 @@ def _(TemporaryDirectory, supercell_2):
 
 @app.cell
 def _(Vasp, base_dir):
+    #| export
+    #| export
     calc = Vasp(label='cryst', directory=f'{base_dir}/sc/', restart=True)
     cryst = calc.atoms.repeat(1)
     return calc, cryst
@@ -225,6 +254,8 @@ def _(Vasp, base_dir):
 
 @app.cell
 def _(calc, un):
+    #| export
+    #| export
     print('Stress tensor: ', end='')
     for ss in calc.get_stress()/un.GPa:
         print(f'{ss:.3f}', end=' ')
@@ -235,6 +266,8 @@ def _(calc, un):
 
 @app.cell
 def _(calc, calc_dir, cryst, os):
+    #| export
+    #| export
     calc.set(directory=f'{calc_dir.name}/sc')
     calc.set(command=f'{os.getcwd()}/run-calc.sh "async"')
     calc.set(nsw=0)
@@ -244,6 +277,8 @@ def _(calc, calc_dir, cryst, os):
 
 @app.cell
 def _(defaultdict):
+    #| export
+    #| export
     samples = defaultdict(lambda: [])
     xsl = []
     return
@@ -251,6 +286,8 @@ def _(defaultdict):
 
 @app.cell
 def _(HECSS, calc, calc_dir, cryst):
+    #| export
+    #| export
     hecss = HECSS(cryst, calc,
                   directory=calc_dir.name,
                   w_search=True,
@@ -260,6 +297,8 @@ def _(HECSS, calc, calc_dir, cryst):
 
 @app.cell
 def _(Ep0, hecss):
+    #| hide
+    #| export
     hecss.Ep0 = Ep0
     return
 
@@ -276,6 +315,8 @@ def _(mo):
 
 @app.cell
 def _(hecss):
+    #| export
+    #| export
     N = 10
     m, s, xscl = hecss.estimate_width_scale(1, Tmax=2000)
     return (N,)
@@ -289,30 +330,40 @@ async def _(N, hecss):
 
 @app.cell
 def _(N, hecss):
+    #| export
+    #| export
     m_1, s_1, xscl_1 = hecss.estimate_width_scale(N, Tmax=2000, nwork=N // 2)
     return
 
 
 @app.cell
 def _(N, hecss):
+    #| export
+    #| export
     m_2, s_2, xscl_2 = hecss.estimate_width_scale(N // 2, Tmax=2000, nwork=3)
     return
 
 
 @app.cell
 def _(N, hecss):
+    #| export
+    #| export
     m_3, s_3, xscl_3 = hecss.estimate_width_scale(2 * N, Tmax=2000, nwork=N)
     return
 
 
 @app.cell
 def _(N, hecss):
+    #| export
+    #| export
     m_4, s_4, xscl_4 = hecss.estimate_width_scale(3 * N, Tmax=2000, nwork=0)
     return m_4, s_4
 
 
 @app.cell
 def _(hecss, m_4, np, plt, s_4, un):
+    #| export
+    #| export
     wm = np.array(hecss._eta_list).T
     y = np.sqrt(3 * wm[1] * un.kB / (2 * wm[2]))
     plt.plot(wm[1], y, '.')
@@ -350,6 +401,8 @@ def _(hecss, m_4, np, plt, s_4, un):
 
 @app.cell(hide_code=True)
 def _(mo):
+    #| export
+    #| hide
     mo.md(r"""
     ## Directory clean-up routine
 
@@ -360,6 +413,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     CLEANUP = False
     return (CLEANUP,)
 

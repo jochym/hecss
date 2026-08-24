@@ -1,4 +1,4 @@
-"""Generated from notebooks/optimize.py by build_package.py"""
+"""Generated from notebooks/optimize.py by build.py"""
 
 from __future__ import annotations
 
@@ -196,5 +196,6 @@ def refit(data, mu, sigma, sigma_scale=1.0, probTH=0.25, Nmul=4, N=None, Nb=None
                 continue
             plt.axvline(s, ymin=0.97, ymax=0.99, ls='-', color='r', alpha=np.sqrt(a / nf))  # Block zero weights in the +/- 3*sigma zone to not lose data
         return (w, iw, wd)
+
 
 __all__ = ["make_sampling", "get_sample_weights", "refit"]

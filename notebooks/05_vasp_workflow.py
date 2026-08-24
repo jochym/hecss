@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp vasp_workflow
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 
@@ -24,6 +27,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from ase.calculators.vasp import Vasp
     from ase import units as un
     from os.path import isfile
@@ -55,24 +60,32 @@ def _():
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell = '1x1x1'
     return (supercell,)
 
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell_1 = '2x2x2'
     return (supercell_1,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     supercell_2 = '1x1x1'
     return (supercell_2,)
 
 
 @app.cell
 def _(TemporaryDirectory, supercell_2):
+    #| export
+    #| export
     base_dir = f'example/VASP_3C-SiC/{supercell_2}/'
     calc_dir = TemporaryDirectory(dir='TMP')
     return base_dir, calc_dir
@@ -80,6 +93,8 @@ def _(TemporaryDirectory, supercell_2):
 
 @app.cell
 def _(Vasp, base_dir, supercell_2):
+    #| export
+    #| export
     calc = Vasp(label='cryst', directory=f'{base_dir}/sc_{supercell_2}/', restart=True)
     cryst = calc.atoms.repeat(1)
     return calc, cryst
@@ -87,6 +102,8 @@ def _(Vasp, base_dir, supercell_2):
 
 @app.cell
 def _(calc, calc_dir, cryst, os):
+    #| export
+    #| export
     calc.set(directory=f'{calc_dir.name}/sc')
     calc.set(command=f'{os.getcwd()}/run-calc.sh "vasp_test"')
     calc.set(nsw=0)
@@ -96,6 +113,8 @@ def _(calc, calc_dir, cryst, os):
 
 @app.cell
 def _(calc, un):
+    #| export
+    #| export
     print('Stress tensor: ', end='')
     for ss in calc.get_stress()/un.GPa:
         print(f'{ss:.3f}', end=' ')
@@ -105,6 +124,8 @@ def _(calc, un):
 
 @app.cell
 def _(defaultdict):
+    #| export
+    #| export
     samples = defaultdict(lambda: [])
     xsl = []
     return (samples,)
@@ -112,6 +133,8 @@ def _(defaultdict):
 
 @app.cell
 def _(HECSS, calc, calc_dir, cryst):
+    #| export
+    #| export
     hecss = HECSS(cryst, calc,
                   directory=calc_dir.name,
                   w_search=True,
@@ -121,6 +144,8 @@ def _(HECSS, calc, calc_dir, cryst):
 
 @app.cell
 def _(hecss, np, plt, un):
+    #| export
+    #| export
     N = 5
     m, s, xscl = hecss.estimate_width_scale(5, nwork=0)
     wm = np.array(hecss._eta_list).T
@@ -140,12 +165,16 @@ def _(hecss, np, plt, un):
 
 @app.cell
 def _(N, calc_dir, glob):
+    #| hide
+    #| hide
     assert len(glob(f'{calc_dir.name}/w_est/*/vasprun.xml')) == N
     return
 
 
 @app.cell
 def _(hecss, samples):
+    #| export
+    #| export
     N_1 = 30
     T_list = (100, 200, 300)
     for T in T_list:
@@ -155,6 +184,8 @@ def _(hecss, samples):
 
 @app.cell
 def _(T_list, hecss, plot_stats, samples):
+    #| export
+    #| export
     for T_1 in T_list:
         plot_stats(hecss.generate(samples[T_1]), sqrN=True)
     return
@@ -162,6 +193,8 @@ def _(T_list, hecss, plot_stats, samples):
 
 @app.cell
 def _(T_list, calc_dir, glob, samples):
+    #| hide
+    #| hide
     for T_2 in T_list:
         assert len(glob(f'{calc_dir.name}/T_{T_2:.1f}K/smpl/*')) == len(samples[T_2])
     return
@@ -169,6 +202,8 @@ def _(T_list, calc_dir, glob, samples):
 
 @app.cell
 def _(calc_dir, glob):
+    #| hide
+    #| hide
     for d in ([f'{calc_dir.name}/sc'] +
               glob(f'{calc_dir.name}/w_est/???') +
               glob(f'{calc_dir.name}/*/smpl/*')):
@@ -185,12 +220,16 @@ def _(calc_dir, glob):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     CLEANUP = False
     return (CLEANUP,)
 
 
 @app.cell
 def _(CLEANUP, calc_dir):
+    #| hide
+    #| hide
     _ = None
     try:
         _ = CLEANUP

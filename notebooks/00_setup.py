@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp setup
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 

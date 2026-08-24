@@ -32,6 +32,7 @@ dependencies = [
     "click",
     "matplotlib",
     "ipython",
+    "marimo>=0.17.6",
 ]
 
 [project.scripts]

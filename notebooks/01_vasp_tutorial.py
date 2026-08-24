@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp vasp_tutorial
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 
@@ -32,6 +35,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from ase.calculators.vasp import Vasp
     from ase import units as un
     from os.path import isfile
@@ -63,24 +68,32 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell = '1x1x1'
     return (supercell,)
 
 
 @app.cell
 def _():
+    #| export
+    #| export
     supercell_1 = '2x2x2'
     return (supercell_1,)
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     supercell_2 = '1x1x1'
     return (supercell_2,)
 
 
 @app.cell
 def _(supercell_2):
+    #| export
+    #| export
     base_dir = f'example/VASP_3C-SiC/{supercell_2}/'
     return (base_dir,)
 
@@ -98,6 +111,8 @@ def _(mo):
 
 @app.cell
 def _(Vasp, base_dir, supercell_2):
+    #| export
+    #| export
     calc = Vasp(label='cryst', directory=f'{base_dir}/sc_{supercell_2}/', restart=True)
     cryst = calc.atoms.repeat(1)
     return calc, cryst
@@ -119,6 +134,8 @@ def _(mo):
 
 @app.cell
 def _(calc, cryst, os, supercell_2):
+    #| export
+    #| export
     calc.set(directory=f'TMP/calc_{supercell_2}/sc')
     calc.set(command=f'{os.getcwd()}/run-calc.sh "3C-SiC-{supercell_2}"')
     calc.set(nsw=0)
@@ -138,6 +155,8 @@ def _(mo):
 
 @app.cell
 def _(calc, un):
+    #| export
+    #| export
     print('Stress tensor: ', end='')
     for ss in calc.get_stress()/un.GPa:
         print(f'{ss:.3f}', end=' ')
@@ -159,6 +178,8 @@ def _(mo):
 
 @app.cell
 def _(supercell_2):
+    #| export
+    #| export
     xsl = []
     calc_dir = f'TMP/calc_{supercell_2}'
     return (calc_dir,)
@@ -166,6 +187,8 @@ def _(supercell_2):
 
 @app.cell
 def _(HECSS, calc, calc_dir, cryst):
+    #| export
+    #| export
     hecss = HECSS(cryst, calc,
                   directory=f'{calc_dir}',
                   w_search=True,
@@ -175,6 +198,8 @@ def _(HECSS, calc, calc_dir, cryst):
 
 @app.cell
 def _(hecss, np, plt, un):
+    #| export
+    #| export
     m, s, xscl = hecss.estimate_width_scale(10, nwork=0)
     wm = np.array(hecss._eta_list).T
     y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
@@ -193,6 +218,8 @@ def _(hecss, np, plt, un):
 
 @app.cell
 def _():
+    #| export
+    #| export
     T = 300
     return (T,)
 
@@ -205,12 +232,16 @@ def _():
 
 @app.cell
 def _(N, T, hecss):
+    #| export
+    #| export
     samples = hecss.sample(T, N)
     return (samples,)
 
 
 @app.cell
 def _(T, hecss, plot_stats, samples):
+    #| export
+    #| export
     plot_stats(samples, T)
     distrib = hecss.generate(samples, T)
     plot_stats(distrib, T, sqrN=True)
@@ -227,6 +258,8 @@ def _(mo):
 
 @app.cell
 def _(plot_stats):
+    #| export
+    #| export
     def show_stats(s, sl, col=None, Temp=None):
         from matplotlib import pyplot as plt
         from IPython.display import clear_output
@@ -244,6 +277,8 @@ def _(plot_stats):
 
 @app.cell
 def _(T, hecss, plot_stats, samples, show_stats):
+    #| export
+    #| export
     N_1 = 10
     samples_1 = samples + hecss.sample(T, N_1, sentinel=show_stats, sentinel_args={'col': samples, 'Temp': T})
     plot_stats(hecss.generate(samples_1, T), T, sqrN=True)
@@ -252,18 +287,24 @@ def _(T, hecss, plot_stats, samples, show_stats):
 
 @app.cell
 def _(N_1, T, hecss, samples_1, show_stats):
+    #| export
+    #| export
     samples_2 = samples_1 + hecss.sample(T, N_1, sentinel=show_stats, sentinel_args={'col': samples_1, 'Temp': T})
     return (samples_2,)
 
 
 @app.cell
 def _(T, hecss, plot_stats, samples_2):
+    #| export
+    #| export
     plot_stats(hecss.generate(samples_2, T), T, sqrN=True)
     return
 
 
 @app.cell
 def _(T, calc_dir, samples_2, write_dfset):
+    #| export
+    #| export
     for c in samples_2:
         write_dfset(f'{calc_dir}/DFSET_T={T}K.dat', c)
     return
@@ -279,6 +320,8 @@ def _(mo):
 
 @app.cell
 def _(hecss, plot_stats):
+    #| export
+    #| export
     T_1 = 600
     confs_600 = hecss.sample(T_1, 50)
     plot_stats(hecss.generate(confs_600, T_1), T_1, sqrN=True)
@@ -287,6 +330,8 @@ def _(hecss, plot_stats):
 
 @app.cell
 def _(T_1, calc_dir, confs_600, write_dfset):
+    #| export
+    #| export
     for c_1 in confs_600:
         write_dfset(f'{calc_dir}/DFSET_T={T_1}K.dat', c_1)
     return
@@ -294,30 +339,40 @@ def _(T_1, calc_dir, confs_600, write_dfset):
 
 @app.cell
 def _(T_1, confs_600, hecss):
+    #| export
+    #| export
     hecss.generate(confs_600, T_1, debug=True)
     return
 
 
 @app.cell
 def _(hecss):
+    #| export
+    #| export
     c_1000 = hecss.sample(1000, 50)
     return (c_1000,)
 
 
 @app.cell
 def _(c_1000, np):
+    #| export
+    #| export
     T_1000 = np.array([s[-1] for s in c_1000]).mean()
     return (T_1000,)
 
 
 @app.cell
 def _(T_1000, c_1000, hecss, un):
+    #| export
+    #| export
     s_1000 = hecss.generate(c_1000, 2*T_1000/un.kB/3, border=True, debug=True)
     return (s_1000,)
 
 
 @app.cell
 def _(calc_dir, s_1000, write_dfset):
+    #| export
+    #| export
     for c_2 in s_1000:
         write_dfset(f'{calc_dir}/DFSET_T={1000}K.dat', c_2)
     return

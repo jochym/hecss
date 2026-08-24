@@ -1,4 +1,4 @@
-"""Generated from notebooks/parallel.py by build.py"""
+"""Generated from notebooks/index.py by build.py"""
 
 from __future__ import annotations
 
@@ -22,8 +22,3 @@ from ase.data import chemical_symbols
 from ase import Atoms
 import spglib
 from spglib import find_primitive, get_symmetry_dataset
-
-
-# Apply patches from @patch decorators
-from fastcore.basics import patch as _patch
-del _patch

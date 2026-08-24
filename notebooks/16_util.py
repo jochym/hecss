@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp util
 
 
 @app.cell
@@ -22,6 +23,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from numpy import dot, loadtxt, allclose, array
     from spglib import find_primitive, get_symmetry_dataset
     from ase import units as un
@@ -31,6 +34,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from ase.build import bulk
     import os
     return (bulk,)
@@ -38,12 +43,16 @@ def _():
 
 @app.cell
 def _(itertools):
+    #| export
+    #| export
     flatten = itertools.chain.from_iterable
     return (flatten,)
 
 
 @app.cell
 def _():
+    #| export
+    #| export
     def select_asap_model(comp='SiC'):
         '''
         This simple function selects the latest *working* OpenKIM model
@@ -72,6 +81,8 @@ def _():
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     def create_asap_calculator(model):    
         import asap3
         return asap3.OpenKIMcalculator(model)
@@ -80,6 +91,8 @@ def _():
 
 @app.cell
 def _(dot):
+    #| export
+    #| export
     def normalize_conf(c, base):
         '''
         Normalize the configuration `c` relative to the basic structure `base`.
@@ -128,6 +141,8 @@ def _(dot):
 
 @app.cell
 def _(loadtxt, un):
+    #| export
+    #| export
     def load_dfset(fn):
         '''
         Load contents of the DFSET file and return dfset array
@@ -160,6 +175,8 @@ def _(loadtxt, un):
 
 @app.cell
 def _():
+    #| export
+    #| export
     def get_dfset_len(fn):
         try:
             with open(fn) as dfset:
@@ -171,6 +188,8 @@ def _():
 
 @app.cell
 def _(load_dfset):
+    #| hide
+    #| hide
     confs = load_dfset('example/VASP_3C-SiC_calculated/2x2x2/T_300K/DFSET.dat')
     len(confs)
     return (confs,)
@@ -178,6 +197,8 @@ def _(load_dfset):
 
 @app.cell
 def _(un):
+    #| export
+    #| export
     def write_dfset(fn, c, comment=''):
         '''
         Append displacement-force data from the conf to the fn file.
@@ -200,6 +221,8 @@ def _(un):
 
 @app.cell
 def _(allclose, confs, loadtxt, write_dfset):
+    #| hide
+    #| hide
     open('TMP/dfset_test.dat', 'w').close()
     for s in confs:
         write_dfset('TMP/dfset_test.dat', s)
@@ -211,6 +234,8 @@ def _(allclose, confs, loadtxt, write_dfset):
 
 @app.cell
 def _():
+    #| export
+    #| export
     def calc_init_xscale(cryst, xsl, skip=None):
         '''
         Calculate initial xscale amplitude correction coefficients 
@@ -266,6 +291,8 @@ def _(allclose, bulk, normalize_conf):
 
 @app.cell
 def _(array):
+    #| export
+    #| export
     def get_cell_data(cell):
         '''
         Create new spglib style of cell data from ase cell.

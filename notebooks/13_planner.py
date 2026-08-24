@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp planner
 
 
 @app.cell
@@ -12,6 +13,8 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
+    #| hide
+    #| hide
     mo.md(r"""
     # Temperature scan planner
     """)
@@ -20,6 +23,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from ase.build import bulk
     import ase.units as un
     from scipy import stats
@@ -32,12 +37,16 @@ def _():
 
 @app.cell
 def _(itertools):
+    #| export
+    #| export
     flatten = itertools.chain.from_iterable
     return (flatten,)
 
 
 @app.cell
 def _(np, plt, stats):
+    #| export
+    #| export
     def plan_T_scan(Tlo, Thi, nat, N=1, plot_dist=True):
         l = Tlo
         n = np.sqrt(3 * nat / 2 / 2)  # 1/sqrt(2) adjusts for the shape of the distribution 
@@ -118,6 +127,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| export
+    #| export
     from hecss.core import HECSS
     from hecss.util import select_asap_model, create_asap_calculator
     from hecss.optimize import make_sampling
@@ -150,6 +161,8 @@ def _(HECSS, bulk, create_asap_calculator, select_asap_model):
 
 @app.cell
 def _(cryst, plan_T_scan, plt):
+    #| export
+    #| export
     N_1 = 1000
     plt.figure(figsize=(10, 6))
     plan_1 = plan_T_scan(150, 250, len(cryst), N_1)
@@ -158,6 +171,8 @@ def _(cryst, plan_T_scan, plt):
 
 @app.cell
 def _(hecss, np, plan_1, tqdm):
+    #| export
+    #| export
     smpls = {}
     for T, sig, n_1 in tqdm(plan_1):
         smpls[T] = np.array([s[-1] for s in hecss._sampler_ser(T, n_1)])
@@ -166,6 +181,8 @@ def _(hecss, np, plan_1, tqdm):
 
 @app.cell
 def _(np, smpls):
+    #| export
+    #| export
     ell = np.concatenate(list(smpls.values()))
     e_min = ell.min()
     e_max = ell.max()
@@ -174,6 +191,8 @@ def _(np, smpls):
 
 @app.cell
 def _(e_max, e_min, ell, plt, smpls):
+    #| export
+    #| export
     for T_1, el_1 in smpls.items():
         plt.hist(el_1, bins=50, histtype='step', label=f'T={T_1:.0f}K', range=(e_min, e_max))
     plt.hist(ell, bins=50, stacked=True, color='C0', alpha=0.25, range=(e_min, e_max))
@@ -183,6 +202,8 @@ def _(e_max, e_min, ell, plt, smpls):
 
 @app.cell
 def _(N_1, e_max, e_min, ell, np, plan_1, plt, smpls, stats, un):
+    #| export
+    #| export
     plt.figure(figsize=(10, 6))
     if N_1 < 10000:
         bins_1 = np.linspace(e_min, e_max, 50) * 2 / un.kB / 3
@@ -222,6 +243,8 @@ def _(mo):
 
 @app.cell
 def _(cryst, plan_T_scan, plt):
+    #| export
+    #| export
     N_2 = 1000
     plt.figure(figsize=(8, 4))
     plan_2 = plan_T_scan(200, 400, len(cryst), N_2)
@@ -231,6 +254,8 @@ def _(cryst, plan_T_scan, plt):
 
 @app.cell
 def _(hecss, plan_2, tqdm):
+    #| export
+    #| export
     smpll = []
     for T_3, sig_2, n_3 in tqdm(plan_2):
         smpll.append([s for s in hecss.sample(T_3, n_3)])
@@ -240,6 +265,8 @@ def _(hecss, plan_2, tqdm):
 
 @app.cell
 def _(smpll):
+    #| export
+    #| export
     usmp = []
     for sl in smpll:
         usmp = usmp + sl
@@ -248,6 +275,8 @@ def _(smpll):
 
 @app.cell
 def _(plt, usmp):
+    #| export
+    #| export
     plt.figure(figsize=(8, 4))
     plt.hist([s[-1] for s in usmp], bins='auto', density=True)
     plt.xlabel('Potential energy (meV/at)')
@@ -259,6 +288,8 @@ def _(plt, usmp):
 
 @app.cell
 def _(N_2, make_sampling, plot_stats, plt, usmp):
+    #| export
+    #| export
     T_4 = 273
     wd = make_sampling(usmp, T_4, N=4 * N_2, nonzero_w=False, debug=True)
     print(len(usmp), len(wd))
@@ -271,6 +302,8 @@ def _(N_2, make_sampling, plot_stats, plt, usmp):
 
 @app.cell
 def _(N_2, ell_1, flatten, np, plan_2, plt, stats, un):
+    #| export
+    #| export
     plt.figure(figsize=(10, 6))
     if N_2 < 1000:
         bins_2 = np.linspace(min(flatten(ell_1)), max(flatten(ell_1)), 40) * 2 / un.kB / 3

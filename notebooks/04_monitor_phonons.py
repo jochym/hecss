@@ -2,10 +2,13 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp monitor_phonons
 
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     import marimo as mo
     return (mo,)
 
@@ -49,6 +52,8 @@ def _(plot_bands_file, plt):
 
 @app.cell
 def _(monitor_phonons):
+    #| export
+    #| export
     T_1 = 3000
     supercell = '2x2x2'
     monitor_phonons(directory=f'example/VASP_3C-SiC_calculated/{supercell}/phon/', dfset=f'../T_3000K/DFSET.dat', kpath='3C_SiC', charge='3C_SiC', sc=f'../sc/CONTCAR', order=1, cutoff=10, born=2, k_list=None, once=True)

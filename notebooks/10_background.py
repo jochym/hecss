@@ -2,6 +2,7 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
+#| default_exp background
 
 
 @app.cell
@@ -128,6 +129,8 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+    #| hide
     from scipy import stats
     from matplotlib import pylab as plt
     import numpy as np
@@ -138,6 +141,8 @@ def _():
 
 @app.cell
 def _(np, plt, stats):
+    #| export
+    #| export
     A = 1
     u = np.linspace(-A, A, 301)[1:-1]
     plt.plot(u, stats.arcsine.pdf(u, -A, 2*A))
@@ -182,6 +187,8 @@ def _(mo):
 
 @app.cell
 def _(np, plt, stats):
+    #| export
+    #| export
     u_1 = np.linspace(0, 4, 301)
     plt.plot(u_1, stats.rayleigh.pdf(u_1))
     plt.xlabel('Amplitude')

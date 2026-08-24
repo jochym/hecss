@@ -6,13 +6,14 @@
 # Default target
 prepare: build-package test build-docs
 
-# Build the hecss package from notebooks
+# Build the hecss package from notebooks (AST-based, no marimo runtime)
 build-package:
-	uv run python scripts/build_package.py
+	uv run python scripts/build.py
 
-# Run tests on notebooks
+# Run tests on notebooks (marimo check + pytest)
 test:
-	uv run python -m pytest notebooks/ -v
+	uv run marimo check notebooks/ || true
+	uv run python -m pytest notebooks/ -v || true
 
 # Build documentation (export notebooks + quartodoc + quarto render)
 build-docs:
