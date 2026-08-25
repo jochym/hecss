@@ -29,9 +29,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 OUTPUT_DIR = PROJECT_ROOT / "hecss"
 
-CANONICAL_MODULES = {
-    "cli", "core", "mh", "monitor", "optimize", "parallel", "planner", "util", "xscale"
-}
+
 
 def detect_module_merges(notebooks_dir: Path) -> dict:
     """
@@ -958,10 +956,6 @@ def main():
         
         # First, convert merged modules
         for module_name, notebook_names in auto_merges.items():
-            if module_name not in CANONICAL_MODULES:
-                print(f"Skipped merge: {module_name} (non-canonical module)")
-                failed += 1
-                continue
             result = convert_merged_module(module_name, notebook_names, output_dir)
             if result:
                 print(f"Merged: {', '.join(notebook_names)} -> {result.name}")
@@ -979,16 +973,6 @@ def main():
             if nb_path.name in merged_notebooks:
                 continue
             
-            # Check if this notebook targets a canonical module
-            source = nb_path.read_text()
-            parsed = parse_marimo_notebook(source)
-            module_name = parsed['module_name']
-            
-            if module_name and module_name not in CANONICAL_MODULES:
-                print(f"Skipped: {nb_path.name} (non-canonical module: {module_name})")
-                failed += 1
-                continue
-            
             result = convert_notebook(nb_path, output_dir)
             if result:
                 print(f"Converted: {nb_path.name} -> {result.name}")
@@ -997,14 +981,11 @@ def main():
                 print(f"Skipped: {nb_path.name} (no #| default_exp)")
                 failed += 1
         
-        # Finally, apply cross-module exports (only for canonical target modules)
+        # Finally, apply cross-module exports
         cross_module_exports = detect_cross_module_exports(NOTEBOOKS_DIR)
         if cross_module_exports:
-            # Filter to only canonical target modules
-            filtered_exports = {mod: exports for mod, exports in cross_module_exports.items() if mod in CANONICAL_MODULES}
-            if filtered_exports:
-                print("\nApplying cross-module exports:")
-                apply_cross_module_exports(output_dir, filtered_exports)
+            print("\nApplying cross-module exports:")
+            apply_cross_module_exports(output_dir, cross_module_exports)
         
         print(f"\nConverted: {converted}, Skipped: {failed}")
 
