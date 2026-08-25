@@ -19,8 +19,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| hide
-    #| hide
+    #| exporti
     import sys
     import pathlib
     from fastcore.basics import patch
@@ -52,8 +51,7 @@ def _():
 
 @app.cell
 def _(stats):
-    #| export
-    #| export
+    #| exporti
     _disp_dists = {
         'normal': stats.norm,
         'logistic': stats.logistic,
@@ -78,7 +76,6 @@ def _(mo):
 
 @app.cell
 def _(Atoms, _disp_dists, np, stats):
-    #| export
     #| export
     class HECSS:
         '''
@@ -172,8 +169,7 @@ def _(Atoms, _disp_dists, np, stats):
 
 @app.cell
 def _(HECSS, patch):
-    #| export
-    #| export
+    #| exporti
     @patch
     def __get_calculator(self: HECSS):
         '''
@@ -187,8 +183,7 @@ def _(HECSS, patch):
 
 @app.cell
 def _(HECSS, Atoms, np, patch, stats, sys):
-    #| export
-    #| export
+    #| exporti
     @patch
     def _estimate_width_scale_ser(self: HECSS, n=1, Tmin=0, Tmax=600, set_scale=True, pbar=None):
         '''
@@ -243,7 +238,6 @@ def _(HECSS, Atoms, np, patch, stats, sys):
 @app.cell
 def _(HECSS, Atoms, np, patch, pathlib, tqdm, un):
     #| export
-    #| export
     @patch
     def estimate_width_scale(self: HECSS, n=1, Tmin=0, Tmax=600,
                              set_scale=True, pbar=None, nwork=None):
@@ -296,8 +290,7 @@ def _(HECSS, Atoms, np, patch, pathlib, tqdm, un):
 
 @app.cell
 def _(HECSS, Atoms, calculator, expit, np, patch, sys, un):
-    #| export
-    #| export
+    #| exporti
     @patch
     def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
                      eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
@@ -440,7 +433,6 @@ def _(HECSS, Atoms, calculator, expit, np, patch, sys, un):
 @app.cell
 def _(HECSS, patch, tqdm):
     #| export
-    #| export
     @patch
     def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwargs):
         '''
@@ -478,8 +470,14 @@ def _(HECSS, patch, tqdm):
 
 
 @app.cell
+def _():
+    #| exporti
+    from hecss.optimize import make_sampling
+    return (make_sampling,)
+
+
+@app.cell
 def _(HECSS, np, patch, un):
-    #| export
     #| export
     @patch
     def generate(self: HECSS, S, T=None, sigma_scale=1.0, border=False, probTH=0.25,
@@ -489,7 +487,6 @@ def _(HECSS, np, patch, un):
         corresponding to temperature `T` and size of the system inferred
         from data.
         '''
-        from hecss.optimize import make_sampling
 
         if T is None:
             T = 2 * np.mean([s[-1] for s in S]) / 3 / un.kB
@@ -500,7 +497,6 @@ def _(HECSS, np, patch, un):
 
 @app.cell(hide_code=True)
 def _(mo):
-    #| hide
     #| hide
     mo.md(r"""
     ### The calculator option in sampler
@@ -516,7 +512,6 @@ def _(mo):
 
 @app.cell
 def _(expit, linspace, plt):
-    #| hide
     #| hide
     x = linspace(0, 2, 100)
     ampl = 0.05

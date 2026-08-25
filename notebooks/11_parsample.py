@@ -2,7 +2,6 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
-#| default_exp parsample
 
 
 @app.cell
@@ -92,6 +91,7 @@ def _(
     sys,
     un,
 ):
+    #| exporti core
     from scipy.special import expit
     from spglib import get_symmetry_dataset
     from hecss.util import get_cell_data
@@ -324,8 +324,7 @@ def _(
 
 @app.cell
 def _(HECSS, patch):
-    #| export
-    #| export
+    #| exporti core
     @patch
     def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
                  eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,

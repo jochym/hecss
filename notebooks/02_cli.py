@@ -39,6 +39,7 @@ def _():
     from ase import units as un
     from numpy import savetxt, loadtxt, array, sqrt
     import hecss
+    from hecss.core import HECSS
     from hecss.util import write_dfset, calc_init_xscale
     from hecss.optimize import make_sampling
     import traceback
@@ -48,7 +49,7 @@ def _():
     return (
         Path, TemporaryDirectory, Vasp, click, traceback,
         os, ase, un, savetxt, loadtxt, array, sqrt,
-        hecss, write_dfset, calc_init_xscale, make_sampling,
+        write_dfset, calc_init_xscale, make_sampling,
         ast,
     )
 
@@ -83,8 +84,7 @@ def _():
 
 @app.cell
 def _(CliRunner, traceback):
-    #| hide
-    #| hide
+    #| exporti
     def run_cli_cmd(cmd, args, prt_result=False):
         print(f'$ {cmd.name} {args}\n')
         run = CliRunner().invoke(cmd, args)
@@ -99,8 +99,7 @@ def _(CliRunner, traceback):
 
 @app.cell
 def _(Path, savetxt, write_dfset):
-    #| hide
-    #| hide
+    #| exporti
     def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
         '''
         Write samples to the DFSET file in the workdir directory.
@@ -399,8 +398,7 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, hecss_sampler, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(hecss_sampler,
                 f"-W {calc_dir.name} "
                 "-T 1000 -N 0 -e 10 "
@@ -422,8 +420,7 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, hecss_sampler, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     open(f'{calc_dir.name}/DFSET.dat', 'wt').close()
     open(f'{calc_dir.name}/DFSET.dat.raw', 'wt').close()
 
@@ -474,8 +471,7 @@ def _(ase, calc_init_xscale, click, hecss, loadtxt, savetxt, _version_message):
 
 @app.cell
 def _(calc_dir, calculate_xscale, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(calculate_xscale, "--help")
     run_cli_cmd(calculate_xscale,
                 f"-o {calc_dir.name}/iscale.dat -s 10 "
@@ -494,8 +490,7 @@ def _(mo):
 
 @app.cell
 def _(calc_dir, calc_dir_2, hecss_sampler, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     open(f'{calc_dir_2.name}/DFSET.dat', 'wt').close()
     open(f'{calc_dir_2.name}/DFSET.dat.raw', 'wt').close()
 
@@ -583,8 +578,7 @@ def _(reshape_sample, run_cli_cmd, subprocess, calc_dir, calc_dir_2):
 
 @app.cell
 def _(calc_dir, reshape_sample, run_cli_cmd, subprocess):
-    #| export
-    #| export
+    #| exporti
     subprocess.call(['rm', '-f', f'{calc_dir.name}/T_300.0K/DFSET.dat'])
     run_cli_cmd(reshape_sample,
                 f" -N 1 -w -d -o {calc_dir.name}/T_300.0K/DFSET.dat"
@@ -646,8 +640,7 @@ def _(Path, click, hecss, _version_message):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(plot_stats, "--help")
 
     run_cli_cmd(plot_stats,
@@ -660,8 +653,7 @@ def _(plot_stats, run_cli_cmd):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(plot_stats,
                 "-n "
                 "-w 7 -h 4 "
@@ -671,8 +663,7 @@ def _(plot_stats, run_cli_cmd):
 
 @app.cell
 def _(plot_stats, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(plot_stats,
                 "-n "
                 "-w 7 -h 4 "
@@ -748,8 +739,7 @@ def _(Path, click, hecss, os, _version_message):
 
 @app.cell
 def _(plot_bands, run_cli_cmd):
-    #| export
-    #| export
+    #| exporti
     run_cli_cmd(plot_bands, "--help")
     run_cli_cmd(plot_bands,
                    "-w 7 -h 4 -l '300K,600K,3000K' "

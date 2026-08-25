@@ -2,7 +2,6 @@ import marimo
 
 __generated_with = "0.23.16"
 app = marimo.App()
-#| default_exp parwidth
 
 
 @app.cell
@@ -78,8 +77,7 @@ def _():
 
 @app.cell
 def _():
-    #| hide
-    #| hide
+    #| exporti core
     import asyncio
     import traceback
     from concurrent.futures import ThreadPoolExecutor
@@ -90,8 +88,7 @@ def _():
 
 @app.cell
 def _(HECSS, ase, asyncio, np, patch, stats, traceback):
-    #| export
-    #| export
+    #| exporti core
     @patch
     async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                                          set_scale=True, pbar=None, nwork=5):
@@ -188,8 +185,7 @@ def _(HECSS, ase, asyncio, np, patch, stats, traceback):
 
 @app.cell
 def _(HECSS, __run_async, patch):
-    #| export
-    #| export
+    #| exporti core
     @patch
     def _estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                                   set_scale=True, pbar=None, nwork=5):

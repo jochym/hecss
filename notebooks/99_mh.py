@@ -103,8 +103,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     import sys
     import ase
     import ase.units as un
@@ -144,8 +143,7 @@ def _():
 
 @app.cell
 def _(un):
-    #| export
-    #| export
+    #| exporti
     def write_dfset(fn, c):
         '''
         Append displacement-force data from the conf to the fn file.
@@ -166,8 +164,7 @@ def _(un):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     def calc_init_xscale(cryst, xsl, skip=None):
         '''
         Calculate initial xscale amplitude correction coefficients
@@ -213,6 +210,7 @@ def _(
     sys,
     un,
 ):
+    #| exporti
     def HECSS_MH_Sampler(cryst, calc, T_goal, width=1, maxburn=20, N=None, w_search=True, delta_sample=0.01, sigma=2, eqdelta=0.05, eqsigma=0.2, xi=1, chi=1, xscale_init=None, Ep0=None, modify=None, modify_args=None, symprec=1e-5, directory=None, reuse_base=None, verb=True, pbar=None, priors=None, posts=None, width_list=None, dofmu_list=None, xscale_list=None):
         """
         Run HECS sampler on the system `cryst` using calculator `calc` at target
@@ -471,8 +469,7 @@ def _(expit, linspace, plt):
 
 @app.cell
 def _(HECSS_MH_Sampler, tqdm):
-    #| export
-    #| export
+    #| exporti
     class HECSS_MH:
         """
         Class facilitating more traditional use of the `HECSS_Sampler` generator.
@@ -530,8 +527,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     from ase.build import bulk
     from ase.spacegroup import crystal
     from hecss.monitor import plot_stats, plot_virial_stat, plot_xs_stat
@@ -569,8 +565,7 @@ def _(bulk, create_asap_calculator, select_asap_model):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, cryst, model):
-    #| export
-    #| export
+    #| exporti
     T = 600
     xsl = []
     dofmu = []
@@ -585,8 +580,7 @@ def _(HECSS_MH, create_asap_calculator, cryst, model):
 
 @app.cell
 def _(T, plot_stats, sampler):
-    #| export
-    #| export
+    #| exporti
     N = 1_000
     samples = sampler.generate(N)
     plot_stats(samples, T, sqrN=True)
@@ -595,8 +589,7 @@ def _(T, plot_stats, sampler):
 
 @app.cell
 def _(cryst, np, plt, xsl):
-    #| export
-    #| export
+    #| exporti
     plt.figure(figsize=(10, 4))
     for n, el in enumerate(set(cryst.get_chemical_symbols())):
         elmap = np.array(cryst.get_chemical_symbols()) == el
@@ -650,8 +643,7 @@ def _(mo):
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
-    #| export
-    #| export
+    #| exporti
     omodel = select_asap_model('Universal')
     print(f'Using potential model: {omodel}')
 
@@ -663,8 +655,7 @@ def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
 
 @app.cell
 def _(np, oliv, un):
-    #| export
-    #| export
+    #| exporti
     print(f'Max. stress: {np.abs(oliv.get_stress()[:3]).max()/un.GPa:.3f} GPa')
     print(f'Max. force : {np.abs(oliv.get_forces()).max():.3f} eV/A')
     return
@@ -672,8 +663,7 @@ def _(np, oliv, un):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, oliv, omodel, plot_stats):
-    #| export
-    #| export
+    #| exporti
     T_1 = 600
     dofmu_1 = []
     xsl_1 = []

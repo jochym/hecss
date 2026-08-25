@@ -6,7 +6,6 @@ app = marimo.App()
 
 @app.cell
 def _():
-    #| default_exp monitor_phonons
     return
 
 

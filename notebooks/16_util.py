@@ -23,8 +23,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     from numpy import dot, loadtxt, allclose, array
     from spglib import find_primitive, get_symmetry_dataset
     from ase import units as un
@@ -43,16 +42,14 @@ def _():
 
 @app.cell
 def _(itertools):
-    #| export
-    #| export
+    #| exporti
     flatten = itertools.chain.from_iterable
     return (flatten,)
 
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     def select_asap_model(comp='SiC'):
         '''
         This simple function selects the latest *working* OpenKIM model
@@ -81,8 +78,7 @@ def _():
 
 @app.cell
 def _():
-    #| hide
-    #| hide
+    #| exporti
     def create_asap_calculator(model):    
         import asap3
         return asap3.OpenKIMcalculator(model)
@@ -91,7 +87,6 @@ def _():
 
 @app.cell
 def _(dot):
-    #| export
     #| export
     def normalize_conf(c, base):
         '''
@@ -142,7 +137,6 @@ def _(dot):
 @app.cell
 def _(loadtxt, un):
     #| export
-    #| export
     def load_dfset(fn):
         '''
         Load contents of the DFSET file and return dfset array
@@ -176,7 +170,6 @@ def _(loadtxt, un):
 @app.cell
 def _():
     #| export
-    #| export
     def get_dfset_len(fn):
         try:
             with open(fn) as dfset:
@@ -197,7 +190,6 @@ def _(load_dfset):
 
 @app.cell
 def _(un):
-    #| export
     #| export
     def write_dfset(fn, c, comment=''):
         '''
@@ -234,7 +226,6 @@ def _(allclose, confs, loadtxt, write_dfset):
 
 @app.cell
 def _():
-    #| export
     #| export
     def calc_init_xscale(cryst, xsl, skip=None):
         '''
@@ -291,8 +282,7 @@ def _(allclose, bulk, normalize_conf):
 
 @app.cell
 def _(array):
-    #| export
-    #| export
+    #| exporti
     def get_cell_data(cell):
         '''
         Create new spglib style of cell data from ase cell.

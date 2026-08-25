@@ -23,8 +23,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
     from numpy import sqrt, loadtxt, array, linspace, histogram
     from numpy import median, abs, convolve, ones, arange, cumsum, fromiter
     from IPython.display import clear_output
@@ -85,8 +84,7 @@ def _():
 
 @app.cell
 def _():
-    #| hide
-    #| export
+    #| exporti
     from ase.data import chemical_symbols
     from ase import units as un
     THz = 1e12 * un._hplanck * un.J
@@ -289,14 +287,12 @@ def _(
     get_dfset_len,
     loadtxt,
     plot_omega,
-    plt,
-    run_alamode,
-    sca,
     show,
     show_dc_conv,
     sleep,
     sys,
 ):
+    #| export
     def monitor_phonons(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', sc='../sc/CONTCAR',
                         order=1, cutoff=10, born=None, charge=None, k_list=None,
                         fig_out=None, once=False):
@@ -469,6 +465,7 @@ def _(load_dfset, plot_stats):
 
 @app.cell
 def _(clear_output, get_dfset_len, load_dfset, plot_stats, show, sleep, sys):
+    #| export
     def monitor_stats(T, dfset, plotchi2=False, sqrN=False, once=False):
 
         prev_N = get_dfset_len(dfset) - 1
@@ -520,6 +517,7 @@ def _(convolve, ones):
 
 @app.cell
 def _(arange):
+    #| export
     def ewma(data, window):
 
         alpha = 2 / (window + 1.0)
@@ -631,6 +629,7 @@ def _(
     xlim,
     ylabel,
 ):
+    #| export
     def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
         symm = get_symmetry_dataset(get_cell_data(cryst))
         dofmap = symm.mapping_to_primitive
@@ -708,6 +707,7 @@ def _(
     xlim,
     ylabel,
 ):
+    #| export
     def plot_xs_stat(cryst, xsl, skip=10, window=10):
         symm = get_symmetry_dataset(get_cell_data(cryst))
         dofmap = symm.mapping_to_primitive
