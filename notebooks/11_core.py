@@ -586,7 +586,7 @@ def _(HECSS, Atoms, calculator, expit, np, patch, sys, un):
                     # Continue
                     k += 1
                     if k>self.maxburn :
-                        print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
+                        print(f'\nError: reached maxburn ({self.maxburn}) without finding target energy.\n'+
                             f'You probably need to change initial width parameter (current:{w})' +
                             f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
                         return
