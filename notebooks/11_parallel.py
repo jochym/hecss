@@ -33,8 +33,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| hide
-    #| hide
+    #| exporti
     from fastcore.basics import patch
     import ase
     from ase.utils import workdir
@@ -64,13 +63,16 @@ def _(ThreadPoolExecutor, asyncio):
         '''
         try:
             loop = asyncio.get_running_loop()
-        except RuntimeError:
+        except RuntimeError:  # 'RuntimeError: There is no current event loop...'
             loop = None
-
-        if loop and loop.is_running():
+    
+        if loop and loop.is_running():        
+            # print('Async event loop already running. Running in new thread.')
+            # Create a separate thread so we can block before returning
             with ThreadPoolExecutor(1) as pool:
                 result = pool.submit(lambda: asyncio.run(func(*args, **kwargs))).result()
         else:
+            # print('Starting new event loop')
             result = asyncio.run(func(*args, **kwargs))
         return result
 
@@ -87,6 +89,8 @@ def _(Vasp, asyncio, patch):
         Method to explicitly execute VASP in async mode
         This is an asyncio version of the function.
         """
+        # DEBUG
+        # print(f'Async _run {command} in {directory}')
         if command is None:
             command = self.command
         if directory is None:
@@ -100,6 +104,14 @@ def _(Vasp, asyncio, patch):
                 )
 
         stdout, stderr = await proc.communicate()
+
+        # DEBUG
+        # print(f'[{command!r} exited with {proc.returncode}]')
+        # if stdout:
+        #     print(f'[stdout]\n{stdout.decode()}')
+        # if stderr:
+        #     print(f'[stderr]\n{stderr.decode()}')
+    
         return proc.returncode
 
     return
@@ -117,35 +129,39 @@ def _(Vasp, calculator, check_atoms, patch, workdir):
                            ):
         """
         Do a VASP calculation in the specified directory.
-
+    
         This will generate the necessary VASP input files, and then
         execute VASP. After execution, the energy, forces. etc. are read
         from the VASP output files.
 
         This is an asyncio version of the function.
         """
+        # Check for zero-length lattice vectors and PBC
+        # and that we actually have an Atoms object.
         check_atoms(atoms)
-
+    
         self.clear_results()
-
+    
         if atoms is not None:
             self.atoms = atoms.copy()
-
+    
         command = self.make_command(self.command)
+        # Make sure the working directory exists
         with workdir(self.directory, mkdir=True):
             pass
         self.write_input(self.atoms, properties, system_changes)
-
+    
         with self._txt_outstream() as out:
             errorcode = await self._arun(command=command,
                                          out=out,
                                          directory=self.directory)
-
+    
         if errorcode:
             raise calculator.CalculationFailed(
                 '{} in {} returned an error: {:d}'.format(
                     self.name, self.directory, errorcode))
-
+    
+        # Read results from calculation
         self.update_atoms(atoms)
         self.read_results()
         return errorcode

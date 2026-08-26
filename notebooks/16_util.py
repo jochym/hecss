@@ -54,7 +54,7 @@ def _():
         '''
         This simple function selects the latest *working* OpenKIM model
         containing `comp` in the name. Required since some models are 
-        not loading properly and the names are not stable.
+        not loding properly and the names are not stable.
         OUTPUT
         ------
         Name of the model. If nothing is found returns None.
@@ -62,14 +62,14 @@ def _():
         import asap3
         models = []
         for pot in [pot for pot in asap3.OpenKIMavailable() if comp in pot]:
-            try:
+            try :
                 calc = asap3.OpenKIMcalculator(pot)
                 models.append(pot)
-            except asap3.AsapError:
+            except asap3.AsapError :
                 pass
-        if models:
+        if models :
             model = sorted(models, key=lambda m: m.split('_')[3])[-1]
-        else:
+        else :
             model = None
         return model
 
@@ -91,23 +91,23 @@ def _(dot):
     def normalize_conf(c, base):
         '''
         Normalize the configuration `c` relative to the basic structure `base`.
-        Normalization is performed by "unwrapping" the displacements of atoms
+        Normalization is performed by "nuwrapping" the displacements of atoms
         when they cross the periodic boundary conditions in such a way that the
         atoms are not "jumping" from one side of the cell to the other. 
-
+    
         E.g. if the atom at r=(0,0,0) goes to the relative position (-0.01, 0, 0)
-        it is "wrapped" by PBC to the r=(0.99, 0, 0). Thus if we naively calculate
+        it is "wrapped" by PBC to the r=(0.99, 0, 0). Thus if we naiively calculate
         the displacement we will get a large positive displacement (0.99 of the cell 
         vector) instead of a small negative one. 
-
+    
         This function reverses that process making the positions suitable for 
-        differentiation. The positions may be part of a continuous trajectory or
+        differentiation. The positions may be part of a continous trajectory or
         just independent configurations. This makes it impossible for described 
         procedure to work if the displacements are above 1/2 of the unit cell.
-        For safety this implementation is limited to displacements < 1/3 of the 
+        For sefety this implementation is limited to displacements < 1/3 of the 
         unit cell. If any coordinate changes by more then 1/3 the function
-        will raise an AssertionError exception.
-
+        will rise an AssertionError exception.
+    
         This implementation is not suitable for tracking positions in the system
         with systematic drift (e.g. long MD trajectory with non-perfect momentum
         conservation). For stronger implementation suitable for such cases look
@@ -128,8 +128,8 @@ def _(dot):
         # Calculate unwrapped spos
         spos = bspos + sdx
 
-        # Return cartesian positions, fractional positions
-        return dot(spos, cell), spos
+        # Return carthesian positions, fractional positions
+        return dot(spos,cell), spos
 
     return (normalize_conf,)
 
@@ -139,11 +139,11 @@ def _(loadtxt, un):
     #| export
     def load_dfset(fn):
         '''
-        Load contents of the DFSET file and return dfset array
+        Load contents of the DFSET flie and return dfset array
         '''
         N = get_dfset_len(fn)
-        dfset = loadtxt(fn).reshape(N, -1, 6)
-        nat = dfset.shape[1]
+        dfset = loadtxt(fn).reshape(N,-1,6)
+        nat=dfset.shape[1]
     
         confs = []
         sets = []
@@ -157,9 +157,9 @@ def _(loadtxt, un):
                 s = int(s)
                 c = int(c)
                 e = float(e)
-                confs.append((n, c, 
-                              dfset[n, :, :3]*un.Bohr, 
-                              dfset[n, :, 3:]*un.Ry/un.Bohr, e))
+                confs.append((n,c, 
+                              dfset[n,:,:3]*un.Bohr, 
+                              dfset[n,:,3:]*un.Ry/un.Bohr, e))
                 n += 1
             
         return confs
@@ -171,11 +171,11 @@ def _(loadtxt, un):
 def _():
     #| export
     def get_dfset_len(fn):
-        try:
+        try :
             with open(fn) as dfset:
                 return len([l for l in dfset if 'set:' in l])
         except FileNotFoundError:
-            return 0
+                return 0
     return (get_dfset_len,)
 
 
@@ -195,7 +195,7 @@ def _(un):
         '''
         Append displacement-force data from the conf to the fn file.
         The format is suitable for use as ALAMODE DFSET file.
-        Optionally you can provide configuration number in n.
+        Optionaly you can provide configuration number in n.
         File need not exist prior to first call. 
         If it does not it will be created.
         '''
@@ -204,7 +204,7 @@ def _(un):
             if comment:
                 print('##', comment, file=dfset)
             print(f'# set: {n:04d} config: {i:04d}  energy: {e:8e} eV/at', file=dfset)
-            for ui, fi in zip(x, f):
+            for ui, fi in zip(x,f):
                 print((3*'%15.7f ' + '     ' + 3*'%15.8e ') % 
                             (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), 
                             file=dfset)
@@ -232,14 +232,14 @@ def _():
         Calculate initial xscale amplitude correction coefficients 
         from the history exported from the previous calculation 
         (with `xscale_list` argument). 
-        
+    
         INPUT
         -----
         cryst : ASE structure 
         xsl   : List of amplitude correction coefficients. The shape of 
                 each element of the list must be `cryst.get_positions().shape`
         skip  : Number of samples to skip at the start of the xsl list
-        
+    
         OUTPUT
         ------
         Array amplitude correction coefficients with shape the same as
@@ -253,7 +253,7 @@ def _():
         xs = array(xsl)[skip:]
         xscale = ones(xs[0].shape)
         for i, el in enumerate(set(elmap)):
-            xscale[elmap==el] = xs[:, elmap==el, :].mean()
+            xscale[elmap==el] = xs[:,elmap==el,:].mean()
         return xscale
 
     return (calc_init_xscale,)

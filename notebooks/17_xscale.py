@@ -65,26 +65,28 @@ def _(np, plot_hist, plt):
     def plot_virial_stat(cryst, smpl, normal=True):
         elems = cryst.get_chemical_symbols()
         elmap = cryst.get_atomic_numbers()
-        vir = np.array([abs(s[2] * s[3]) for s in smpl])
-        vir = vir / vir.mean(axis=(-1, -2))[:, None, None]
+        vir = np.array([abs(s[2]*s[3]) for s in smpl])
+        vir /= vir.mean(axis=(-1,-2))[:,None,None]
         nat = len(elems)
         xscale = np.ones(cryst.get_positions().shape)
+        # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)
         mi = 1
         ma = 1
         for n, el in enumerate(sorted(set(elems))):
-            elmask = np.array(elems) == el
-            m, s = plot_hist(1 / np.sqrt(vir[:, elmask, :].mean(axis=(-1, -2))), el, n + 1, normal=normal, df=3 * sum(elmask))
-            if mi > m - 3 * s:
-                mi = m - 3 * s
-            if ma < m + 3 * s:
-                ma = m + 3 * s
+            elmask = np.array(elems)==el
+            m, s = plot_hist(1/np.sqrt(vir[:, elmask, :].mean(axis=(-1,-2))), 
+                             el, n+1, normal=normal, df=3*sum(elmask))
+            if mi > m-3*s:
+                mi = m-3*s
+            if ma < m+3*s:
+                ma = m+3*s
             xscale[elmask] = m
         plt.axvline(1, ls=':', color='C5', label='Equilibrium')
         plt.xlim(mi, ma)
         plt.legend()
         plt.title('Normalized Virial distribution in the sample')
         plt.ylabel('Probability density')
-        plt.xlabel('Normalized Virial')
+        plt.xlabel('Normalized Virial');
         return xscale
 
     return (plot_virial_stat,)
@@ -92,8 +94,7 @@ def _(np, plot_hist, plt):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| hide
     from hecss.monitor import plot_stats, plot_xs_stat
     from hecss.monitor import plot_acceptance_history, plot_dofmu_stat
     from hecss.util import select_asap_model, create_asap_calculator
@@ -110,8 +111,7 @@ def _():
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
-    #| export
-    #| export
+    #| hide
     model = select_asap_model('Universal')
     print(f'Using potential model: {model}')
 
@@ -132,8 +132,7 @@ def _(HECSS, create_asap_calculator, model, oliv):
 
 @app.cell
 def _(np, oliv, plot_hist, plt, sampler, un):
-    #| export
-    #| export
+    #| hide
     wm = np.array(sampler._eta_list).T
     y = np.sqrt((3 * wm[1] * un.kB) / (2 * wm[2]))
     plot_hist(y, '', 0, normal=False, df=3 * len(oliv))
@@ -144,8 +143,7 @@ def _(np, oliv, plot_hist, plt, sampler, un):
 
 @app.cell
 def _(oliv, plot_virial_stat, plt, sampler):
-    #| export
-    #| export
+    #| hide
     plt.semilogx()
     plot_virial_stat(oliv, sampler._eta_samples, normal=False)
     return
@@ -153,8 +151,7 @@ def _(oliv, plot_virial_stat, plt, sampler):
 
 @app.cell
 def _(sampler, xscl):
-    #| export
-    #| export
+    #| hide
     T = 600
     N_1 = 1000
     dofmu = []
@@ -166,24 +163,21 @@ def _(sampler, xscl):
 
 @app.cell
 def _(oliv, osamples, plot_virial_stat):
-    #| export
-    #| export
+    #| hide
     plot_virial_stat(oliv, osamples, normal=False)
     return
 
 
 @app.cell
 def _(dofmu, oliv, plot_dofmu_stat):
-    #| export
-    #| export
+    #| hide
     plot_dofmu_stat(oliv, dofmu, skip=0, window=10)
     return
 
 
 @app.cell
 def _(oliv, plot_xs_stat, xsl):
-    #| export
-    #| export
+    #| hide
     plot_xs_stat(oliv, xsl, skip=0, window=10)
     return
 

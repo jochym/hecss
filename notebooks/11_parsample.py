@@ -92,9 +92,6 @@ def _(
     un,
 ):
     #| exporti core
-    from scipy.special import expit
-    from spglib import get_symmetry_dataset
-    from hecss.util import get_cell_data
 
     @patch
     async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,

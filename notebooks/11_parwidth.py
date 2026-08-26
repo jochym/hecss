@@ -319,8 +319,8 @@ def _(hecss):
 
 
 @app.cell
-async def _(N, hecss):
-    await hecss.__estimate_width_scale_aio(N//2, Tmax=2000, nwork=N//2)
+def _(N, asyncio, hecss):
+    asyncio.run(hecss.__estimate_width_scale_aio(N//2, Tmax=2000, nwork=N//2))
     return
 
 
