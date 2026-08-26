@@ -13,66 +13,34 @@ import ase.units as un
 import numpy as np
 import spglib
 from ase.calculators.vasp import Vasp
-from hecss.monitor import plot_acceptance_history, plot_dofmu_stat
 from hecss.monitor import plot_hist
-from hecss.monitor import plot_stats, plot_xs_stat
-from hecss.util import calc_init_xscale
 from hecss.util import normalize_conf, get_cell_data
-from hecss.util import select_asap_model, create_asap_calculator
 from scipy.special import expit
 from scipy.stats import chi2, chi, norm
-from tqdm.auto import tqdm
 
 def plot_virial_stat(cryst, smpl, normal=True):
     elems = cryst.get_chemical_symbols()
     elmap = cryst.get_atomic_numbers()
-    vir = np.array([abs(s[2] * s[3]) for s in smpl])
-    vir = vir / vir.mean(axis=(-1, -2))[:, None, None]
+    vir = np.array([abs(s[2]*s[3]) for s in smpl])
+    vir /= vir.mean(axis=(-1,-2))[:,None,None]
     nat = len(elems)
     xscale = np.ones(cryst.get_positions().shape)
+    # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)
     mi = 1
     ma = 1
     for n, el in enumerate(sorted(set(elems))):
-        elmask = np.array(elems) == el
-        m, s = plot_hist(1 / np.sqrt(vir[:, elmask, :].mean(axis=(-1, -2))), el, n + 1, normal=normal, df=3 * sum(elmask))
-        if mi > m - 3 * s:
-            mi = m - 3 * s
-        if ma < m + 3 * s:
-            ma = m + 3 * s
+        elmask = np.array(elems)==el
+        m, s = plot_hist(1/np.sqrt(vir[:, elmask, :].mean(axis=(-1,-2))), 
+                         el, n+1, normal=normal, df=3*sum(elmask))
+        if mi > m-3*s:
+            mi = m-3*s
+        if ma < m+3*s:
+            ma = m+3*s
         xscale[elmask] = m
     plt.axvline(1, ls=':', color='C5', label='Equilibrium')
     plt.xlim(mi, ma)
     plt.legend()
     plt.title('Normalized Virial distribution in the sample')
     plt.ylabel('Probability density')
-    plt.xlabel('Normalized Virial')
+    plt.xlabel('Normalized Virial');
     return xscale
-
-model = select_asap_model('Universal')
-print(f'Using potential model: {model}')
-
-oliv = ase.io.read('data/spinel.POSCAR')
-oliv.calc = create_asap_calculator(model)
-print(f'Space group: {spglib.get_spacegroup(get_cell_data(oliv))}')
-
-wm = np.array(sampler._eta_list).T
-y = np.sqrt((3 * wm[1] * un.kB) / (2 * wm[2]))
-plot_hist(y, '', 0, normal=False, df=3 * len(oliv))
-plt.legend()
-plt.show()
-
-plt.semilogx()
-plot_virial_stat(oliv, sampler._eta_samples, normal=False)
-
-T = 600
-N_1 = 1000
-dofmu = []
-xsl = []
-sampler.xscale_init = xscl.copy()
-osamples = sampler.sample(T, N_1, dofmu_list=dofmu, xscale_list=xsl)
-
-plot_virial_stat(oliv, osamples, normal=False)
-
-plot_dofmu_stat(oliv, dofmu, skip=0, window=10)
-
-plot_xs_stat(oliv, xsl, skip=0, window=10)
