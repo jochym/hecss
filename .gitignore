@@ -190,3 +190,6 @@ reference/
 _site/
 _docs/
 uv.lock
+
+# build_lib intermediates
+/build/
