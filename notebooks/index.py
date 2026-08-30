@@ -1,14 +1,13 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
 
 
 @app.cell
 def _():
-    #| hide
-    #| hide
     import marimo as mo
+
     return (mo,)
 
 
@@ -16,7 +15,6 @@ def _():
 def _(mo):
     mo.md(r"""
     # HECSS
-
     > High Efficiency Configuration Space Sampler
     """)
     return
@@ -58,8 +56,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| asap
     from hecss import HECSS
     from hecss.util import select_asap_model, create_asap_calculator
     from hecss.monitor import plot_stats
@@ -78,11 +75,10 @@ def _(mo):
 
 @app.cell
 def _(bulk, create_asap_calculator, select_asap_model):
-    #| export
-    #| export
+    #| asap
     model = select_asap_model('SiC')
-    cryst = bulk('SiC', crystalstructure='zincblende',
-                 a=4.38120844, cubic=True).repeat((3, 3, 3))
+    cryst = bulk('SiC', crystalstructure='zincblende', 
+                 a=4.38120844, cubic=True).repeat((3,3,3))
     cryst.calc = create_asap_calculator(model)
     return cryst, model
 
@@ -97,11 +93,10 @@ def _(mo):
 
 @app.cell
 def _(HECSS, create_asap_calculator, cryst, model):
-    #| export
-    #| export
+    #| asap
     T = 300
     N = 100
-    hecss = HECSS(cryst, lambda: create_asap_calculator(model))
+    hecss = HECSS(cryst, lambda : create_asap_calculator(model))
     samples = hecss.sample(T, N)
     distrib = hecss.generate(samples, T)
     return T, distrib
@@ -117,8 +112,7 @@ def _(mo):
 
 @app.cell
 def _(T, distrib, plot_stats):
-    #| export
-    #| export
+    #| asap
     plot_stats(distrib, T, sqrN=True)
     return
 

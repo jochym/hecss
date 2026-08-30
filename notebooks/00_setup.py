@@ -1,14 +1,13 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
 
 
 @app.cell
 def _():
-    #| hide
-    #| hide
     import marimo as mo
+
     return (mo,)
 
 

@@ -1,13 +1,16 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
+
 #| default_exp xscale
+
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -23,18 +26,19 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| exporti
+
     from hecss import HECSS
     from hecss.util import normalize_conf, get_cell_data
     from hecss.monitor import plot_hist
+
     return HECSS, get_cell_data, normalize_conf, plot_hist
 
 
 @app.cell
 def _():
-    #| hide
-    #| export
+    #| exporti
+
     import numpy as np
     from scipy.special import expit
     from scipy.stats import chi2, chi, norm
@@ -61,32 +65,29 @@ def _(mo):
 @app.cell
 def _(np, plot_hist, plt):
     #| export
-    #| export
     def plot_virial_stat(cryst, smpl, normal=True):
         elems = cryst.get_chemical_symbols()
         elmap = cryst.get_atomic_numbers()
-        vir = np.array([abs(s[2]*s[3]) for s in smpl])
-        vir /= vir.mean(axis=(-1,-2))[:,None,None]
+        vir = np.array([abs(s[2] * s[3]) for s in smpl])
+        vir = vir / vir.mean(axis=(-1, -2))[:, None, None]
         nat = len(elems)
         xscale = np.ones(cryst.get_positions().shape)
-        # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)
         mi = 1
-        ma = 1
+        ma = 1  # m, s = plot_hist(vir.mean(axis=(-1,-2)), 'Total', 0, normal=True)
         for n, el in enumerate(sorted(set(elems))):
-            elmask = np.array(elems)==el
-            m, s = plot_hist(1/np.sqrt(vir[:, elmask, :].mean(axis=(-1,-2))), 
-                             el, n+1, normal=normal, df=3*sum(elmask))
-            if mi > m-3*s:
-                mi = m-3*s
-            if ma < m+3*s:
-                ma = m+3*s
+            elmask = np.array(elems) == el
+            m, s = plot_hist(1 / np.sqrt(vir[:, elmask, :].mean(axis=(-1, -2))), el, n + 1, normal=normal, df=3 * sum(elmask))
+            if mi > m - 3 * s:
+                mi = m - 3 * s
+            if ma < m + 3 * s:
+                ma = m + 3 * s
             xscale[elmask] = m
         plt.axvline(1, ls=':', color='C5', label='Equilibrium')
         plt.xlim(mi, ma)
         plt.legend()
         plt.title('Normalized Virial distribution in the sample')
         plt.ylabel('Probability density')
-        plt.xlabel('Normalized Virial');
+        plt.xlabel('Normalized Virial')
         return xscale
 
     return (plot_virial_stat,)
@@ -94,7 +95,7 @@ def _(np, plot_hist, plt):
 
 @app.cell
 def _():
-    #| hide
+    #| asap
     from hecss.monitor import plot_stats, plot_xs_stat
     from hecss.monitor import plot_acceptance_history, plot_dofmu_stat
     from hecss.util import select_asap_model, create_asap_calculator
@@ -111,7 +112,7 @@ def _():
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
-    #| hide
+    #| asap
     model = select_asap_model('Universal')
     print(f'Using potential model: {model}')
 
@@ -123,19 +124,20 @@ def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
 
 @app.cell
 def _(HECSS, create_asap_calculator, model, oliv):
+    #| asap
     N = 100
 
-    sampler = HECSS(oliv, lambda: create_asap_calculator(model))
+    sampler = HECSS(oliv, lambda : create_asap_calculator(model))
     m, s, xscl = sampler.estimate_width_scale(N, Tmax=1000)
     return sampler, xscl
 
 
 @app.cell
 def _(np, oliv, plot_hist, plt, sampler, un):
-    #| hide
+    #| asap
     wm = np.array(sampler._eta_list).T
-    y = np.sqrt((3 * wm[1] * un.kB) / (2 * wm[2]))
-    plot_hist(y, '', 0, normal=False, df=3 * len(oliv))
+    y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
+    plot_hist(y, '', 0, normal=False, df=3*len(oliv))
     plt.legend()
     plt.show()
     return
@@ -143,41 +145,43 @@ def _(np, oliv, plot_hist, plt, sampler, un):
 
 @app.cell
 def _(oliv, plot_virial_stat, plt, sampler):
-    #| hide
+    #| asap
     plt.semilogx()
-    plot_virial_stat(oliv, sampler._eta_samples, normal=False)
+    plot_virial_stat(oliv, sampler._eta_samples, normal=False);
     return
 
 
 @app.cell
 def _(sampler, xscl):
-    #| hide
+    #| asap
     T = 600
     N_1 = 1000
     dofmu = []
     xsl = []
     sampler.xscale_init = xscl.copy()
+    # osamples = [s for s in tqdm(sampler._sampler(T, N, 
+    #                                             dofmu_list=dofmu, xscale_list=xsl), total=N)]
     osamples = sampler.sample(T, N_1, dofmu_list=dofmu, xscale_list=xsl)
     return dofmu, osamples, xsl
 
 
 @app.cell
 def _(oliv, osamples, plot_virial_stat):
-    #| hide
-    plot_virial_stat(oliv, osamples, normal=False)
+    #| asap
+    plot_virial_stat(oliv, osamples, normal=False);
     return
 
 
 @app.cell
 def _(dofmu, oliv, plot_dofmu_stat):
-    #| hide
+    #| asap
     plot_dofmu_stat(oliv, dofmu, skip=0, window=10)
     return
 
 
 @app.cell
 def _(oliv, plot_xs_stat, xsl):
-    #| hide
+    #| asap
     plot_xs_stat(oliv, xsl, skip=0, window=10)
     return
 
@@ -187,13 +191,14 @@ def _(mo):
     mo.md(r"""
     ## VASP calculations
 
-    > Here we use pre-calculated vasp data for 3C-SiC 2x2x2 supercell
+    > Here we use pre-calculated vasp data for 3C-SiC 2x2x2 suprecell
     """)
     return
 
 
 @app.cell
 def _():
+    # Use more realistic pre-calculated data 
     supercell = '2x2x2'
     return (supercell,)
 
@@ -216,7 +221,7 @@ def _(get_cell_data, get_symmetry_dataset, np, sc):
     eqsigma = 0.2
     nat = len(sc)
     dim = (nat, 3)
-    symprec = 1e-5
+    symprec = 1e-05
     symm = get_symmetry_dataset(get_cell_data(sc), symprec=symprec)
     dofmap = symm.mapping_to_primitive
     dof = list(sorted(set(dofmap)))
@@ -231,6 +236,7 @@ def _(ase, dim, dof, dofmap, e0, glob, nat, normalize_conf, np, sc, supercell):
     dofxs = np.array([xscale[dofmap == d, :].mean(axis=0) for d in dof])
     vt = []
     for i, sfn in enumerate(sorted(glob(f'example/VASP_3C-SiC_calculated/calc_{supercell}/w_est/*/vasprun.xml'))):
+    # for i, sfn in enumerate(sorted(glob(f'TMP/calc_{supercell}/w_est/*/vasprun.xml'))):
         s_1 = ase.io.read(sfn)
         dx = normalize_conf(s_1, sc)[0] - sc.get_positions()
         try:
@@ -241,8 +247,8 @@ def _(ase, dim, dof, dofmap, e0, glob, nat, normalize_conf, np, sc, supercell):
             v = v / v.mean()
             dofv = np.array([v[dofmap == d, :].mean(axis=0) for d in dof])
             vt.append(dofv.reshape(-1))
-        except RuntimeError:
-            continue
+        except RuntimeError:  # dofxs *= (1-2*eqdelta*(expit((np.sqrt(dofmu)-1)/eqsigma)-0.5))
+            continue  # dofxs /= np.sqrt((dofxs**2).mean())
     vt = np.array(vt).reshape(-1, 2, 3)
     vta = vt.reshape(-1, 2, 3).mean(axis=-1)
     mu_1 = vta.cumsum(axis=0)
@@ -252,6 +258,7 @@ def _(ase, dim, dof, dofmap, e0, glob, nat, normalize_conf, np, sc, supercell):
 
 @app.cell
 def _(mu_1, plt, vta):
+    # plt.semilogy()
     plt.plot(mu_1, '-')
     plt.plot(vta, '.', ms=1)
     for dofn in (0, 1):

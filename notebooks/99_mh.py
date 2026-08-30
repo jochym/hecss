@@ -1,7 +1,8 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
+
 #| hide
 # Legacy reference only (pre-0.6 sampler). Not built into the library:
 # this notebook carries no module-target tag, so build_lib skips it.
@@ -10,6 +11,7 @@ app = marimo.App()
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -18,7 +20,7 @@ def _(mo):
     mo.md(r"""
     # MH (Metropolis-Hastings)
 
-    > This is an old (pre 0.6) implementation of the HECSS sampler using Metropolis-Hastings algorithm. This is deprecated and should not be used. The core functionality of the HECSS module is provided by the `HECSS` class which encapsulates the `HECSS_Sampler` factory function, which returns sampler as an iterator. The other functions in this module: `normalize_conf` and `write_dfset` are just utilities which are useful in typical use cases.
+    > This is an old (pre 0.6) implementation of the HECSS sampler using Metropolis-Hastings algorithm. This is depreciated and should not be used. The core functionality of the HECSS module is provided by the `HECSS` class which encapsulates the `HECSS_Sampler` factory function, which returns sampler as an iterator. The other functions in this module: `normalize_conf` and `write_dfset` are just utilities which are useful in typical use cases.
     """)
     return
 
@@ -82,7 +84,7 @@ def _(mo):
     mo.md(r"""
     ## `HECSS` class
 
-    Standard interface to the HECSS library. This class encapsulates the actual sampler implemented in the `HECSS_Sampler` generator function and provides main functionality of the library through the `generate` method.
+    Standard interface to the HECSS library. This class encapsulates the actual sampler implemented in the `HECSS_Sampler` generator funtion and provides main functionality of the library through the `generate` method.
     """)
     return
 
@@ -161,41 +163,40 @@ def _(un):
                 print((3*'%15.7f ' + '     ' + 3*'%15.8e ') % 
                             (tuple(ui/un.Bohr) + tuple(fi*un.Bohr/un.Ry)), 
                             file=dfset)
+
     return
 
 
-@app.cell
-def _():
-    #| exporti
-    def calc_init_xscale(cryst, xsl, skip=None):
-        '''
-        Calculate initial xscale amplitude correction coefficients 
-        from the history exported from the previous calculation 
-        (with `xscale_list` argument). 
+@app.function
+#| exporti
+def calc_init_xscale(cryst, xsl, skip=None):
+    '''
+    Calculate initial xscale amplitude correction coefficients 
+    from the history exported from the previous calculation 
+    (with `xscale_list` argument). 
     
-        INPUT
-        -----
-        cryst : ASE structure 
-        xsl   : List of amplitude correction coefficients. The shape of 
-                each element of the list must be `cryst.get_positions().shape`
-        skip  : Number of samples to skip at the start of the xsl list
+    INPUT
+    -----
+    cryst : ASE structure 
+    xsl   : List of amplitude correction coefficients. The shape of 
+            each element of the list must be `cryst.get_positions().shape`
+    skip  : Number of samples to skip at the start of the xsl list
     
-        OUTPUT
-        ------
-        Array amplitude correction coefficients with shape the same as
-        `cryst.get_positions().shape`. May be directly plugged into 
-        `xscale_init` argument of `HECSS_Sampler` or `HECSS`.
-        '''
-        from numpy import array, ones
-        elmap = cryst.get_atomic_numbers()
-        if skip is not None:
-            skip = min(skip, len(xsl)//2)
-        xs = array(xsl)[skip:]
-        xscale = ones(xs[0].shape)
-        for i, el in enumerate(set(elmap)):
-            xscale[elmap==el] = xs[skip:,elmap==el,:].mean()
-        return xscale
-    return (calc_init_xscale,)
+    OUTPUT
+    ------
+    Array amplitude correction coefficients with shape the same as
+    `cryst.get_positions().shape`. May be directly plugged into 
+    `xscale_init` argument of `HECSS_Sampler` or `HECSS`.
+    '''
+    from numpy import array, ones
+    elmap = cryst.get_atomic_numbers()
+    if skip is not None:
+        skip = min(skip, len(xsl)//2)
+    xs = array(xsl)[skip:]
+    xscale = ones(xs[0].shape)
+    for i, el in enumerate(set(elmap)):
+        xscale[elmap==el] = xs[skip:,elmap==el,:].mean()
+    return xscale
 
 
 @app.cell
@@ -213,15 +214,8 @@ def _(
     un,
 ):
     #| exporti
-    def HECSS_MH_Sampler(cryst, calc, T_goal, width=1, maxburn=20, 
-                N=None, w_search=True, delta_sample=0.01, sigma=2,
-                eqdelta=0.05, eqsigma=0.2,
-                xi=1, chi=1, xscale_init=None,
-                Ep0=None, modify=None, modify_args=None, symprec=1e-5,
-                directory=None, reuse_base=None, verb=True, pbar=None,
-                priors=None, posts=None, width_list=None, 
-                dofmu_list=None, xscale_list=None):
-        '''
+    def HECSS_MH_Sampler(cryst, calc, T_goal, width=1, maxburn=20, N=None, w_search=True, delta_sample=0.01, sigma=2, eqdelta=0.05, eqsigma=0.2, xi=1, chi=1, xscale_init=None, Ep0=None, modify=None, modify_args=None, symprec=1e-05, directory=None, reuse_base=None, verb=True, pbar=None, priors=None, posts=None, width_list=None, dofmu_list=None, xscale_list=None):
+        """
         Run HECS sampler on the system `cryst` using calculator `calc` at target
         temperature `T_goal`. The `delta`, `width`, `maxburn` and `directory` 
         parameters determine detailed aspects of the algorithm.
@@ -294,289 +288,187 @@ def _(
         - forces       : set of forces (in eV/A) generated by the displacement
         - energy       : potential energy of the configuration
 
-        '''    
-    
+        """
         if pbar:
             pbar.set_postfix(Sample='initial')
-    
+
         def smpl_print(r=0):
             max_r = 15
             if pbar:
-                if i==0:
-                    pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, 
-                                     dE=f'{(e_star-E_goal)/Es:+6.2f} sigma', 
-                                     xs=f'{sqrt(xscale.std()):6.3f}')
-                else :
-                    pbar.set_postfix(xs=f'{sqrt(xscale.std()):6.3f}', config=f'{i:04d}', a=f'{100*i/n:5.1f}%', 
-                                     w=w, w_bar=f'{np.mean([_[0] for _ in wl]) if wl else w:7.3f}',
-                                     alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
-            elif pbar is None :
-                if i==0:
-                    print(f'Burn-in sample {sqrt(xscale.std()):6.3f}:{k}'
-                          f'  w:{w:.4f}  alpha:{alpha:7.1e}'
-                          f'  dE:{(e_star-E_goal)/Es:+6.2f} sigma', end='\n')
-                else :
-                    print(f'Sample {sqrt(xscale.std()):6.3f}:{n:04d}'
-                          f'  a:{100*i/n:5.1f}%  w:{w:.4f}  <w>:{np.mean([_[0] for _ in wl]) if wl else w:.4f}'
-                          f' alpha:{alpha:10.3e}  rej:{r:d}', end='\n')
+                if i == 0:
+                    pbar.set_postfix(Sample='burn-in', n=k, w=w, alpha=alpha, dE=f'{(e_star - E_goal) / Es:+6.2f} sigma', xs=f'{sqrt(xscale.std()):6.3f}')
+                else:
+                    pbar.set_postfix(xs=f'{sqrt(xscale.std()):6.3f}', config=f'{i:04d}', a=f'{100 * i / n:5.1f}%', w=w, w_bar=f'{(np.mean([_[0] for _ in wl]) if wl else w):7.3f}', alpha=f'{alpha:7.1e}', rej=f'{r:4d}')
+            elif pbar is None:
+                if i == 0:
+                    print(f'Burn-in sample {sqrt(xscale.std()):6.3f}:{k}  w:{w:.4f}  alpha:{alpha:7.1e}  dE:{(e_star - E_goal) / Es:+6.2f} sigma', end='\n')
+                else:
+                    print(f'Sample {sqrt(xscale.std()):6.3f}:{n:04d}  a:{100 * i / n:5.1f}%  w:{w:.4f}  <w>:{(np.mean([_[0] for _ in wl]) if wl else w):.4f} alpha:{alpha:10.3e}  rej:{r:d}', end='\n')
                 sys.stdout.flush()
-            else :
+            else:
                 pass
 
-        
         def print_xs(c, s):
             elmap = c.get_atomic_numbers()
             for el in sorted(set(elmap)):
-                print(f'{chemical_symbols[el]:2}: {s[elmap==el,:].mean():8.4f}', end='  ')
+                print(f'{chemical_symbols[el]:2}: {s[elmap == el, :].mean():8.4f}', end='  ')
             print()
-    
-        
         nat = len(cryst)
         dim = (nat, 3)
-    
         symm = get_symmetry_dataset(get_cell_data(cryst), symprec=symprec)
         dofmap = symm['mapping_to_primitive']
         dof = list(sorted(set(dofmap)))
         dofmu = np.ones((len(dof), 3))
         mu = np.ones(dim)
-
         if xscale_init is None:
             xscale = np.ones(dim)
-        else :
+        else:
             xscale = np.array(xscale_init)
             assert xscale.shape == dim
-    
-        # Initialise dofxs from data passed in xscale_init
-        dofxs = np.array([xscale[dofmap==d,:].mean(axis=0) for d in dof])
+        dofxs = np.array([xscale[dofmap == d, :].mean(axis=0) for d in dof])
         assert dofxs.shape == dofmu.shape
-            
-        xi = max(0,xi)
-        xi = min(1,xi)
-
-        assert 0 <= xi <= 1 
-    
-        chi = max(0,chi)
-        chi = min(1,chi)
-
-        assert 0 <= chi <= 1 
-    
+        xi = max(0, xi)
+        xi = min(1, xi)
+        assert 0 <= xi <= 1
+        chi = max(0, chi)
+        chi = min(1, chi)
+        assert 0 <= chi <= 1
         if Ep0 is None:
             if reuse_base is not None:
                 calc0 = reuse_base
                 Ep0 = calc0.get_potential_energy()
             else:
                 Ep0 = cryst.get_potential_energy()
-    
-        E_goal = 3*T_goal*un.kB/2
-        Es = np.sqrt(3/2)*un.kB*T_goal/np.sqrt(nat)   
-    
+        E_goal = 3 * T_goal * un.kB / 2
+        Es = np.sqrt(3 / 2) * un.kB * T_goal / np.sqrt(nat)
         P = stats.norm.pdf
         Q = stats.norm
-    
-        # This comes from the fitting to 3C-SiC case
-        w_scale = 1.667e-3 * (T_goal**0.5) #(T_goal**0.47)
-    
+        w_scale = 0.001667 * T_goal ** 0.5
         w = width
         w_prev = w
-
-        if width_list is None :
-            wl = []
-        else :
+        if width_list is None:
+            wl = []  # Initialise dofxs from data passed in xscale_init
+        else:
             wl = width_list
-
         if priors is None:
             priors = []
-
         if posts is None:
             posts = []
-
         i = 0
         n = 0
-    
-        if directory is None :
+        if directory is None:
             basedir = f'calc/T_{T_goal:.1f}K'
-        else :
+        else:
             basedir = directory
-
-        cr = ase.Atoms(cryst.get_atomic_numbers(), 
-                       cell=cryst.get_cell(),
-                       scaled_positions=cryst.get_scaled_positions(),
-                       pbc=True, calculator=calc)
-    
-        try :
+        cr = ase.Atoms(cryst.get_atomic_numbers(), cell=cryst.get_cell(), scaled_positions=cryst.get_scaled_positions(), pbc=True, calculator=calc)
+        try:
             cr.calc.set(directory=f'{basedir}/smpl/{i:04d}')
-        except AttributeError :
-            # Calculator is not directory-based
-            # Ignore the error
+        except AttributeError:
             pass
-
-        # Start from the equilibrium position
         e = 0
         x = np.zeros(dim)
         f = np.zeros(dim)
-    
         k = 0
         r = 0
         alpha = 0
-        prior_len=0
+        prior_len = 0
         pfit = None
-    
         if pbar:
-            pbar.set_postfix(Sample='burn-in')
-
-        while True:
-
-            # print_xs(cryst, xscale)
-            #x_star =  Q.rvs(size=dim, scale=w * w_scale * xscale)
+            pbar.set_postfix(Sample='burn-in')  # This comes from the fitting to 3C-SiC case
+        while True:  #(T_goal**0.47)
             x_star = xscale * Q.rvs(size=dim, scale=w * w_scale)
-
-            assert x_star.shape == dim        
-
-            if verb and (n>0 or k>0):
+            assert x_star.shape == dim
+            if verb and (n > 0 or k > 0):
                 smpl_print(r)
-        
-            cr.set_positions(cryst.get_positions()+x_star)
-            try :
+            cr.set_positions(cryst.get_positions() + x_star)
+            try:
                 cr.calc.set(directory=f'{basedir}/smpl/{i:04d}')
-            except AttributeError :
+            except AttributeError:
                 pass
-
-            try :
+            try:
                 if modify is not None:
                     e_star, f_star = modify(cr, cryst, 's', *modify_args)
                 else:
                     e_star = cr.get_potential_energy()
                     f_star = cr.get_forces()
             except calculator.CalculatorError:
-                print(f"Calculator in {cr.calc.directory} faild.\n", file=sys.stderr)
-                print("Ignoring. Generating next displacement.", file=sys.stderr)
+                print(f'Calculator in {cr.calc.directory} faild.\n', file=sys.stderr)
+                print('Ignoring. Generating next displacement.', file=sys.stderr)
                 continue
-
-            e_star = (e_star-Ep0)/nat
-        
-            wl.append((w,e_star))
-
-            if i==0 :
-                # w-search mode
+            e_star = (e_star - Ep0) / nat
+            wl.append((w, e_star))
+            if i == 0:
                 delta = 10 * delta_sample
-            else :
-                # sampling mode
+            else:
                 delta = delta_sample
-
             w_prev = w
-
-            # Equilibrate all degrees of freedom
-            mu = np.abs(f_star*x_star)/(un.kB*T_goal)
-            # mu = np.abs(f_star*x_star)/(np.abs(f_star*x_star).mean())
-        
-            # Avarage mu over images of the atom in the P.U.C.
-            dofmu = np.array([mu[dofmap==d,:].mean(axis=0) for d in dof])
-
-            # We use sqrt(mu) since the energy is quadratic in position
-            # eqdelta = 0.05 => 5% maximum change in xscale from step to step
-            # eqsigma = 0.2 => half width/sharpness of the sigmoid, 
-            #                  roughly linear part of the curve
-            dofxs *= (1-2*eqdelta*(expit((np.sqrt(dofmu)-1)/eqsigma)-0.5))
-        
-            # We need to normalize to unchanged energy ~ xs**2
-            # The scale must be back linear in xs, thus sqrt(<xs>)
-            dofxs /= np.sqrt((dofxs**2).mean())
-        
-            xscale = (chi * dofxs[dofmap] + xscale * (1 - chi))
-        
-            # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1
-            xscale = (xi*xscale + np.ones(dim) - xi) 
-
-            if xscale_list is not None:
+            mu = np.abs(f_star * x_star) / (un.kB * T_goal)
+            dofmu = np.array([mu[dofmap == d, :].mean(axis=0) for d in dof])
+            dofxs = dofxs * (1 - 2 * eqdelta * (expit((np.sqrt(dofmu) - 1) / eqsigma) - 0.5))
+            dofxs = dofxs / np.sqrt((dofxs ** 2).mean())
+            xscale = chi * dofxs[dofmap] + xscale * (1 - chi)
+            xscale = xi * xscale + np.ones(dim) - xi  # Calculator is not directory-based
+            if xscale_list is not None:  # Ignore the error
                 xscale_list.append(np.array(xscale))
-
             if dofmu_list is not None:
-                dofmu_list.append(np.array(dofmu))
-            
-            if w_search :
-                w = w*(1-2*delta*(expit((e_star-E_goal)/Es/3)-0.5))
-                if i==0 and abs(e_star-E_goal) > sigma*Es :
-                    # We are in w-search mode but still far from E_goal
-                    # Continue
-                    k += 1
-                    if k>maxburn :
-                        print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n'+
-                            f'You probably need to change initial width parameter (current:{w})' +
-                            f' to a {"higher" if (e_star-E_goal)<0 else "lower"} value.')
+                dofmu_list.append(np.array(dofmu))  # Start from the equilibrium position
+            if w_search:
+                w = w * (1 - 2 * delta * (expit((e_star - E_goal) / Es / 3) - 0.5))
+                if i == 0 and abs(e_star - E_goal) > sigma * Es:
+                    k = k + 1
+                    if k > maxburn:
+                        print(f'\nError: reached maxburn ({maxburn}) without finding target energy.\n' + f'You probably need to change initial width parameter (current:{w})' + f" to a {('higher' if e_star - E_goal < 0 else 'lower')} value.")
                         return
-                    # Continue searching for proper w
-                    # print(f'{w=} ({abs(e_star-E_goal)/(sigma*Es)}). Continue searching')
                     continue
-
             priors.append((n, i, x_star, f_star, e_star))
-        
-            if i==0 :
-                # We are in w-search mode and just found a proper w
-                # switch to sampling mode by making sure the sample is accepted
-                # 2 is larger than any result of np.random.rand()
-                alpha = 2 
-                # clean up the w table
+            if i == 0:
+                alpha = 2
                 wl.clear()
-                prior_len=1
-            else :
-                # Sampling mode
+                prior_len = 1
+            else:
                 alpha = P(e_star, E_goal, Es) / P(e, E_goal, Es)
-
-                if len(priors) > 3 :
-                    # There is no sense in fitting priors to normal dist if we have just 2-3 samples
-                    # The 4 samples is still rather low but seems to work well enough
-                    # On the first visit here len(priors)>3 and prior_len==1
-                    # Thus, the pfit will be initialized before first use  below.
-                    if  len(priors) > 1.1*prior_len:
-                        # Re-fit the prior only if we get 10% more samples
+                if len(priors) > 3:  # print_xs(cryst, xscale)
+                    if len(priors) > 1.1 * prior_len:  #x_star =  Q.rvs(size=dim, scale=w * w_scale * xscale)
                         pfit = Q.fit([_[-1] for _ in priors])
                         prior_len = len(priors)
-                
                     assert pfit is not None
-                    # Take into account estimated transition probability
-                    alpha *= Q.pdf(e, *pfit)/Q.pdf(e_star, *pfit)
-
-
+                    alpha = alpha * (Q.pdf(e, *pfit) / Q.pdf(e_star, *pfit))
             if np.random.rand() < alpha:
                 x = x_star
                 e = e_star
                 f = f_star
-                i += 1
+                i = i + 1
                 r = 0
             else:
-                # Sample rejected - stay put
-                r += 1
-        
-            n += 1
-        
+                r = r + 1
+            n = n + 1
             smpl_print(r)
             if pbar:
                 pbar.update()
-
-            if posts is not None :
-                posts.append((n, i-1, x, f, e))
-            
-            yield n, i-1, x, f, e
-        
+            if posts is not None:
+                posts.append((n, i - 1, x, f, e))
+            yield (n, i - 1, x, f, e)
             if N is not None and n > N:
                 break
-    
         if pbar:
-            pbar.close()
+            pbar.close()  # w-search mode  # sampling mode  # Equilibrate all degrees of freedom  # mu = np.abs(f_star*x_star)/(np.abs(f_star*x_star).mean())  # Avarage mu over images of the atom in the P.U.C.  # We use sqrt(mu) since the energy is quadratic in position  # eqdelta = 0.05 => 5% maximum change in xscale from step to step  # eqsigma = 0.2 => half width/sharpness of the sigmoid,  #                  roughly linear part of the curve  # We need to normalize to unchanged energy ~ xs**2  # The scale must be back linear in xs, thus sqrt(<xs>)  # mix with unity: (xi*xs + (1-xi)*1), 0 < xi < 1  # We are in w-search mode but still far from E_goal  # Continue  # Continue searching for proper w  # print(f'{w=} ({abs(e_star-E_goal)/(sigma*Es)}). Continue searching')  # We are in w-search mode and just found a proper w  # switch to sampling mode by making sure the sample is accepted  # 2 is larger than any result of np.random.rand()  # clean up the w table  # Sampling mode  # There is no sense in fitting priors to normal dist if we have just 2-3 samples  # The 4 samples is still rather low but seems to work well enough  # On the first visit here len(priors)>3 and prior_len==1  # Thus, the pfit will be initialized before first use  below.  # Re-fit the prior only if we get 10% more samples  # Take into account estimated transition probability  # Sample rejected - stay put
+
+    return (HECSS_MH_Sampler,)
 
 
 @app.cell
 def _(expit, linspace, plt):
-    #| hide
-    #| hide
+    #| hide 
+    #| asap
+
     x = linspace(0, 2, 100)
     ampl = 0.05
     wdth = 0.25
-    plt.plot(x, (1 - 2 * ampl * (expit((x - 1) / wdth) - 0.5)))
-    plt.axvline(1 - wdth, ls=':')
-    plt.axvline(1 + wdth, ls=':')
-    plt.axhline(1 + ampl, ls=':')
-    plt.axhline(1 - ampl, ls=':')
+    plt.plot(x, (1-2*ampl*(expit((x-1)/wdth)-0.5)))
+    plt.axvline(1-wdth, ls=':')
+    plt.axvline(1+wdth, ls=':')
+    plt.axhline(1+ampl, ls=':')
+    plt.axhline(1-ampl, ls=':');
     return
 
 
@@ -584,43 +476,22 @@ def _(expit, linspace, plt):
 def _(HECSS_MH_Sampler, tqdm):
     #| exporti
     class HECSS_MH:
-        '''
+        """
         Class facilitating more traditional use of the `HECSS_Sampler` generator.
-        '''
-        def __init__(self, cryst, calc, T_goal, width=1, maxburn=20, 
-                     N=None, w_search=True, delta_sample=0.01, sigma=2,
-                     eqdelta=0.05, eqsigma=0.2,
-                     xi=1, chi=1, xscale_init=None,
-                     Ep0=None, modify=None, modify_args=None,
-                     directory=None, reuse_base=None, verb=True, 
-                     pbar=True, priors=None, posts=None, width_list=None, 
-                     dofmu_list=None, xscale_list=None):
+        """
+
+        def __init__(self, cryst, calc, T_goal, width=1, maxburn=20, N=None, w_search=True, delta_sample=0.01, sigma=2, eqdelta=0.05, eqsigma=0.2, xi=1, chi=1, xscale_init=None, Ep0=None, modify=None, modify_args=None, directory=None, reuse_base=None, verb=True, pbar=True, priors=None, posts=None, width_list=None, dofmu_list=None, xscale_list=None):
             if pbar is True:
                 self.pbar = tqdm(total=N)
             else:
                 self.pbar = pbar
-            self.N=N
-            self.total_N=0
-            self.T=T_goal
-            self.sampler = HECSS_MH_Sampler(cryst, calc, T_goal, 
-                                         width=width, maxburn=maxburn, 
-                                         w_search=w_search, 
-                                         delta_sample=delta_sample, 
-                                         sigma=sigma, 
-                                         eqdelta=eqdelta, eqsigma=eqsigma,
-                                         xi=xi, chi=chi, 
-                                         xscale_init=xscale_init,
-                                         Ep0=Ep0, modify=modify, modify_args=modify_args,
-                                         pbar=self.pbar,
-                                         directory=directory,
-                                         reuse_base=reuse_base, verb=verb, 
-                                         priors=priors, posts=posts, 
-                                         width_list=width_list, 
-                                         dofmu_list=dofmu_list,
-                                         xscale_list=xscale_list)
-    
+            self.N = N
+            self.total_N = 0
+            self.T = T_goal
+            self.sampler = HECSS_MH_Sampler(cryst, calc, T_goal, width=width, maxburn=maxburn, w_search=w_search, delta_sample=delta_sample, sigma=sigma, eqdelta=eqdelta, eqsigma=eqsigma, xi=xi, chi=chi, xscale_init=xscale_init, Ep0=Ep0, modify=modify, modify_args=modify_args, pbar=self.pbar, directory=directory, reuse_base=reuse_base, verb=verb, priors=priors, posts=posts, width_list=width_list, dofmu_list=dofmu_list, xscale_list=xscale_list)
+
         def generate(self, N=None, sentinel=None, **kwargs):
-            '''
+            """
             Generate and return the list of N samples provided 
             by the `HECSS_Sampler` generator in `self.sampler`.
             `sentinel` parameter is a call-back function 
@@ -632,26 +503,21 @@ def _(HECSS_MH_Sampler, tqdm):
             first sample is produced). This may take considerable 
             time at the start since first initial and burn-in 
             samples must be produced.
-            '''
+            """
             if N is None:
                 N = self.N
-           
-            # This is a workaround for the miss-design of tqdm 
-            # where bool() for total==None returns error 
             if self.pbar is not None and self.pbar is not False:
                 self.pbar.reset(self.total_N + N)
                 self.pbar.update(self.total_N)
-
-            smpls = [] 
+            smpls = []
             for smpl in self.sampler:
                 smpls.append(smpl)
                 if sentinel is not None and sentinel(smpl, smpls, **kwargs):
                     break
                 if len(smpls) >= N:
-                    #self.pbar.close()
                     break
-            self.total_N += len(smpls)
-            return smpls
+            self.total_N = self.total_N + len(smpls)
+            return smpls  # This is a workaround for the miss-design of tqdm  # where bool() for total==None returns error  #self.pbar.close()
 
     return (HECSS_MH,)
 
@@ -666,7 +532,8 @@ def _(mo):
 
 @app.cell
 def _():
-    #| hide
+    #| asap
+
     from ase.build import bulk
     from ase.spacegroup import crystal
     from hecss.monitor import plot_stats, plot_virial_stat, plot_xs_stat
@@ -687,6 +554,17 @@ def _():
 
 @app.cell
 def _(bulk, create_asap_calculator, select_asap_model):
+    #| asap
+
+    # Local copy of model from OpenKIM-models from 2019
+    # model = 'data/Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+    # Model form 2019 OpenKIM-models package
+    # model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_003'
+    # Model form 2021 OpenKIM-models package
+    # model = 'Tersoff_LAMMPS_ErhartAlbe_2005_SiC__MO_903987585848_004'
+    # model = 'Tersoff_LAMMPS_ErhartAlbe_2005SiII_SiC__MO_408791041969_003'
+    # model = 'MEAM_LAMMPS_KangEunJun_2014_SiC__MO_477506997611_000'
+
     model = select_asap_model('SiC')
     print(f'Using potential model: {model}')
 
@@ -704,14 +582,15 @@ def _(bulk, create_asap_calculator, select_asap_model):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, cryst, model):
-    #| hide
+    #| asap
+
     T = 600
     xsl = []
     dofmu = []
-    xi = 1
-    chi = 0.66
-    chi = 1
-    sampler = HECSS_MH(cryst, create_asap_calculator(model),
+    xi=1
+    chi=0.66
+    chi=1
+    sampler = HECSS_MH(cryst, create_asap_calculator(model), 
                     T, delta_sample=0.01, width=1,
                     dofmu_list=dofmu, xscale_list=xsl, xi=xi, chi=chi, pbar=True)
     return T, dofmu, sampler, xsl
@@ -719,7 +598,8 @@ def _(HECSS_MH, create_asap_calculator, cryst, model):
 
 @app.cell
 def _(T, plot_stats, sampler):
-    #| hide
+    #| asap
+
     N = 1_000
     samples = sampler.generate(N)
     plot_stats(samples, T, sqrN=True)
@@ -728,18 +608,18 @@ def _(T, plot_stats, sampler):
 
 @app.cell
 def _(cryst, np, plt, xsl):
-    #| hide
-    plt.figure(figsize=(10, 4))
+    #| asap
+
+    plt.figure(figsize=(10,4))
     for n, el in enumerate(set(cryst.get_chemical_symbols())):
         elmap = np.array(cryst.get_chemical_symbols()) == el
-        plt.plot(np.array(xsl)[:, elmap, :].mean(-2), label=el)
+        plt.plot(np.array(xsl)[:,elmap,:].mean(-2), label=el)
+    # plt.legend()
     return
 
 
 @app.cell
 def _(
-    #| hide
-    #| hide
     T,
     cryst,
     dofmu,
@@ -750,6 +630,8 @@ def _(
     samples,
     xsl,
 ):
+    #| hide
+    #| asap
     plot_virial_stat(cryst, samples, T)
     plot_acceptance_history(samples)
     plot_dofmu_stat(cryst, dofmu)
@@ -760,15 +642,21 @@ def _(
 @app.cell
 def _(N, T, cryst, np, samples, un):
     #| hide
-    #| hide
+    #| asap
+
     m = np.mean([_[-1] for _ in samples])
     s = np.std([_[-1] for _ in samples])
 
-    s_target = np.sqrt(3/2) * un.kB * T / np.sqrt(len(cryst))
+    s_target = np.sqrt(3/2)*un.kB*T/np.sqrt(len(cryst))
 
+    # We should get N samples
     assert len(samples) == N
-    assert np.abs(m - 3 * T * un.kB / 2) < 2 * s_target
-    assert np.abs(s / s_target - 1) < 0.2
+
+    # The mean really should be inside target 2*sigma around T
+    assert np.abs(m - 3*T*un.kB/2) < 2*s_target
+
+    # And sigmas should be within 20% of each other
+    assert np.abs(s/s_target - 1)<0.2
     return
 
 
@@ -782,7 +670,8 @@ def _(mo):
 
 @app.cell
 def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
-    #| hide
+    #| asap 
+
     omodel = select_asap_model('Universal')
     print(f'Using potential model: {omodel}')
 
@@ -794,7 +683,8 @@ def _(ase, create_asap_calculator, get_cell_data, select_asap_model, spglib):
 
 @app.cell
 def _(np, oliv, un):
-    #| hide
+    #| asap 
+
     print(f'Max. stress: {np.abs(oliv.get_stress()[:3]).max()/un.GPa:.3f} GPa')
     print(f'Max. force : {np.abs(oliv.get_forces()).max():.3f} eV/A')
     return
@@ -802,7 +692,7 @@ def _(np, oliv, un):
 
 @app.cell
 def _(HECSS_MH, create_asap_calculator, oliv, omodel, plot_stats):
-    #| hide
+    #| asap 
     T_1 = 600
     dofmu_1 = []
     xsl_1 = []
@@ -817,8 +707,6 @@ def _(HECSS_MH, create_asap_calculator, oliv, omodel, plot_stats):
 
 @app.cell
 def _(
-    #| hide
-    #| hide
     T_1,
     dofmu_1,
     oliv,
@@ -829,6 +717,8 @@ def _(
     plot_xs_stat,
     xsl_1,
 ):
+    #| hide
+    #| asap
     plot_virial_stat(oliv, osamples, T_1)
     plot_acceptance_history(osamples)
     plot_dofmu_stat(oliv, dofmu_1, skip=10, window=10)
@@ -839,12 +729,15 @@ def _(
 @app.cell
 def _(N_1, T_1, np, oliv, osamples, un):
     #| hide
-    #| hide
+    #| asap
     m_1 = np.mean([_[-1] for _ in osamples])
     s_1 = np.std([_[-1] for _ in osamples])
     s_target_1 = np.sqrt(3 / 2) * un.kB * T_1 / np.sqrt(len(oliv))
     assert len(osamples) == N_1
     assert np.abs(m_1 - 3 * T_1 * un.kB / 2) < 2 * s_target_1
+    # We should get N samples
+    # The mean really should be inside target 2*sigma around T
+    # And sigmas should be within 20% of each other
     assert np.abs(s_1 / s_target_1 - 1) < 0.2
     return
 
@@ -859,8 +752,6 @@ def _(mo):
 
 @app.cell
 def _(
-    #| hide
-    #| hide
     HECSS_MH,
     T_1,
     chi_1,
@@ -872,6 +763,8 @@ def _(
     xi_1,
     xsl_1,
 ):
+    #| hide
+    #| asap
     N_2 = 500
     osampler2 = HECSS_MH(oliv, create_asap_calculator(omodel), T_1, delta_sample=0.01, width=0.7, xscale_init=calc_init_xscale(oliv, xsl_1), dofmu_list=dofmu_1, xscale_list=xsl_1, xi=xi_1, chi=chi_1)
     osamples_1 = osamples + osampler2.generate(N_2)
@@ -880,8 +773,6 @@ def _(
 
 @app.cell
 def _(
-    #| hide
-    #| hide
     T_1,
     dofmu_1,
     oliv,
@@ -893,6 +784,8 @@ def _(
     plot_xs_stat,
     xsl_1,
 ):
+    #| hide
+    #| asap
     plot_stats(osamples_1, T_1, sqrN=True)
     plot_virial_stat(oliv, osamples_1, T_1)
     plot_acceptance_history(osamples_1)
@@ -904,7 +797,7 @@ def _(
 @app.cell
 def _(HECSS_MH, create_asap_calculator, cryst, model):
     #| hide
-    #| hide
+    #| asap
     T_2 = 300
     N_3 = 100
     sampler_1 = HECSS_MH(cryst, create_asap_calculator(model), T_2, N=N_3)
@@ -914,7 +807,7 @@ def _(HECSS_MH, create_asap_calculator, cryst, model):
 @app.cell
 def _(N_3, sampler_1):
     #| hide
-    #| hide
+    #| asap
     smpl = sampler_1.generate()
     smpl = smpl + sampler_1.generate()
     smpl = smpl + sampler_1.generate(20)

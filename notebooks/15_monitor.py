@@ -1,13 +1,16 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
+
 #| default_exp monitor
+
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -94,7 +97,6 @@ def _():
 @app.cell
 def _(THz, plot, un):
     #| export
-    #| export
     def plot_band_set(bnd, units=THz, lbl=None, **kwargs):
         if lbl is None:
             lbl=''
@@ -108,7 +110,6 @@ def _(THz, plot, un):
 
 @app.cell
 def _(THz, axhline, axvline, plot_band_set, xlabel, xlim, xticks, ylabel):
-    #| export
     #| export
     def plot_bands(bnd, kpnts, units=THz, decorate=True, lbl=None, **kwargs):
         plot_band_set(bnd, units, lbl, **kwargs)
@@ -130,7 +131,6 @@ def _(THz, axhline, axvline, plot_band_set, xlabel, xlim, xticks, ylabel):
 @app.cell
 def _(THz, loadtxt, plot_bands):
     #| export
-    #| export
     def plot_bands_file(fn, units=THz, decorate=True, lbl=None, **kwargs):
         bnd = loadtxt(fn).T
 
@@ -149,7 +149,6 @@ def _(THz, loadtxt, plot_bands):
 
 @app.cell
 def _(subprocess):
-    #| export
     #| export
     def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../sc/CONTCAR',
                     o=1, n=0, c2=10, c3=6, born=None, charge=None, skip_fit=False):
@@ -196,7 +195,6 @@ def _(subprocess):
 @app.cell
 def _(legend, plot_band_set, plot_bands, ylim):
     #| export
-    #| export
     def show_dc_conv(bl, kpnts, max_plots=4):
         prev_n = sorted(bl.keys())[-1]
         plot_bands(bl[prev_n], kpnts, lbl=f'{prev_n}', color='C3')
@@ -221,7 +219,6 @@ def _(legend, plot_band_set, plot_bands, ylim):
 @app.cell
 def _(get_dfset_len, loadtxt, run_alamode):
     #| export
-    #| export
     def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast', sc='../sc/CONTCAR',
                       order=1, cutoff=10, born=None, charge=None, verbose=False):
         N = get_dfset_len(f'{directory}/{dfset}')
@@ -242,7 +239,6 @@ def _(get_dfset_len, loadtxt, run_alamode):
 @app.cell
 def _(abs, array):
     #| export
-    #| export
     def build_omega(bl, kpnts):
         omega={}
         eps=1e-3
@@ -257,7 +253,6 @@ def _(abs, array):
 
 @app.cell
 def _(THz, legend, median, plt, semilogy, un, xlabel, ylabel, ylim):
-    #| export
     #| export
     def plot_omega(omega):
         for k, o in omega.items():
@@ -288,6 +283,9 @@ def _(
     get_dfset_len,
     loadtxt,
     plot_omega,
+    plt,
+    run_alamode,
+    sca,
     show,
     show_dc_conv,
     sleep,
@@ -387,7 +385,6 @@ def _(
 @app.cell
 def _(fromiter, histogram, linspace, plt, sqrt, stats, un):
     #| export
-    #| export
     def plot_stats(confs, T=None, sqrN=False, show=True, 
                    plotchi2=False, show_samples=True):
         '''
@@ -466,7 +463,7 @@ def _(fromiter, histogram, linspace, plt, sqrt, stats, un):
 
 @app.cell
 def _(load_dfset, plot_stats):
-    plot_stats(load_dfset('example/VASP_3C-SiC_calculated/1x1x1/T_300K/DFSET.dat'),
+    plot_stats(load_dfset('example/VASP_3C-SiC_calculated/1x1x1/T_300K/DFSET.dat'), 
                T=300, sqrN=True)
     return
 
@@ -507,8 +504,8 @@ def _(clear_output, get_dfset_len, load_dfset, plot_stats, show, sleep, sys):
 
 @app.cell
 def _(monitor_stats):
-    monitor_stats(T=600,
-                  dfset='example/VASP_3C-SiC_calculated/1x1x1/T_600K/DFSET.dat',
+    monitor_stats(T=600, 
+                  dfset='example/VASP_3C-SiC_calculated/1x1x1/T_600K/DFSET.dat', 
                   once=True)
     return
 
@@ -516,7 +513,7 @@ def _(monitor_stats):
 @app.cell
 def _(convolve, ones):
     #| export
-    #| export
+
     def moving_average(x, w):
         return convolve(x, ones(w), 'valid') / w
 
@@ -549,7 +546,7 @@ def _(arange):
 @app.cell
 def _(axvline, hist, linspace, plot, stats, xlim):
     #| export
-    #| export
+
     def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
         if normal:
             rfun = stats.norm
@@ -580,7 +577,7 @@ def _(axvline, hist, linspace, plot, stats, xlim):
 @app.cell
 def _(abs, array, axvline, legend, plot_hist, title, un, xlabel, xlim, ylabel):
     #| export
-    #| export
+
     def plot_virial_stat(cryst, smpl, T, normal=False):
         elems = cryst.get_chemical_symbols()
         vir = array([abs(s[2]*s[3]) for s in smpl])/(un.kB*T)
@@ -603,7 +600,7 @@ def _(abs, array, axvline, legend, plot_hist, title, un, xlabel, xlim, ylabel):
 @app.cell
 def _(arange, array, cumsum, figure, plot, xlabel, ylabel):
     #| export
-    #| export
+
     def plot_acceptance_history(smpl):
         figure(figsize=(10,4))
         na = array([n for i, n, x, f, e in smpl])
@@ -638,6 +635,7 @@ def _(
     ylabel,
 ):
     #| export
+
     def plot_dofmu_stat(cryst, dofmu, skip=10, window=10, normal=False):
         symm = get_symmetry_dataset(get_cell_data(cryst))
         dofmap = symm.mapping_to_primitive
@@ -716,6 +714,7 @@ def _(
     ylabel,
 ):
     #| export
+
     def plot_xs_stat(cryst, xsl, skip=10, window=10):
         symm = get_symmetry_dataset(get_cell_data(cryst))
         dofmap = symm.mapping_to_primitive

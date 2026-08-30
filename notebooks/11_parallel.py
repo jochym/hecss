@@ -1,20 +1,21 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
+
 #| default_exp parallel
+
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    #| hide
-    #| hide
     mo.md(r"""
     # Parallel calculations
 
@@ -33,15 +34,20 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
     #| exporti
+
     from fastcore.basics import patch
+
     import ase
     from ase.utils import workdir
     from ase.calculators.vasp import Vasp
     from ase.calculators import calculator
     from ase.calculators.vasp.vasp import check_atoms
+
     import asyncio
     from concurrent.futures import ThreadPoolExecutor
+
     return (
         ThreadPoolExecutor,
         Vasp,
@@ -55,8 +61,8 @@ def _():
 
 @app.cell
 def _(ThreadPoolExecutor, asyncio):
-    #| export
-    #| export
+    #|exporti
+
     def __run_async(func, *args, **kwargs):
         '''
         Run async methods detecting running loop in jupyter.
@@ -81,8 +87,8 @@ def _(ThreadPoolExecutor, asyncio):
 
 @app.cell
 def _(Vasp, asyncio, patch):
-    #| export
-    #| export
+    #|exporti
+
     @patch
     async def _arun(self: Vasp, command=None, out=None, directory=None):
         """
@@ -119,8 +125,8 @@ def _(Vasp, asyncio, patch):
 
 @app.cell
 def _(Vasp, calculator, check_atoms, patch, workdir):
-    #| export
-    #| export
+    #|exporti
+
     @patch
     async def __calculate_aio(self: Vasp,
                             atoms=None,
@@ -132,7 +138,7 @@ def _(Vasp, calculator, check_atoms, patch, workdir):
     
         This will generate the necessary VASP input files, and then
         execute VASP. After execution, the energy, forces. etc. are read
-        from the VASP output files.
+    from the VASP output files.
 
         This is an asyncio version of the function.
         """

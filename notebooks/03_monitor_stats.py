@@ -1,12 +1,13 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -35,16 +36,15 @@ def _(mo):
     ## Interpreting the statistics plot
 
     The sampling statistics plots show a number of characteristics of the generated sample. The orange bell curve with green central line shows target energy distribution for a given temperature. The shaded orange regions indicate $\sigma, 2\sigma,$ and $3\sigma$ zones around this distribution.
-    The width of the standard deviation band is determined by the square of the target distribution scaled to the size of the sample and number of bins in the histogram. The blue-shaded bars show population in each bin of the histogram and red dashed curve is a normal distribution fitted to the data points in the sample. In general, both bars of the histogram and fitted distribution should fit inside the $3\sigma$ band - such distribution should be considered a correct sampling of the target distribution. However, in small samples the statistical fluctuations are large and sometimes this condition is not met. In such cases the size of the variance of the actual bin of the histogram should be considered. This value is not plotted by default, but may be switched on with `sqrN=True` parameter to `plot_stats` function. The hi-lo bars on top of histogram bins indicate *one standard deviation* intervals around the value of the histogram bin. You have to judge for yourself when the dstribution is satisfactorily reproduced. In general $2\sigma$ bars of the target and the bin should overlap.
+    The width of the standard deviation band is determined by the squere of the target distribution scaled to the size of the sample and number of bins in the histogram. The blue-shaded bars show population in each bin of the histogram and red dashed curve is a normal distribution fitted to the data points in the sample. In general, both bars of the histogram and fitted distribution should fit inside the $3\sigma$ band - such distribution should be considered a correct sampling of the target distribution. However, in small samples the statistical fluctuations are large and sometimes this condition is not met. In such cases the size of the variance of the actual bin of the histogram should be considered. This value is not plotted by default, but may be switched on with `sqrN=True` parameter to `plot_stats` function. The hi-lo bars on top of histogram bins indicate *one standard deviation* intervals around the value of the histogram bin. You have to judge for yourself when the dstribution is satisfactorily reproduced. In general $2\sigma$ bars of the target and the bin should overlap.
     """)
     return
 
 
 @app.cell
 def _():
-    #| hide
-    #| hide
     from hecss.monitor import monitor_stats, plot_stats, load_dfset
+
     return load_dfset, monitor_stats, plot_stats
 
 
@@ -60,8 +60,8 @@ def _(mo):
 def _(load_dfset, plot_stats):
     T = 300
     supercell = '2x2x2'
-    plot_stats(load_dfset(f'example/VASP_3C-SiC_calculated/{supercell}/T_{T:.0f}K/DFSET.dat'),
-               T=T, sqrN=True)
+    plot_stats(load_dfset(f'example/VASP_3C-SiC_calculated/{supercell}/T_{T:.0f}K/DFSET.dat'), 
+               T=T, sqrN=True);
     return
 
 
@@ -77,11 +77,10 @@ def _(mo):
 
 @app.cell
 def _(monitor_stats):
-    #| export
-    #| export
+    #| interactive
     T_1 = 600
     supercell_1 = '1x1x1'
-    monitor_stats(T=T_1, dfset=f'example/VASP_3C-SiC_calculated/{supercell_1}/T_{T_1:.0f}K/DFSET.dat', once=True)
+    monitor_stats(T=T_1, dfset=f'example/VASP_3C-SiC_calculated/{supercell_1}/T_{T_1:.0f}K/DFSET.dat', once=True)  # Show the plot and exit
     return
 
 

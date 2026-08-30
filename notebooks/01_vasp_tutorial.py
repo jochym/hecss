@@ -1,14 +1,13 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
 
 
 @app.cell
 def _():
-    #| hide
-    #| hide
     import marimo as mo
+
     return (mo,)
 
 
@@ -16,7 +15,6 @@ def _():
 def _(mo):
     mo.md(r"""
     # VASP Tutorial
-
     > This example uses VASP to calculate forces and energies. This is a non-free calculator which needs to be installed/setup separately. This example can be easily adapted to some other DFT calculator (e.g. QuantumEspresso, AbInit etc.)
     """)
     return
@@ -27,24 +25,26 @@ def _(mo):
     mo.md(r"""
     ## Setup
 
-    First we need to setup the environment by importing required tools from ASE, stdlib tqdm and hecss libraries.
+    First we need to setup the environment by importing required tools from ASE, stadlib tqdm and hecss libraries.
     """)
     return
 
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #|vasp
+    # Import VASP calculator and unit modules
     from ase.calculators.vasp import Vasp
     from ase import units as un
     from os.path import isfile
     import os
 
+    # The sample generator, monitoring display and dfset writer
     from hecss import HECSS
     from hecss.util import write_dfset
     from hecss.monitor import plot_stats
 
+    # Numerical and plotting routines
     import numpy as np
     from matplotlib import pyplot as plt
 
@@ -67,32 +67,34 @@ def _(mo):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| vasp
+    # Quick test using conventional unit cell
     supercell = '1x1x1'
-    return (supercell,)
+    return
 
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #| vasp
+    #| slow
+    # Slow more realistic test
     supercell_1 = '2x2x2'
-    return (supercell_1,)
+    return
 
 
 @app.cell
 def _():
-    #| hide
-    #| hide
+    #|hide
+    #|eval: false
+    # Reset supercell for interactive work (not executed in tests)
     supercell_2 = '1x1x1'
     return (supercell_2,)
 
 
 @app.cell
 def _(supercell_2):
-    #| export
-    #| export
+    #| vasp
+    # Directory in which our project resides
     base_dir = f'example/VASP_3C-SiC/{supercell_2}/'
     return (base_dir,)
 
@@ -110,9 +112,12 @@ def _(mo):
 
 @app.cell
 def _(Vasp, base_dir, supercell_2):
-    #| export
-    #| export
+    #| vasp
+    # Read the structure (previously calculated unit(super) cell)
+    # The command argument is specific to the cluster setup
     calc = Vasp(label='cryst', directory=f'{base_dir}/sc_{supercell_2}/', restart=True)
+    # This just makes a copy of atoms object
+    # Do not generate supercell here - your atom ordering will be wrong!
     cryst = calc.atoms.repeat(1)
     return calc, cryst
 
@@ -133,8 +138,10 @@ def _(mo):
 
 @app.cell
 def _(calc, cryst, os, supercell_2):
-    #| export
-    #| export
+    #|vasp
+    # Setup the calculator - single point energy calculation
+    # The details will change here from case to case
+    # We are using run-vasp from the current directory!
     calc.set(directory=f'TMP/calc_{supercell_2}/sc')
     calc.set(command=f'{os.getcwd()}/run-calc.sh "3C-SiC-{supercell_2}"')
     calc.set(nsw=0)
@@ -154,8 +161,7 @@ def _(mo):
 
 @app.cell
 def _(calc, un):
-    #| export
-    #| export
+    #|vasp
     print('Stress tensor: ', end='')
     for ss in calc.get_stress()/un.GPa:
         print(f'{ss:.3f}', end=' ')
@@ -177,8 +183,8 @@ def _(mo):
 
 @app.cell
 def _(supercell_2):
-    #| export
-    #| export
+    #|vasp
+    # Space for results
     xsl = []
     calc_dir = f'TMP/calc_{supercell_2}'
     return (calc_dir,)
@@ -186,19 +192,20 @@ def _(supercell_2):
 
 @app.cell
 def _(HECSS, calc, calc_dir, cryst):
-    #| export
-    #| export
-    hecss = HECSS(cryst, calc,
+    #|vasp
+    # Build the sampler
+    hecss = HECSS(cryst, calc, 
                   directory=f'{calc_dir}',
-                  w_search=True,
-                  pbar=True)
+                  w_search = True,
+                  pbar=True,
+                  # reuse_base=f'{base_dir}/calc/' # Use if you want to reuse the base calc
+                  )
     return (hecss,)
 
 
 @app.cell
 def _(hecss, np, plt, un):
-    #| export
-    #| export
+    #|vasp
     m, s, xscl = hecss.estimate_width_scale(10, nwork=0)
     wm = np.array(hecss._eta_list).T
     y = np.sqrt((3*wm[1]*un.kB)/(2*wm[2]))
@@ -217,30 +224,33 @@ def _(hecss, np, plt, un):
 
 @app.cell
 def _():
-    #| export
-    #| export
+    #|vasp
+    # Temperature (K)
     T = 300
     return (T,)
 
 
 @app.cell
 def _():
+    #|vasp
+    # Desired number of samples.
+    # Here 4 is minimal in 3C-SiC 
+    # to get somewhat decent phonons 
+    # with 10 Bohr cutoff.
     N = 4
     return (N,)
 
 
 @app.cell
 def _(N, T, hecss):
-    #| export
-    #| export
+    #|vasp
     samples = hecss.sample(T, N)
     return (samples,)
 
 
 @app.cell
 def _(T, hecss, plot_stats, samples):
-    #| export
-    #| export
+    #|vasp
     plot_stats(samples, T)
     distrib = hecss.generate(samples, T)
     plot_stats(distrib, T, sqrN=True)
@@ -257,18 +267,18 @@ def _(mo):
 
 @app.cell
 def _(plot_stats):
-    #| export
-    #| export
+    #|vasp
     def show_stats(s, sl, col=None, Temp=None):
-        from matplotlib import pyplot as plt
-        from IPython.display import clear_output
-        from hecss.optimize import make_sampling
-        plot_stats(make_sampling(sl if col is None else col + sl, Temp),
+    from matplotlib import pyplot as plt
+    from IPython.display import clear_output
+    from hecss.optimize import make_sampling
+        plot_stats(make_sampling(sl if col is None else col + sl, Temp), 
                    Temp, show=False)
         plt.axvline(s[-1], ls=':', label='Last sample')
         plt.legend()
         plt.show()
         clear_output(wait=True)
+        # Important! Return False to keep iteration going
         return False
 
     return (show_stats,)
@@ -276,8 +286,8 @@ def _(plot_stats):
 
 @app.cell
 def _(T, hecss, plot_stats, samples, show_stats):
-    #| export
-    #| export
+    #|vasp
+    # Need more samples. Increase N and get more samples.
     N_1 = 10
     samples_1 = samples + hecss.sample(T, N_1, sentinel=show_stats, sentinel_args={'col': samples, 'Temp': T})
     plot_stats(hecss.generate(samples_1, T), T, sqrN=True)
@@ -286,24 +296,22 @@ def _(T, hecss, plot_stats, samples, show_stats):
 
 @app.cell
 def _(N_1, T, hecss, samples_1, show_stats):
-    #| export
-    #| export
+    #|vasp
     samples_2 = samples_1 + hecss.sample(T, N_1, sentinel=show_stats, sentinel_args={'col': samples_1, 'Temp': T})
     return (samples_2,)
 
 
 @app.cell
 def _(T, hecss, plot_stats, samples_2):
-    #| export
-    #| export
+    #|vasp
+    # Verify if we really got the same picture
     plot_stats(hecss.generate(samples_2, T), T, sqrN=True)
     return
 
 
 @app.cell
 def _(T, calc_dir, samples_2, write_dfset):
-    #| export
-    #| export
+    #|vasp
     for c in samples_2:
         write_dfset(f'{calc_dir}/DFSET_T={T}K.dat', c)
     return
@@ -319,8 +327,7 @@ def _(mo):
 
 @app.cell
 def _(hecss, plot_stats):
-    #| export
-    #| export
+    #|vasp
     T_1 = 600
     confs_600 = hecss.sample(T_1, 50)
     plot_stats(hecss.generate(confs_600, T_1), T_1, sqrN=True)
@@ -329,8 +336,7 @@ def _(hecss, plot_stats):
 
 @app.cell
 def _(T_1, calc_dir, confs_600, write_dfset):
-    #| export
-    #| export
+    #|vasp
     for c_1 in confs_600:
         write_dfset(f'{calc_dir}/DFSET_T={T_1}K.dat', c_1)
     return
@@ -338,40 +344,35 @@ def _(T_1, calc_dir, confs_600, write_dfset):
 
 @app.cell
 def _(T_1, confs_600, hecss):
-    #| export
-    #| export
+    #|vasp
     hecss.generate(confs_600, T_1, debug=True)
     return
 
 
 @app.cell
 def _(hecss):
-    #| export
-    #| export
+    #|vasp
     c_1000 = hecss.sample(1000, 50)
     return (c_1000,)
 
 
 @app.cell
 def _(c_1000, np):
-    #| export
-    #| export
+    #|vasp
     T_1000 = np.array([s[-1] for s in c_1000]).mean()
     return (T_1000,)
 
 
 @app.cell
 def _(T_1000, c_1000, hecss, un):
-    #| export
-    #| export
+    #|vasp
     s_1000 = hecss.generate(c_1000, 2*T_1000/un.kB/3, border=True, debug=True)
     return (s_1000,)
 
 
 @app.cell
 def _(calc_dir, s_1000, write_dfset):
-    #| export
-    #| export
+    #|vasp
     for c_2 in s_1000:
         write_dfset(f'{calc_dir}/DFSET_T={1000}K.dat', c_2)
     return

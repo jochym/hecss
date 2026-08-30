@@ -1,12 +1,13 @@
 import marimo
 
-__generated_with = "0.23.16"
+__generated_with = "0.24.0"
 app = marimo.App()
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -14,7 +15,6 @@ def _():
 def _(mo):
     mo.md(r"""
     # Background
-
     >HECSS is a Monte-Carlo configuration space sampler. It provides an alternative way to create representations of systems at thermal equilibrium without running a very expensive molecular dynamics simulation. The physical background of HECSS is presented in [SciPost Phys. 10, 129 (2021)](https://scipost.org/SciPostPhys.10.6.129), which should be cited in every work using this code. Here is just a short overview of the foundations of the approach used in the code.
     """)
     return
@@ -73,6 +73,8 @@ def _(mo):
 
     $$
     \left\langle E_p(q)\right\rangle =
+    # magic command not supported in marimo; please file an issue to add support
+    # %\left\langle \sum_{n=2}^{\infty} C_n q^n \right\rangle =
     \frac{k_B T}{2} -
         \sum\limits_{n=3}^\infty \frac{n-2}{2}C_n \left\langle q^n \right\rangle,
     $$
@@ -129,7 +131,6 @@ def _(mo):
 @app.cell
 def _():
     #| hide
-    #| hide
     from scipy import stats
     from matplotlib import pylab as plt
     import numpy as np
@@ -140,15 +141,17 @@ def _():
 
 @app.cell
 def _(np, plt, stats):
-    #| export
-    #| export
+    #|code-fold: true
+    #| label: fig-harmonic
+    #| fig-cap: Probability distribution of the displacement of the harmonic oscillator.
+
     A = 1
     u = np.linspace(-A, A, 301)[1:-1]
     plt.plot(u, stats.arcsine.pdf(u, -A, 2*A))
-    plt.axvline(-A, ls=':', lw=1, color='k')
-    plt.axvline(A, ls=':', lw=1, color='k')
+    plt.axvline(-A, ls=':', lw=1, color='k');
+    plt.axvline(A, ls=':', lw=1, color='k');
     plt.xlabel('Displacement')
-    plt.ylabel('Probability density')
+    plt.ylabel('Probability density');
     return
 
 
@@ -185,9 +188,17 @@ def _(mo):
 
 
 @app.cell
+def _():
+    #| hide
+
+    return
+
+
+@app.cell
 def _(np, plt, stats):
-    #| export
-    #| export
+    #|code-fold: true
+    #| label: fig-rayleigh
+    #| fig-cap: Probability distribution of the amplitude of the harmonic oscillator in the thermodynamic ensemble.
     u_1 = np.linspace(0, 4, 301)
     plt.plot(u_1, stats.rayleigh.pdf(u_1))
     plt.xlabel('Amplitude')
@@ -203,7 +214,7 @@ def _(mo):
     {\cal P}(u) = \int\limits_u^\infty p(u|A) p(A) dA =
     \frac{1}{\cal{N}}\int\limits_u^\infty
          \frac{\alpha A \exp\left(-\frac{\alpha A^2}{2 k T}\right)}
-                  {\pi\sqrt{A^2 - u^2}}  dA =
+                 {\pi\sqrt{A^2 - u^2}}  dA =
     \frac{1}{\cal{N}}\sqrt{\frac{\alpha k T}{2 \pi}}
             \exp\left(-\frac{\alpha u^2}{2 k T}\right),
     $$
@@ -286,56 +297,86 @@ def _(mo):
 
 @app.cell
 def _():
+    #| hide
+
     return
 
 
 @app.cell
 def _(np, plt, stats):
+    #|code-fold: true
+    #| label: fig-prior
+    #| fig-cap: Histogram of the prior distribution of the sample (red lines on top).
+
+    # You can try uniform distribution as your prior
+    # prior = stats.uniform(0, 100)
+    # Or some peaked distribution like logistic
     prior = stats.logistic(70, 50)
 
+    # Generate N samples
     N = 50
     d = np.sort(prior.rvs(size=N))
 
-    plt.hist(d, bins='auto', density=True)
-    skip = len(d) // 2000
+    # Let us see our initial sample
+    plt.hist(d, bins='auto', density=True);
+    skip = len(d)//2000
     skip = int(max(0, skip))
     for s in d[::skip] if skip else d:
-        plt.axvline(s, ymin=0.96, ymax=0.98, ls='-',
+        plt.axvline(s, ymin=0.96, ymax=0.98, ls='-', 
                     color='r', alpha=np.sqrt(1/len(d)))
-    plt.ylabel('Probability density')
-    plt.xlabel('Data value')
+    plt.ylabel('Probability density');
+    plt.xlabel('Data value');
     return d, prior
 
 
 @app.cell
 def _(d, itertools, np, plt, prior, stats):
+    #|code-fold: true
+    #| label: fig-posterior
+    #| fig-cap: Posterior distribution after application of weighting procedure. The mean and variance of the target may be selected independent of the prior sample. Try to modify `m` and `s` variables or the `target` distribution.
     flatten = itertools.chain.from_iterable
+    # Helper function
     target = stats.logistic
     m = 40
+    # Proof of concept - floating point waighted data
+    # Target distribution, you can select any reasonable
+    # function which covers the data range
     s_1 = 20
     g = target(m, s_1)
     cdf = np.zeros(len(d) + 1)
     cdf[1:-1] = g.cdf((d[:-1] + d[1:]) / 2)
     cdf[0] = g.cdf(d[0] - (d[1] - d[0]) / 2)
+    # Cumulative distribution function for data bins
     cdf[-1] = g.cdf(d[-1] + (d[-1] - d[-2]) / 2)
     w = cdf[1:] - cdf[:-1]
     Nmul = 4
+    # boundary cdf values for the data domain
     iw = Nmul * len(d) * w
     iw[np.logical_and(0.25 < iw, iw < 1)] = 1
     iw = np.round(iw)
+    # Data weights as change in cdf in data bin
     bb = np.zeros(len(d) + 1)
     bb[1:-1] = (d[:-1] + d[1:]) / 2
+    # Integer weights/data multipliers
+    # We will produce Nmul times the data to simulate 
+    # real-valued weighting
     bb[0] = d[0] - (d[1] - d[0]) / 2
     bb[-1] = d[-1] + (d[-1] - d[-2]) / 2
     bw = bb[1:] - bb[:-1]
+    # Never remove the data, block zero weights
+    # This will deform (rise) the wings of the histogram
     plt.title(f'{iw.sum():.0f} ({len(d)} unique) samples')
     x = np.linspace(d[0], d[-1], 300)
     plt.plot(x, prior.pdf(x), label='Prior distribution')
+    ## This is a visualisation part
+    # Bin boundaries for data weighting
+    # This is for visualization only
     plt.plot(x, g.pdf(x) / (g.cdf(bb[-1]) - g.cdf(bb[0])), '-', lw=1, label='Target distribution', zorder=1)
     plt.stairs(w / bw / w.sum(), bb, fill=False, lw=1, label='Float weighted samples')
     Nb = max(20, len(d) // 10)
     plt.hist(d, weights=iw, bins=Nb, density=True, color='C1', alpha=0.4, label='Integer weighted histogram')
     fit = target.fit(list(flatten([int(wv) * [v] for v, wv in zip(d, iw)])))
+    # bin widths
     plt.plot(x, target.pdf(x, *fit) * (target.cdf(bb[-1], *fit) - target.cdf(bb[0], *fit)), '--', label='Fitted target distribution')
     skip_1 = len(d) // 2000
     skip_1 = int(max(0, skip_1))
@@ -344,6 +385,8 @@ def _(d, itertools, np, plt, prior, stats):
     plt.ylabel('Probability density')
     plt.xlabel('Data value')
     plt.xlim(m - 6 * s_1, m + 6 * s_1)
+    # plt.stairs(iw/bw/iw.sum(), bb, label='integer weighted samples')
+    # Fit and plot target distribution to integer weighted data
     plt.legend(loc='upper left', bbox_to_anchor=(0.65, 0.95))
     return
 
