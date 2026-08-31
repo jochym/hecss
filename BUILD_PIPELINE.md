@@ -129,6 +129,42 @@ init_star_import = "core"        # for __init__.py
 
 ---
 
+## Native marimo cells vs. nbdev tags
+
+marimo exposes three "special" cell kinds beyond the regular `@app.cell`. They
+are **present in this repo** but are **not** used as library gates — the `#|`
+tags above remain the single source of truth for what lands in `hecss/`.
+
+| marimo cell | Purpose | Maps to nbdev tag? | Role in this pipeline |
+|-------------|---------|--------------------|-----------------------|
+| `@app.cell` | Regular reactive cell | `#\| export` / `#\| exporti` / `#\| hide` | **Primary.** Tags gate inclusion |
+| `@app.function` | Pure, top-level importable function | partial — it is a cell like any other; tags still govern inclusion | Authoring convenience; `marimo export script` flattens it to a plain `def` and keeps `#\|` tags |
+| `@app.class_definition` | Pure, top-level importable class | partial — same as function | Authoring convenience; flattened like `def` on export |
+| `app.setup` (`with app.setup:`) | Shared imports for top-level funcs/classes | **does not map** — imports are stripped by `marimo export script` | Currently **not usable** for cross-cell import hoisting |
+
+### Why tags stay the gate, not these cells
+- **`export` vs `exporti` (public vs internal) has no marimo equivalent.** A
+  `@app.function` cell is importable by *any* notebook, but `hecss` needs to
+  distinguish `__all__` members from internal helpers. `#\| export` / `#\| exporti`
+  carry that distinction; the cell decorator does not.
+- **`exporti <mod>` (cross-module) is purely a build-time concept.** marimo has
+  no notion of routing a cell into another module. Only the tag does this.
+- **`app.setup` is lost on export.** `marimo export script` drops `with app.setup:`
+  bodies entirely (verified 0.24.0), so it cannot feed the library build. The
+  conventional `import` blocks inside `#\| exporti`/`#\| export` cells are what
+  `split_imports()` collects and merges.
+- **Byte parity with canonical `3578cce` was the goal.** Reworking gates onto
+  marimo cells would change code shape and risk drifting from nbdev semantics.
+- `asap`/`vasp`/`slow`/`eval` remain doc/run flags (`#\|` comments), never gates.
+
+**Conclusion:** `@app.function` / `@app.class_definition` are kept for authoring
+ergonomics; `app.setup` is documented-but-unused. Library membership stays
+100% tag-driven. If marimo later gains a native "export to module" / "exclude
+from module" cell property, that could replace `#\| export`/`hide` — worth
+revisiting then, not now.
+
+---
+
 ## Configuration Files
 
 ### `pyproject.toml` (project root)
