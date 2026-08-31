@@ -136,12 +136,17 @@ are **not** used as library gates — the `#|` tags above remain the single
 source of truth for what lands in `hecss/`. None of the current notebooks use
 `app.setup`; `@app.function` appears in `16_util.py` / `99_mh.py`.
 
+> **WARNING — do NOT use `with app.setup:` cells.**
+> `marimo export script` (Stage 3) silently strips their contents, so any
+> imports/definitions placed there never reach `hecss/`. Put imports inside
+> `#| export` / `#| exporti` cells instead; `split_imports()` collects them.
+
 | marimo cell | Purpose | Maps to nbdev tag? | Role in this pipeline |
 |-------------|---------|--------------------|-----------------------|
 | `@app.cell` | Regular reactive cell | `#\| export` / `#\| exporti` / `#\| hide` | **Primary.** Tags gate inclusion |
 | `@app.function` | Pure, top-level importable function | partial — it is a cell like any other; tags still govern inclusion | Authoring convenience; `marimo export script` flattens it to a plain `def` and keeps `#\|` tags |
 | `@app.class_definition` | Pure, top-level importable class | partial — same as function | Authoring convenience; flattened like `def` on export |
-| `app.setup` (`with app.setup:`) | Shared imports for top-level funcs/classes | **does not map** — imports are stripped by `marimo export script` | Currently **not usable** for cross-cell import hoisting |
+| `app.setup` (`with app.setup:`) | Shared imports for top-level funcs/classes | **does not map** — imports are stripped by `marimo export script` | **AVOID — dropped by export; never reaches `hecss/`** |
 
 ### Why tags stay the gate, not these cells
 - **`export` vs `exporti` (public vs internal) has no marimo equivalent.** A
@@ -150,10 +155,10 @@ source of truth for what lands in `hecss/`. None of the current notebooks use
   carry that distinction; the cell decorator does not.
 - **`exporti <mod>` (cross-module) is purely a build-time concept.** marimo has
   no notion of routing a cell into another module. Only the tag does this.
-- **`app.setup` is lost on export.** `marimo export script` drops `with app.setup:`
-  bodies entirely (verified 0.24.0), so it cannot feed the library build. The
-  conventional `import` blocks inside `#\| exporti`/`#\| export` cells are what
-  `split_imports()` collects and merges.
+- **AVOID `app.setup` — it is lost on export.** `marimo export script` drops
+  `with app.setup:` bodies entirely (verified 0.24.0), so it cannot feed the
+  library build. The conventional `import` blocks inside `#\| exporti`/`#\| export`
+  cells are what `split_imports()` collects and merges.
 - **Byte parity with canonical `3578cce` was the goal.** Reworking gates onto
   marimo cells would change code shape and risk drifting from nbdev semantics.
 - `asap`/`vasp`/`slow`/`eval` remain doc/run flags (`#\|` comments), never gates.
@@ -238,6 +243,11 @@ repl = r'\1\1 \2= \4'
 1. Create `notebooks/<name>.py` with `#| default_exp <name>`
 2. Tag cells `#| export` / `#| exporti` / `#| exporti other_mod`
 3. Run `python scripts/build_lib.py` → auto-discovers module
+
+**Do NOT use `with app.setup:` cells.** `marimo export script` silently strips
+them, so anything placed there (imports, constants, defs) never reaches
+`hecss/`. Keep imports in `#| export` / `#| exporti` cells — that is what
+`split_imports()` collects and merges.
 
 ### Updating `marimo` version
 1. `uv pip install marimo@<new_version>`
