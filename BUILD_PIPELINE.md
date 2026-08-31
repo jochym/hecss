@@ -136,17 +136,20 @@ are **not** used as library gates — the `#|` tags above remain the single
 source of truth for what lands in `hecss/`. None of the current notebooks use
 `app.setup`; `@app.function` appears in `16_util.py` / `99_mh.py`.
 
-> **WARNING — do NOT use `with app.setup:` cells.**
-> `marimo export script` (Stage 3) silently strips their contents, so any
-> imports/definitions placed there never reach `hecss/`. Put imports inside
-> `#| export` / `#| exporti` cells instead; `split_imports()` collects them.
+> **WARNING — for THIS pipeline, do NOT use `with app.setup:` cells.**
+> `marimo export script` (Stage 3) omits the setup block's body, so imports
+> placed there never reach the exported script — and therefore never reach
+> `hecss/`. Put imports inside `#| export` / `#| exporti` cells instead;
+> `split_imports()` collects them. (See note below: setup cells *do* work in
+> marimo's native module-import model; the gap is specific to this pipeline's
+> use of `marimo export script`.)
 
 | marimo cell | Purpose | Maps to nbdev tag? | Role in this pipeline |
 |-------------|---------|--------------------|-----------------------|
 | `@app.cell` | Regular reactive cell | `#\| export` / `#\| exporti` / `#\| hide` | **Primary.** Tags gate inclusion |
 | `@app.function` | Pure, top-level importable function | partial — it is a cell like any other; tags still govern inclusion | Authoring convenience; `marimo export script` flattens it to a plain `def` and keeps `#\|` tags |
 | `@app.class_definition` | Pure, top-level importable class | partial — same as function | Authoring convenience; flattened like `def` on export |
-| `app.setup` (`with app.setup:`) | Shared imports for top-level funcs/classes | **does not map** — imports are stripped by `marimo export script` | **AVOID — dropped by export; never reaches `hecss/`** |
+| `app.setup` (`with app.setup:`) | Shared imports for top-level funcs/classes | **does not map** — omitted by `marimo export script` | **AVOID in this pipeline** — never reaches `hecss/` |
 
 ### Why tags stay the gate, not these cells
 - **`export` vs `exporti` (public vs internal) has no marimo equivalent.** A
@@ -155,20 +158,38 @@ source of truth for what lands in `hecss/`. None of the current notebooks use
   carry that distinction; the cell decorator does not.
 - **`exporti <mod>` (cross-module) is purely a build-time concept.** marimo has
   no notion of routing a cell into another module. Only the tag does this.
-- **AVOID `app.setup` — it is lost on export.** `marimo export script` drops
-  `with app.setup:` bodies entirely (verified 0.24.0), so it cannot feed the
-  library build. The conventional `import` blocks inside `#\| exporti`/`#\| export`
-  cells are what `split_imports()` collects and merges.
+- **AVOID `app.setup` in this pipeline — omitted by `marimo export script`.**
+  Its body never reaches `hecss/`. The `import` blocks inside
+  `#\| exporti`/`#\| export` cells are what `split_imports()` collects and merges.
 - **Byte parity with canonical `3578cce` was the goal.** Reworking gates onto
   marimo cells would change code shape and risk drifting from nbdev semantics.
 - `asap`/`vasp`/`slow`/`eval` remain doc/run flags (`#\|` comments), never gates.
 
-#### Where the setup cell drops out of the pipeline
-The drop happens in **Stage 3 (`marimo export script`)** — not in the notebook
-files and not in `build_lib.py`. Specifically, marimo's
-`_convert/script.py:convert_from_ir_to_script` emits only regular cells:
+### Setup cells: intended behavior vs. this pipeline
+Verified against marimo's docs, MEP-0008, and the source (`App.setup` /
+`_SetupContext`), and confirmed empirically.
+
+**Setup cells are NOT broken — they work in marimo's native model.** The setup
+cell exists precisely so shared imports/constants can be consumed by top-level
+`@app.function` / `@app.class_definition`, enabling `from my_notebook import
+func`. In that model (`import` the notebook as a module) the block runs first
+and its symbols become module globals:
 
 ```python
+# importing the notebook as a module:
+#   np / sqrt   -> present (from app.setup)
+#   add / Point -> importable (top-level)
+```
+
+The `with` wrapper (vs. bare top-level imports) is a deliberate security
+feature (MEP-0008): the imports are **not** executed at module-import time for
+`marimo edit`, only at runtime.
+
+**The gap is specific to one exporter.** `marimo export script` produces a flat
+*executable* script by walking only regular cells — never the setup block:
+
+```python
+# marimo/_convert/script.py:convert_from_ir_to_script
 codes = ["# %%\n" + graph.cells[cid].code
          for cid in topological_sort(graph, graph.cells.keys())]
 ```
@@ -176,13 +197,18 @@ codes = ["# %%\n" + graph.cells[cid].code
 `graph.cells` holds `@app.cell` / `@app.function` / `@app.class_definition`
 only. The setup cell is stored separately on the app (`app._setup`, a
 `_SetupContext`), **outside** `graph.cells`, so this loop never sees it. It is
-preserved in the notebook's own canonical serialization (`InternalApp.to_py()`)
-but stripped by the flat-script exporter. The notebook-direct fallback
-(`parse_notebook_blocks`) would also miss it, because it keys off
-`@app.cell` markers. To feed a future `app.setup` into the library, the build
-would need to read the `with app.setup:` block directly from the notebook file
-and merge its `stmt*` imports like any other import block — no `marimo export
-script` change required. Not done now: no current notebook uses it.
+preserved by `InternalApp.to_py()` and by direct module import, but omitted by
+the flat-script exporter. The notebook-direct fallback
+(`parse_notebook_blocks`) would also miss it, because it keys off `@app.cell`
+markers.
+
+**Implication for `hecss`:** since `build_lib.py` consumes `marimo export
+script` output (or the notebook file via `@app.cell` markers), setup-cell
+imports cannot reach the library today. That is why the warning above is "avoid
+in this pipeline" — not "marimo is broken." To support a future `app.setup`,
+the build could read the `with app.setup:` block directly from the notebook
+file and merge its `stmt*` imports like any other import block — no `marimo
+export script` change required. Not done now: no current notebook uses it.
 
 **Conclusion:** `@app.function` / `@app.class_definition` are kept for authoring
 ergonomics; `app.setup` is documented-but-unused. Library membership stays

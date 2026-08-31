@@ -16,7 +16,7 @@ Key points for agents:
 * **Configuration:** `pyproject.toml` `[tool.build_lib]` — paths, `init_star_import`
 * **Tags:** `#| default_exp`, `#| export`, `#| exporti`, `#| exporti <mod>`, `#| hide` — nbdev semantics
 * **Tag logic:** `export` → `__all__`, `exporti` → internal, `exporti <mod>` → cross-module, `hide` excluded
-* **AVOID `app.setup` cells** — silently dropped by `marimo export script`; keep imports in `#| export` / `#| exporti` cells
+* **AVOID `app.setup` cells in this pipeline** — `marimo export script` omits the setup block, so those imports never reach `hecss/` (setup works only in marimo's module-import model, not our export path); keep imports in `#| export` / `#| exporti` cells
 * **Cross-module:** `exporti <mod>` blocks appended to target module, imports merged
 * **Disposable patches:** `patches/01-notebooks.py` (notebook fixes), `patches/02-scripts.py` (AugAssign revert) — remove after confidence
 * **Canonical reference:** git tag `3578cce` (v0.5.29 on test.pypi.org)
