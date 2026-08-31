@@ -132,8 +132,9 @@ init_star_import = "core"        # for __init__.py
 ## Native marimo cells vs. nbdev tags
 
 marimo exposes three "special" cell kinds beyond the regular `@app.cell`. They
-are **present in this repo** but are **not** used as library gates — the `#|`
-tags above remain the single source of truth for what lands in `hecss/`.
+are **not** used as library gates — the `#|` tags above remain the single
+source of truth for what lands in `hecss/`. None of the current notebooks use
+`app.setup`; `@app.function` appears in `16_util.py` / `99_mh.py`.
 
 | marimo cell | Purpose | Maps to nbdev tag? | Role in this pipeline |
 |-------------|---------|--------------------|-----------------------|
@@ -156,6 +157,27 @@ tags above remain the single source of truth for what lands in `hecss/`.
 - **Byte parity with canonical `3578cce` was the goal.** Reworking gates onto
   marimo cells would change code shape and risk drifting from nbdev semantics.
 - `asap`/`vasp`/`slow`/`eval` remain doc/run flags (`#\|` comments), never gates.
+
+#### Where the setup cell drops out of the pipeline
+The drop happens in **Stage 3 (`marimo export script`)** — not in the notebook
+files and not in `build_lib.py`. Specifically, marimo's
+`_convert/script.py:convert_from_ir_to_script` emits only regular cells:
+
+```python
+codes = ["# %%\n" + graph.cells[cid].code
+         for cid in topological_sort(graph, graph.cells.keys())]
+```
+
+`graph.cells` holds `@app.cell` / `@app.function` / `@app.class_definition`
+only. The setup cell is stored separately on the app (`app._setup`, a
+`_SetupContext`), **outside** `graph.cells`, so this loop never sees it. It is
+preserved in the notebook's own canonical serialization (`InternalApp.to_py()`)
+but stripped by the flat-script exporter. The notebook-direct fallback
+(`parse_notebook_blocks`) would also miss it, because it keys off
+`@app.cell` markers. To feed a future `app.setup` into the library, the build
+would need to read the `with app.setup:` block directly from the notebook file
+and merge its `stmt*` imports like any other import block — no `marimo export
+script` change required. Not done now: no current notebook uses it.
 
 **Conclusion:** `@app.function` / `@app.class_definition` are kept for authoring
 ergonomics; `app.setup` is documented-but-unused. Library membership stays
