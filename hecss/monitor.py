@@ -474,7 +474,8 @@ def plot_virial_stat(cryst, smpl, T, normal=False):
     """Plot the virial-to-temperature ratio of width-estimation samples.
 
     For each element, the distribution of ``|displacement * force| / (kB*T)``
-    is fitted and plotted in units of temperature ``T`` (kelvin). With
+    is fitted and plotted as a dimensionless virial/T ratio (equilibrium 1).
+    With
     ``normal=True`` a normal distribution is fitted; otherwise chi-squared
     with ``3 * natoms(element)`` degrees of freedom is used. Nothing is
     returned.

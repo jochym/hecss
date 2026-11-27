@@ -53,7 +53,8 @@ class HECSS:
     
     * cryst : crystal structure (ASE `Atoms` object) 
     * calc  : ASE calculator or a callable returning a fresh one. A single
-              calculator instance is reused for all samples.
+              calculator instance is reused; a callable is invoked once per
+              sampler (i.e. once per temperature).
     * width : eta, displacement scaling parameter, approx 1.0. If None, it is
               estimated from forces on the first `sample()` call.
     * maxburn : max. number of initial burn-in samples
@@ -158,6 +159,7 @@ def _estimate_width_scale_ser(self: HECSS, n=1, Tmin=0, Tmax=600, set_scale=True
     
     #### Input
     * `n`    - number of sampling points
+    * `Tmin` - min sampled temperature
     * `Tmax` - max sampled temperature
     * `set_scale` - set scale parameter in the class after run
     * `pbar` - show progress bar during calculation
@@ -303,7 +305,7 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, ):
     '''
-    The the core functionality of the module is implemented in this generator function 
+    The core functionality of the module is implemented in this generator function 
     which yields samples of the prior distribution. This is an internal implementation 
     mechanism. In principle, it can be used by outside code but it is **strongly** 
     discouraged as the implementation details may change without any notice 
@@ -582,16 +584,20 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
     #### INPUT
     * T            : Target temperature in Kelvin
     * N            : Number of iterations.
-    * sentinel     :
+    * sentinel     : callback `sentinel(sample, samples, **sentinel_args)`;
+                     returning True stops the run early.
+    * sentinel_args: keyword arguments passed to the sentinel callback.
+    * nwork        : number of parallel workers. Only supported for VASP;
+                     None selects the serial sampler.
     * delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-    * sigma        : Range around E0 in sigmas to stop w-serach mode
+    * sigma        : Range around E0 in sigmas to stop w-search mode
     * eqdelta      : Max. speed of amplitude correction from step to step (0.05=5%)
     * eqsigma      : Half width of linear part of amplitude correction function.
     * xi           : strength of the amplitude correction term [0-1]
     * chi          : strength of the amplitude correction term mixing [0-1]
-    * xscale_init  : Initial values of the amplitude correction coefficients.
-                   Array with shape `cryst.get_positions().shape`.
-                   May be also generated with `calc_init_xscale` function.
+    Set `sampler.xscale_init` before calling `sample()` to supply initial
+    amplitude correction coefficients. The array must have shape
+    `cryst.get_positions().shape`; use `calc_init_xscale` to generate it.
     * Ep0          : T=0 energy (base, no displacements), if None (default) calculate E0.
     * modify       : pass your own pre-processing function to modify the structure 
                    before calculation. The function must return a  (e, f) tuple
@@ -727,7 +733,7 @@ async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, ):
     '''
-    The the core functionality of the module is implemented in this generator function 
+    The core functionality of the module is implemented in this generator function 
     which yields samples of the prior distribution. This is an internal implementation 
     mechanism. In principle, it can be used by outside code but it is **strongly** 
     discouraged as the implementation details may change without any notice 
@@ -1026,6 +1032,7 @@ async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
     
     #### Input
     * `n`    - number of sampling points
+    * `Tmin` - min sampled temperature
     * `Tmax` - max sampled temperature
     * `set_scale` - set scale parameter in the class after run
     * `pbar` - show progress bar during calculation

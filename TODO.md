@@ -26,6 +26,9 @@ work is done. Items marked "on request" are deliberately deferred.
 - [ ] Move the API compatibility probe into the repository as a maintained
       script so parity with 0.5.29 (minus the intentional `hecss.mh` removal)
       stays checkable after future changes.
+- [ ] Check the `kpath` default mismatch: `run_alamode` uses `cryst` while
+      `build_bnd_lst` uses `crast`. Confirm which k-path file name is correct
+      before changing a public default.
 
 ## Standing decisions
 

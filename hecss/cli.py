@@ -39,9 +39,10 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
     Write one sample to the DFSET file in `workdir`.
 
-    `s` is a sample tuple and `sl` the full sample list (used only for its
-    length). If `scale` and `xsl` are both set, the accumulated amplitude
-    corrections are appended to the scale file and `xsl` is cleared. Always
+    `s` is a sample tuple; `sl` is unused and exists only to match the
+    sentinel callback signature. If `scale` and `xsl` are both set, the
+    accumulated amplitude corrections are appended to the scale file and
+    `xsl` is cleared. Always
     returns `False`, so it can be used as a sampler sentinel.
     '''
     wd = Path(workdir)
