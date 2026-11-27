@@ -22,5 +22,6 @@
 
 ## Do you want to contribute to the documentation?
 
-* Docs are automatically created from the notebooks in the root folder.
+* Documentation sources live in `docs/` and are built with `mkdocs build --strict`.
+* API pages are generated from docstrings by mkdocstrings; edit the Python modules to change them.
 

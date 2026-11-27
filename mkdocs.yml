@@ -1,0 +1,53 @@
+site_name: HECSS
+site_description: High Efficiency Configuration Space Sampler
+site_url: https://jochym.github.io/hecss/
+repo_url: https://github.com/jochym/hecss/
+repo_name: jochym/hecss
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+
+nav:
+  - Home: index.md
+  - Background: background.md
+  - Tutorials:
+      - LAMMPS: tutorials/lammps.md
+      - VASP: tutorials/vasp.md
+      - VASP workflow: tutorials/vasp-workflow.md
+      - Command line: tutorials/cli.md
+      - Monitor statistics: tutorials/monitor-stats.md
+      - Monitor phonons: tutorials/monitor-phonons.md
+      - Degrees of freedom map: tutorials/dof-map.md
+  - API reference:
+      - hecss: api/core.md
+      - cli: api/cli.md
+      - monitor: api/monitor.md
+      - optimize: api/optimize.md
+      - parallel: api/parallel.md
+      - planner: api/planner.md
+      - util: api/util.md
+      - xscale: api/xscale.md
+      - mh: api/mh.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://unpkg.com/katex@0.16/dist/katex.min.js
+
+extra_css:
+  - https://unpkg.com/katex@0.16/dist/katex.min.css
