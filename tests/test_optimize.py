@@ -27,6 +27,14 @@ def test_make_sampling(samples):
     assert energies == sorted(energies)
 
 
+def test_make_sampling_preserves_all_configurations(samples):
+    result = make_sampling(
+        samples, 300.0, probTH=0, Nmul=1 / len(samples), nonzero_w=True
+    )
+    assert len(result) == len(samples)
+    assert sorted(s[1] for s in result) == sorted(s[1] for s in samples)
+
+
 def test_make_sampling_short_input_is_unchanged(samples):
     short = samples[:1]
     assert make_sampling(short, 300.0) is short

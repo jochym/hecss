@@ -8,6 +8,7 @@ import importlib.util
 
 import numpy as np
 import pytest
+from ase import units as un
 from ase.build import bulk
 
 from hecss import HECSS
@@ -61,6 +62,28 @@ def test_samples_can_be_appended(sampler):
     first += sampler.sample(300, 3)
     assert len(first) == 7
     assert [s[0] for s in first] == list(range(1, 8))
+
+
+def test_mean_energy_matches_target(model):
+    """Restore the historical ASAP temperature regression from 11_core.ipynb."""
+    np.random.seed(42)
+    cryst = bulk("SiC", crystalstructure="zincblende", a=4.38120844, cubic=True)
+    cryst = cryst.repeat((2, 2, 2))
+    cryst.calc = create_asap_calculator(model)
+    sampler = HECSS(
+        cryst,
+        lambda: create_asap_calculator(model),
+        width=1.05,
+        pbar=False,
+    )
+    temperature, n_samples = 300, 100
+    samples = sampler.sample(temperature, n_samples)
+    assert len(samples) == n_samples
+
+    mean = np.mean([s[-1] for s in samples])
+    target = 3 * temperature * un.kB / 2
+    sigma = np.sqrt(3 / 2) * un.kB * temperature / np.sqrt(len(cryst))
+    assert abs(mean - target) < 2 * sigma
 
 
 def test_estimate_width_scale(model, tmp_path):
