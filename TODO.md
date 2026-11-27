@@ -13,45 +13,47 @@ work is done. Items marked "on request" are deliberately deferred.
       variant, leave a `DeprecationWarning` alias in `hecss.xscale` for one
       release, then remove it and update `docs/api/{monitor,xscale}.md`.
 
-## On request
+## On request (deferred)
 
 - [ ] Read the Docs support: `.readthedocs.yaml`, `mkdocs.configuration`, a
-      version selector and tag triggers in `deploy.yaml`. Deferred in 0.6.
-- [x] KaTeX vendored locally in `docs/assets/katex/`, with the auto-render
-      extension and a Material initializer in `docs/javascripts/katex.js`;
-      the docs no longer depend on unpkg for equation rendering.
+      version selector and tag triggers in `deploy.yaml`.
 
-## Decisions needed (full review, 0.6.0)
-
-- [ ] `v0.6.0` points at `ec2d520`, before the review-driven fixes. Decide
-      whether to move/recreate the tag at the current HEAD; this needs a
-      force-push and is a release action requiring approval.
-- [ ] `deploy.yaml` triggers only on `devel`. Decide whether to add
-      `back-to-std` or tag triggers; that would auto-publish docs and needs
-      approval.
-- [x] Python metadata aligned: `requires-python = ">=3.9"` and classifiers
-      updated to 3.9-3.12 (CI runs 3.11). User decision from full review.
-- [x] Release decisions recorded: keep `v0.6.0` tag where it is, keep docs
-      deploy on `devel` only, keep the current ASAP CI skip behaviour.
-
-## Infrastructure
+## Infrastructure (open)
 
 - [ ] The GitHub `asap` job passes only by skipping: the PyPI `asap3` there has
       no OpenKIM models. Decide whether to add a conda/OpenKIM setup step for
       real integration coverage; local `uv` runs do exercise these tests.
-- [ ] Clean unused imports in `hecss/xscale.py` (non-blocking lint noise).
 - [ ] Refresh pinned GitHub Actions versions (Node 20 deprecation notices) and
       add `uv.lock` or `cache-dependency-glob` to `setup-uv`.
 - [ ] Move the API compatibility probe into the repository as a maintained
       script so parity with 0.5.29 (minus the intentional `hecss.mh` removal)
       stays checkable after future changes.
+
+## Decisions resolved (full review, 0.6.0)
+
+- [x] Keep the `v0.6.0` tag at `ec2d520`, before the review fixes. Retagging is
+      a release action for a later decision.
+- [x] Keep docs deployment on `devel` only; no auto-publishing from branches
+      or tags.
+- [x] Keep the current ASAP CI skip behaviour.
+- [x] Python metadata aligned: `requires-python = ">=3.9"` and classifiers
+      3.9-3.12 (CI runs 3.11).
+
+## Completed in 0.6
+
+- [x] KaTeX vendored locally in `docs/assets/katex/` with auto-render and a
+      Material initializer in `docs/javascripts/katex.js`; no unpkg dependency.
 - [x] `kpath` default mismatch resolved: `build_bnd_lst` used `crast` since
       2020 while `run_alamode` and `monitor_phonons` used `cryst`. Corrected
       to `cryst` and covered by a signature regression test.
+- [x] Unused imports removed and import blocks sorted; `ruff check --select
+      F401,F811,I .` is clean, with `archive/` excluded by configuration.
 
 ## Merge and release
 
 - [x] PR #7 opened: `back-to-std` -> `devel`, after reviewer sign-off.
+- [x] Docs-only build verified in a pristine `uv` environment with `.[docs]`:
+      strict build succeeds and the local KaTeX assets are present.
 - [ ] After merge: verify the `devel` docs deployment builds with the
       vendored KaTeX, static highlighting and no missing local assets.
 - [ ] Agree the release version/tag (`v0.6.0` still points at `ec2d520`) and
