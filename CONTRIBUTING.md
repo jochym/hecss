@@ -20,6 +20,10 @@
 * Do not turn an already submitted PR into your development playground. If after you submitted PR, you discovered that more work is needed - close the PR, do the required work and then submit a new PR. Otherwise each of your commits requires attention from maintainers of the project.
 * If, however, you submitted a PR and received a request for changes, you should proceed with commits inside that PR, so that the maintainer can see the incremental fixes and won't need to review the whole PR again. In the exception case where you realise it'll take many many commits to complete the requests, then it's probably best to close the PR, do the work and then submit it again. Use common sense where you'd choose one way over another.
 
+## Where is the project backlog?
+
+The maintained todo list is [TODO.md](TODO.md) in the repository root.
+
 ## Do you want to contribute to the documentation?
 
 * Documentation sources live in `docs/` and are built with `mkdocs build --strict`.

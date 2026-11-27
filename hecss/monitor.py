@@ -390,6 +390,21 @@ def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
     return m, s
 
 def plot_virial_stat(cryst, smpl, T, normal=False):
+    """Plot the virial-to-temperature ratio of width-estimation samples.
+
+    For each element, the distribution of ``|displacement * force| / (kB*T)``
+    is fitted and plotted in units of temperature ``T`` (kelvin). With
+    ``normal=True`` a normal distribution is fitted; otherwise chi-squared
+    with ``3 * natoms(element)`` degrees of freedom is used. Nothing is
+    returned.
+
+    Note: ``hecss.xscale.plot_virial_stat`` has the same name but implements
+    a different algorithm: it normalises the virial by the sample mean,
+    plots ``1/sqrt(virial)`` and returns an amplitude correction matrix.
+    The two functions will be merged into this one in 0.7, with a switch
+    selecting the normalised variant and a compatibility alias left in
+    ``hecss.xscale``.
+    """
     elems = cryst.get_chemical_symbols()
     vir = array([abs(s[2]*s[3]) for s in smpl])/(un.kB*T)
     nat = len(elems)

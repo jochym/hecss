@@ -20,11 +20,20 @@ from glob import glob
 from matplotlib import pyplot as plt
 
 def plot_virial_stat(cryst, smpl, normal=True):
-    """Plot normalized virial distributions from width-estimation samples.
+    """Plot normalised virial distributions and return an amplitude matrix.
 
-    The samples are grouped by element; returns the fitted amplitude
-    correction matrix with the same shape as the atomic positions.
+    The virial ``|displacement * force|`` from width-estimation samples is
+    divided by the sample mean, and ``1/sqrt(virial)`` is plotted per element.
+    ``normal=True`` fits a normal distribution; ``False`` fits chi-squared
+    with ``3 * natoms(element)`` degrees of freedom. The returned matrix has
+    the shape of ``cryst.get_positions()`` and can be used as ``xscale_init``.
+
+    Note: ``hecss.monitor.plot_virial_stat`` shares this name but plots the
+    dimensional virial/T ratio and returns nothing. The two implementations
+    will be merged into the monitor function in 0.7; this one will stay as a
+    compatibility alias for one release.
     """
+    # shortcut: distinct algorithm under a colliding name; merge into hecss.monitor in 0.7.
     elems = cryst.get_chemical_symbols()
     elmap = cryst.get_atomic_numbers()
     vir = np.array([abs(s[2]*s[3]) for s in smpl])
