@@ -7,7 +7,7 @@
 HECSS is a Monte-Carlo configuration space sampler using a sample weighting
 algorithm for probability distribution sampling. It provides an alternative
 way to create representations of systems at thermal equilibrium without
-running an expensive molecular dynamics simulation. Theoretical
+running an expensive molecular dynamics simulation. The theoretical
 foundation is described in [SciPost Phys. 10, 129 (2021)](https://scipost.org/SciPostPhys.10.6.129)
 and summarised in the [Background](https://jochym.github.io/hecss/background/) page
 of the [documentation](https://jochym.github.io/hecss/).
