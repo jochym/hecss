@@ -4,16 +4,15 @@
 # Only private methods are patched onto ASE's Vasp class; no public names.
 __all__ = []
 
-from fastcore.basics import patch
-
-import ase
-from ase.utils import workdir
-from ase.calculators.vasp import Vasp
-from ase.calculators import calculator
-from ase.calculators.vasp.vasp import check_atoms
-
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+
+from ase.calculators import calculator
+from ase.calculators.vasp import Vasp
+from ase.calculators.vasp.vasp import check_atoms
+from ase.utils import workdir
+from fastcore.basics import patch
+
 
 def __run_async(func, *args, **kwargs):
     '''

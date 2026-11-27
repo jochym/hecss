@@ -3,31 +3,22 @@
 
 __all__ = ['HECSS']
 
-import sys
 import pathlib
-from fastcore.basics import patch
-
-import numpy as np
-from numpy import log, exp, sqrt, linspace, dot
-import scipy
-from scipy import stats
-from scipy.special import expit
-
-from tqdm.auto import tqdm
-from itertools import islice
-from collections import Counter
-from matplotlib import pyplot as plt
+import sys
 
 import ase
 import ase.units as un
+import numpy as np
 from ase.calculators import calculator
 from ase.data import chemical_symbols
-from hecss.util import get_cell_data
-import spglib
-from spglib import find_primitive, get_symmetry_dataset
+from fastcore.basics import patch
+from numpy import sqrt
+from scipy import stats
+from scipy.special import expit
+from spglib import get_symmetry_dataset
+from tqdm.auto import tqdm
 
-import hecss
-from hecss import *
+from hecss.util import get_cell_data
 
 _disp_dists = {
     'normal'   : stats.norm,
@@ -684,6 +675,7 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
 
 from hecss.optimize import make_sampling
 
+
 @patch
 def generate(self: HECSS, S, T=None, sigma_scale=1.0, border=False, probTH=0.25, 
                   Nmul=4, N=None, nonzero_w=True, debug=False):
@@ -1009,9 +1001,9 @@ def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 
 import asyncio
 import traceback
-from concurrent.futures import ThreadPoolExecutor
+
 from hecss.parallel import __run_async
-from hecss.parallel import __calculate_aio
+
 
 @patch 
 async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600, 

@@ -1,13 +1,12 @@
 
 __all__ = ['plan_T_scan']
 
-from ase.build import bulk
-import ase.units as un
-from scipy import stats
-from matplotlib import pylab as plt
-import numpy as np
 import itertools
-from tqdm.auto import tqdm
+
+import numpy as np
+from matplotlib import pylab as plt
+from scipy import stats
+
 # from rich.progress import track
 
 flatten = itertools.chain.from_iterable

@@ -3,6 +3,7 @@
 import inspect
 
 import numpy as np
+
 from hecss.monitor import build_bnd_lst, ewma, moving_average, plot_stats, run_alamode
 
 

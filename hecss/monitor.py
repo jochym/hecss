@@ -5,23 +5,52 @@ __all__ = ['plot_band_set', 'plot_bands', 'plot_bands_file', 'run_alamode', 'sho
            'plot_omega', 'monitor_phonons', 'plot_stats', 'monitor_stats', 'moving_average', 'ewma', 'plot_hist',
            'plot_virial_stat', 'plot_acceptance_history', 'plot_dofmu_stat', 'plot_xs_stat']
 
-from numpy import sqrt, loadtxt, array, linspace, histogram
-from numpy import median, abs, convolve, ones, arange, cumsum, fromiter
-from IPython.display import clear_output
 import subprocess
-from time import sleep
-from matplotlib import pyplot as plt
-from matplotlib.pyplot import plot, figure, subplot, legend, show, sca, title
-from matplotlib.pyplot import hist, semilogx, semilogy, axvspan, axhspan
-from matplotlib.pyplot import xlabel, ylabel, xticks, xlim, ylim, axhline, axvline
-from scipy import stats
 import sys
-from spglib import find_primitive, get_symmetry_dataset
 from collections import Counter
-from hecss.util import load_dfset, get_dfset_len, get_cell_data
+from time import sleep
 
-from ase.data import chemical_symbols
 from ase import units as un
+from ase.data import chemical_symbols
+from IPython.display import clear_output
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import (
+    axhline,
+    axvline,
+    axvspan,
+    figure,
+    hist,
+    legend,
+    plot,
+    sca,
+    semilogy,
+    show,
+    title,
+    xlabel,
+    xlim,
+    xticks,
+    ylabel,
+    ylim,
+)
+from numpy import (
+    abs,
+    arange,
+    array,
+    convolve,
+    cumsum,
+    fromiter,
+    histogram,
+    linspace,
+    loadtxt,
+    median,
+    ones,
+    sqrt,
+)
+from scipy import stats
+from spglib import get_symmetry_dataset
+
+from hecss.util import get_cell_data, get_dfset_len, load_dfset
+
 THz = 1e12 * un._hplanck * un.J # THz in eV
 
 def plot_band_set(bnd, units=THz, lbl=None, **kwargs):

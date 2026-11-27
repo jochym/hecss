@@ -3,21 +3,11 @@
 
 __all__ = ['plot_virial_stat']
 
-from hecss import HECSS
-from hecss.util import normalize_conf, get_cell_data
+import numpy as np
+from matplotlib import pyplot as plt
+
 from hecss.monitor import plot_hist
 
-import numpy as np
-from scipy.special import expit
-from scipy.stats import chi2, chi, norm
-
-import ase
-import ase.units as un
-from ase.calculators.vasp import Vasp
-import spglib
-from spglib import find_primitive, get_symmetry_dataset
-from glob import glob
-from matplotlib import pyplot as plt
 
 def plot_virial_stat(cryst, smpl, normal=True):
     """Plot normalised virial distributions and return an amplitude matrix.

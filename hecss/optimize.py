@@ -3,11 +3,11 @@
 
 __all__ = ['get_sample_weights', 'make_sampling']
 
-from scipy import stats
-from matplotlib import pylab as plt
 import ase.units as un
 import numpy as np
-from hecss.util import flatten
+from matplotlib import pylab as plt
+from scipy import stats
+
 
 def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
     '''
