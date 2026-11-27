@@ -39,7 +39,6 @@ nav:
       - planner: api/planner.md
       - util: api/util.md
       - xscale: api/xscale.md
-      - mh: api/mh.md
 
 markdown_extensions:
   - admonition

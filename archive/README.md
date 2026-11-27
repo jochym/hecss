@@ -8,6 +8,7 @@ here is used to build, test or document the package any more.
 - `nbdev/config/` — nbdev, Quarto, packaging and legacy CI configuration.
 - `nbdev/ci/` — the GitLab CI configuration and the custom Quarto deploy action.
 - `nbdev/envs/` — the conda environment files used by the old notebook-based CI.
+- `nbdev/legacy/mh.py` — the removed Metropolis-Hastings sampler implementation (pre-0.6 legacy code), kept here for reference only.
 
 The library source now lives directly in `hecss/`, tests in `tests/`, and
 documentation sources in `docs/`. The notebook assertions were migrated to
