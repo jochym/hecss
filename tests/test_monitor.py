@@ -1,7 +1,14 @@
 """Tests for plotting and smoothing helpers in hecss.monitor."""
 
+import inspect
+
 import numpy as np
-from hecss.monitor import ewma, moving_average, plot_stats
+from hecss.monitor import build_bnd_lst, ewma, moving_average, plot_stats, run_alamode
+
+
+def test_kpath_defaults_agree():
+    for func in (run_alamode, build_bnd_lst):
+        assert inspect.signature(func).parameters["kpath"].default == "cryst"
 
 
 def test_moving_average():

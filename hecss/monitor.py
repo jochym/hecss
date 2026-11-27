@@ -152,7 +152,7 @@ drawn in the foreground and at most `max_plots` earlier sets are faded out."""
     ylim(y_lims)
     legend()
 
-def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='crast', sc='../sc/CONTCAR',
+def build_bnd_lst(directory='phon', dfset='DFSET', prefix='cryst', kpath='cryst', sc='../sc/CONTCAR',
                   order=1, cutoff=10, born=None, charge=None, verbose=False):
     """Build a convergence series of phonon band structures.
 
