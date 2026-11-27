@@ -24,6 +24,7 @@ _version_message=("HECSS, version %(version)s\n"
                   '    License: GPL v3 or later')
 
 def run_cli_cmd(cmd, args, prt_result=False):
+    """Invoke a Click command with `args`, print its output and any failure traceback."""
     print(f'$ {cmd.name} {args}\n')
     run = CliRunner().invoke(cmd, args) 
     print(run.output)

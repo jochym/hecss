@@ -20,6 +20,11 @@ from glob import glob
 from matplotlib import pyplot as plt
 
 def plot_virial_stat(cryst, smpl, normal=True):
+    """Plot normalized virial distributions from width-estimation samples.
+
+    The samples are grouped by element; returns the fitted amplitude
+    correction matrix with the same shape as the atomic positions.
+    """
     elems = cryst.get_chemical_symbols()
     elmap = cryst.get_atomic_numbers()
     vir = np.array([abs(s[2]*s[3]) for s in smpl])
