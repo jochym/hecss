@@ -29,9 +29,10 @@ work is done. Items marked "on request" are deliberately deferred.
 - [ ] `deploy.yaml` triggers only on `devel`. Decide whether to add
       `back-to-std` or tag triggers; that would auto-publish docs and needs
       approval.
-- [ ] Align Python metadata: `requires-python = ">=3.7"` conflicts with
-      classifiers (3.7-3.10) and CI (3.11). Decide the support floor, then
-      update both fields.
+- [x] Python metadata aligned: `requires-python = ">=3.9"` and classifiers
+      updated to 3.9-3.12 (CI runs 3.11). User decision from full review.
+- [x] Release decisions recorded: keep `v0.6.0` tag where it is, keep docs
+      deploy on `devel` only, keep the current ASAP CI skip behaviour.
 
 ## Infrastructure
 
