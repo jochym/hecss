@@ -13,10 +13,18 @@ from ase.build import bulk
 from hecss import HECSS
 from hecss.util import create_asap_calculator, select_asap_model
 
+def has_openkim_support():
+    if importlib.util.find_spec("asap3") is None:
+        return False
+    import asap3
+
+    return hasattr(asap3, "OpenKIMavailable")
+
+
 pytestmark = [
     pytest.mark.asap,
     pytest.mark.skipif(
-        importlib.util.find_spec("asap3") is None, reason="ASAP3 is required"
+        not has_openkim_support(), reason="ASAP3 with OpenKIM support is required"
     ),
 ]
 
