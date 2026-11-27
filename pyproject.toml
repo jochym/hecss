@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hecss"
-version = "0.5.29"
+version = "0.6.0"
 description = "High Efficiency Configuration Space Sampler"
 readme = "README.md"
 authors = [
