@@ -48,9 +48,9 @@ markdown_extensions:
       permalink: true
 
 extra_javascript:
-  - javascripts/katex.js
   - assets/katex/katex.min.js
   - assets/katex/contrib/auto-render.min.js
+  - javascripts/katex.js
 
 extra_css:
   - assets/katex/katex.min.css
