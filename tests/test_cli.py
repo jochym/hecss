@@ -10,6 +10,7 @@ from hecss.cli import (
     plot_bands,
     plot_stats,
     reshape_sample,
+    run_cli_cmd,
 )
 
 COMMANDS = (hecss_sampler, plot_stats, plot_bands, calculate_xscale, reshape_sample)
@@ -27,3 +28,8 @@ def test_version(command):
     result = CliRunner().invoke(command, ["--version"])
     assert result.exit_code == 0
     assert hecss.__version__ in result.output
+
+
+def test_run_cli_cmd(capsys):
+    run_cli_cmd(hecss_sampler, ["--version"])
+    assert hecss.__version__ in capsys.readouterr().out

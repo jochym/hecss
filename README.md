@@ -1,7 +1,7 @@
 # HECSS
 
 [![PyPI](https://img.shields.io/pypi/v/hecss.svg)](https://pypi.org/project/hecss/)
-[![CI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=devel)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
+[![CI](https://github.com/jochym/hecss/actions/workflows/test.yaml/badge.svg?branch=back-to-std)](https://github.com/jochym/hecss/actions/workflows/test.yaml)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](COPYING)
 
 HECSS is a Monte-Carlo configuration space sampler using a sample weighting

@@ -13,7 +13,7 @@ run_cli_cmd(hecss_sampler, '--help')
 
 To use it you need to prepare:
 
-1. `run-calc` script which should start the VASP calculation. You need to put this script in the root of your project tree. The example of such a script is included in the source as `run-calc.example`. :
+1. `run-calc` script which should start the VASP calculation. You need to put this script in the root of your project tree. The example of such a script is included in the source as `example/scripts/run-calc.example`. :
 
 ```bash
 #!/bin/bash

@@ -4,7 +4,7 @@ HECSS sampler may be used in multiple ways. Three main modes are:
 
 1. Jupyter notebook
 2. (I)Python scripts
-3. Command line programs included with the HECSS library. See the [CLI](cli.md) sction for more information.
+3. Command line programs included with the HECSS library. See the [CLI](cli.md) section for more information.
 
 Probably the easiest way to start is a notebook path presented here. You can quite easily convert your notebooks to more sophisticated python scripts by saving them as such from the JupyterLab file menu (File/Save and Export as/Executable script). The CLI route is also fairly simple, but limits the use of the library to pre-packaged procedures with limited configurability.
 
@@ -61,7 +61,7 @@ hecss = HECSS(cryst, lambda : create_asap_calculator(model), pbar=True)
 
 ### Prior distribution
 
-The configuration space sampling starts with the generation of the prior energy distribution with the `HECSS.sampe` method. It generates a number (`N` here) of configurations with corresponding displacements, forces and energies targeted at some temperature (`T` here). The energy distribution of the sample is somewhat wider then the intended thermodynamic distribution described in the [Background](../background.md) section. Nevertheless, we expect the distribution to be fairly close to the target (orange, dashed line), and the plot provided by the `plot_stats` confirms our expectation.
+The configuration space sampling starts with the generation of the prior energy distribution with the `HECSS.sample` method. It generates a number (`N` here) of configurations with corresponding displacements, forces and energies targeted at some temperature (`T` here). The energy distribution of the sample is somewhat wider than the intended thermodynamic distribution described in the [Background](../background.md) section. Nevertheless, we expect the distribution to be fairly close to the target (orange, dashed line), and the plot provided by the `plot_stats` confirms our expectation.
 
 ```python
 T = 600

@@ -90,7 +90,7 @@ p(E) dE = \frac{1}{\cal{N}}\exp\left({-\frac{E}{k_B T}}\right) dE =
     dE = \alpha A dA
 }\right| = \alpha A\exp\left(-\frac{\alpha A^2}{2 k T}\right) dA = p(A) dA,
 $$
-which is a $\chi$ distribution with two degrees of freedom also known as Rayleigh distribution. The the figure below illustrates the shape of this distribution.
+which is a $\chi$ distribution with two degrees of freedom also known as Rayleigh distribution. The figure below illustrates the shape of this distribution.
 
 ```python
 u = np.linspace(0, 4, 301)
