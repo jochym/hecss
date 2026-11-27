@@ -21,8 +21,24 @@ work is done. Items marked "on request" are deliberately deferred.
       extension and a Material initializer in `docs/javascripts/katex.js`;
       the docs no longer depend on unpkg for equation rendering.
 
+## Decisions needed (full review, 0.6.0)
+
+- [ ] `v0.6.0` points at `ec2d520`, before the review-driven fixes. Decide
+      whether to move/recreate the tag at the current HEAD; this needs a
+      force-push and is a release action requiring approval.
+- [ ] `deploy.yaml` triggers only on `devel`. Decide whether to add
+      `back-to-std` or tag triggers; that would auto-publish docs and needs
+      approval.
+- [ ] Align Python metadata: `requires-python = ">=3.7"` conflicts with
+      classifiers (3.7-3.10) and CI (3.11). Decide the support floor, then
+      update both fields.
+
 ## Infrastructure
 
+- [ ] The GitHub `asap` job passes only by skipping: the PyPI `asap3` there has
+      no OpenKIM models. Decide whether to add a conda/OpenKIM setup step for
+      real integration coverage; local `uv` runs do exercise these tests.
+- [ ] Clean unused imports in `hecss/xscale.py` (non-blocking lint noise).
 - [ ] Refresh pinned GitHub Actions versions (Node 20 deprecation notices) and
       add `uv.lock` or `cache-dependency-glob` to `setup-uv`.
 - [ ] Move the API compatibility probe into the repository as a maintained
