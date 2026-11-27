@@ -48,7 +48,9 @@ markdown_extensions:
       permalink: true
 
 extra_javascript:
-  - https://unpkg.com/katex@0.16/dist/katex.min.js
+  - javascripts/katex.js
+  - assets/katex/katex.min.js
+  - assets/katex/contrib/auto-render.min.js
 
 extra_css:
-  - https://unpkg.com/katex@0.16/dist/katex.min.css
+  - assets/katex/katex.min.css

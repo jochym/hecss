@@ -17,7 +17,9 @@ work is done. Items marked "on request" are deliberately deferred.
 
 - [ ] Read the Docs support: `.readthedocs.yaml`, `mkdocs.configuration`, a
       version selector and tag triggers in `deploy.yaml`. Deferred in 0.6.
-- [ ] Vendor KaTeX instead of loading it from unpkg, so the docs work offline.
+- [x] KaTeX vendored locally in `docs/assets/katex/`, with the auto-render
+      extension and a Material initializer in `docs/javascripts/katex.js`;
+      the docs no longer depend on unpkg for equation rendering.
 
 ## Infrastructure
 
