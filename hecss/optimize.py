@@ -171,9 +171,9 @@ def make_sampling(data, T, sigma_scale=1.0, border=False, probTH=0.25,
         x = np.linspace(mu-data_range, mu+data_range, 300)
         fit = stats.norm.fit(wde)
         plt.plot(x, stats.norm.pdf(x, mu, sigma), '--', 
-                 label=f'$\mu$={2*mu/3/un.kB:.1f}; $\sigma$={2*sigma/3/un.kB:.1f} (Target)' )
+                 label=rf'$\mu$={2*mu/3/un.kB:.1f}; $\sigma$={2*sigma/3/un.kB:.1f} (Target)' )
         plt.plot(x, stats.norm.pdf(x, *fit), 
-                 label=f'$\mu$={2*fit[0]/3/un.kB:.1f}; $\sigma$={2*fit[1]/3/un.kB:.1f} (Fit)' )
+                 label=rf'$\mu$={2*fit[0]/3/un.kB:.1f}; $\sigma$={2*fit[1]/3/un.kB:.1f} (Fit)' )
         plt.title('Generated weighted sample')
         skip = len(data)//2000
         skip = int(max(1, skip))

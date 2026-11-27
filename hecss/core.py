@@ -140,18 +140,18 @@ def __get_calculator(self: HECSS):
 
 @patch 
 def _estimate_width_scale_ser(self: HECSS, n=1, Tmin=0, Tmax=600, set_scale=True, pbar=None):
-    '''
+    r'''
     Serial version of w-estimator.
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
     distributed between 0 and `Tmax` and calculate avarage $\sqrt{E-E0/T}$
     which is a width scale for a given temperature:
     $$
-        w = \\eta\\sqrt{T}
+        w = \eta\sqrt{T}
     $$
     which comes from the assumed approximate relationship:
     $$
-        \\frac{E(w(T))-E_0}{T} \\approx \\mathrm{const} = \\eta^2.
+        \frac{E(w(T))-E_0}{T} \approx \mathrm{const} = \eta^2.
     $$
     
     #### Input
@@ -211,17 +211,17 @@ def _estimate_width_scale_ser(self: HECSS, n=1, Tmin=0, Tmax=600, set_scale=True
 @patch 
 def estimate_width_scale(self: HECSS, n=1, Tmin=0, Tmax=600, 
                          set_scale=True, pbar=None, nwork=None):
-    '''
+    r'''
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
     distributed between 0 and `Tmax` and calculate avarage $\sqrt{E-E0/T}$
     which is a width scale for a given temperature:
     $$
-        w = \\eta\\sqrt{T}
+        w = \eta\sqrt{T}
     $$
     which comes from the assumed approximate relationship:
     $$
-        \\frac{E(w(T))-E_0}{T} \\approx \\mathrm{const} = \\eta^2.
+        \frac{E(w(T))-E_0}{T} \approx \mathrm{const} = \eta^2.
     $$
     
     #### Input
@@ -1008,18 +1008,18 @@ from hecss.parallel import __calculate_aio
 @patch 
 async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600, 
                                      set_scale=True, pbar=None, nwork=5):
-    '''
+    r'''
     Async/parallel version of w-estimator. Only supported for VASP.
     Estimate coefficient between temperature and displacement scale (eta).
     Calculate energy increase from the `n` temperatures uniformly 
     distributed between 0 and `Tmax` and calculate avarage $\sqrt{E-E0/T}$
     which is a width scale for a given temperature:
     $$
-        w = \\eta\\sqrt{T}
+        w = \eta\sqrt{T}
     $$
     which comes from the assumed approximate relationship:
     $$
-        \\frac{E(w(T))-E_0}{T} \\approx \\mathrm{const} = \\eta^2.
+        \frac{E(w(T))-E_0}{T} \approx \mathrm{const} = \eta^2.
     $$
     
     #### Input
