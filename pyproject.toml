@@ -34,12 +34,29 @@ dependencies = [
 ]
 requires-python = ">=3.7"
 
+[project.optional-dependencies]
+test = ["pytest>=7", "asap3"]
+docs = ["mkdocs-material>=9", "mkdocstrings[python]>=0.24"]
+dev = ["pytest>=7", "asap3", "build", "twine", "mkdocs-material>=9", "mkdocstrings[python]>=0.24"]
+
+[project.urls]
+Repository = "https://github.com/jochym/hecss/"
+Documentation = "https://jochym.github.io/hecss/"
+
 [project.scripts]
 hecss_sampler = "hecss.cli:hecss_sampler"
 plot_stats = "hecss.cli:plot_stats"
 plot_bands = "hecss.cli:plot_bands"
 calculate_xscale = "hecss.cli:calculate_xscale"
 reshape_sample = "hecss.cli:reshape_sample"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "asap: requires ASAP3 and OpenKIM models",
+    "vasp: requires a VASP executable in the dedicated environment",
+]
+addopts = "-m 'not asap and not vasp'"
 
 [tool.nbdev]
 nbs_path = "."
