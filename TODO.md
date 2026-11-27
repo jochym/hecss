@@ -49,6 +49,14 @@ work is done. Items marked "on request" are deliberately deferred.
       2020 while `run_alamode` and `monitor_phonons` used `cryst`. Corrected
       to `cryst` and covered by a signature regression test.
 
+## Merge and release
+
+- [x] PR #7 opened: `back-to-std` -> `devel`, after reviewer sign-off.
+- [ ] After merge: verify the `devel` docs deployment builds with the
+      vendored KaTeX, static highlighting and no missing local assets.
+- [ ] Agree the release version/tag (`v0.6.0` still points at `ec2d520`) and
+      publish manually only after explicit review.
+
 ## Standing decisions
 
 - Do not publish any artifact without a detailed review and explicit approval.
