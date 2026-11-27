@@ -54,6 +54,9 @@ reshape_sample = "hecss.cli:reshape_sample"
 [tool.setuptools.packages.find]
 include = ["hecss"]
 
+[tool.ruff]
+extend-exclude = ["archive"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
