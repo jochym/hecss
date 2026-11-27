@@ -17,21 +17,18 @@ of the [documentation](https://jochym.github.io/hecss/).
 ```python
 from hecss import HECSS
 from hecss.util import select_asap_model, create_asap_calculator
-from hecss.monitor import plot_stats
 from ase.build import bulk
 
 model = select_asap_model('SiC')
-cryst = bulk('SiC', crystalstructure='zincblende',
-             a=4.38120844, cubic=True).repeat((3, 3, 3))
+cryst = bulk('SiC', crystalstructure='zincblende', cubic=True).repeat((3, 3, 3))
 cryst.calc = create_asap_calculator(model)
-
 sampler = HECSS(cryst, lambda: create_asap_calculator(model))
 samples = sampler.sample(300, 100)
 distribution = sampler.generate(samples, 300)
-plot_stats(distribution, 300, sqrN=True)
 ```
 
-![Energy distribution of the sampled 3C-SiC crystal](docs/figures/index-sample.png)
+The [documentation](https://jochym.github.io/hecss/) has the full worked example,
+including plotting the resulting energy distribution.
 
 ## Installation
 

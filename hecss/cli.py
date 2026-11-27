@@ -1,7 +1,8 @@
 """The command line interface for the HECSS sampler"""
 
 
-__all__ = []
+__all__ = ['hecss_sampler', 'plot_stats', 'plot_bands', 'calculate_xscale',
+           'reshape_sample', 'run_cli_cmd', 'dfset_writer']
 
 import click
 from pathlib import Path

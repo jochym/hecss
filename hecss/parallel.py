@@ -1,6 +1,7 @@
 """Support for parallel/async calulations."""
 
 
+# Only private methods are patched onto ASE's Vasp class; no public names.
 __all__ = []
 
 from fastcore.basics import patch
