@@ -2,6 +2,25 @@
 
 > The command line interface for the HECSS sampler
 
+## Setup
+
+The examples below call the Click commands in-process. Import them and create
+the temporary work directories before running the snippets. VASP and a
+`./run-calc` wrapper (described below) must be available for the sampling
+examples.
+
+```python
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from hecss.cli import (calculate_xscale, hecss_sampler, plot_bands,
+                       plot_stats, reshape_sample, run_cli_cmd)
+
+Path('TMP').mkdir(exist_ok=True)
+calc_dir = TemporaryDirectory(dir='TMP')
+calc_dir_2 = TemporaryDirectory(dir='TMP')
+```
+
 ## Command line hecss sampler
 
 The HECSS sampler can be also used from the command line using `hecss-sampler` command:
@@ -139,8 +158,10 @@ run_cli_cmd(hecss_sampler,
 The reshaper of the sample set to any given temperature.
 
 ```python
-!cat TMP/${calc_dir.name}/T_300.0K/DFSET.dat.raw TMP/${calc_dir_2.name}/T_300.0K/DFSET.dat.raw > TMP/DFSET_raw.dat
-!rm -f TMP/DFSET.dat
+raw_a = Path('TMP') / calc_dir.name / 'T_300.0K' / 'DFSET.dat.raw'
+raw_b = Path('TMP') / calc_dir_2.name / 'T_300.0K' / 'DFSET.dat.raw'
+Path('TMP/DFSET_raw.dat').write_bytes(raw_a.read_bytes() + raw_b.read_bytes())
+Path('TMP/DFSET.dat').unlink(missing_ok=True)
 run_cli_cmd(reshape_sample, "--help")
 run_cli_cmd(reshape_sample, 
             " -d -o TMP/DFSET.dat"
@@ -148,7 +169,7 @@ run_cli_cmd(reshape_sample,
 ```
 
 ```python
-!rm -f ${calc_dir.name}/T_300.0K/DFSET.dat
+Path(calc_dir.name, 'T_300.0K', 'DFSET.dat').unlink(missing_ok=True)
 run_cli_cmd(reshape_sample, 
             f" -N 1 -w -d -o {calc_dir.name}/T_300.0K/DFSET.dat"
             f" --check {calc_dir.name}/T_300.0K/smpl"

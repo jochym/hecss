@@ -142,7 +142,8 @@ def calc_init_xscale(cryst, xsl, skip=None):
     OUTPUT
     ------
     Array amplitude correction coefficients with the same shape as
-    `cryst.get_positions()`. Pass it as `xscale_init` to `HECSS.sample()`.
+    `cryst.get_positions()`. Assign it to `sampler.xscale_init` before
+    calling `sample()` for a new temperature stream.
     '''
     from numpy import array, ones
     elmap = cryst.get_atomic_numbers()

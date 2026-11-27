@@ -20,7 +20,8 @@ from hecss.util import select_asap_model, create_asap_calculator
 from ase.build import bulk
 
 model = select_asap_model('SiC')
-cryst = bulk('SiC', crystalstructure='zincblende', cubic=True).repeat((3, 3, 3))
+cryst = bulk('SiC', crystalstructure='zincblende',
+             a=4.38120844, cubic=True).repeat((3, 3, 3))
 cryst.calc = create_asap_calculator(model)
 sampler = HECSS(cryst, lambda: create_asap_calculator(model))
 samples = sampler.sample(300, 100)
@@ -49,10 +50,10 @@ The project uses a local `uv` environment:
 ```bash
 uv venv
 uv pip install -e '.[dev]'
-pytest                  # fast tests
-pytest -m asap          # ASAP3/OpenKIM integration tests
-pytest -m vasp          # VASP tests, dedicated environment only
-mkdocs build --strict   # documentation
+.venv/bin/python -m pytest               # fast tests
+.venv/bin/python -m pytest -m asap       # ASAP3/OpenKIM integration tests
+.venv/bin/python -m pytest -m vasp       # VASP tests, dedicated environment only
+.venv/bin/mkdocs build --strict          # documentation
 ```
 
 VASP tests require a VASP executable and a working setup in the dedicated
