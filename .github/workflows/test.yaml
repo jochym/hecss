@@ -12,8 +12,9 @@ jobs:
           python-version: '3.11'
       - uses: astral-sh/setup-uv@v5
       - run: uv venv
-      - run: uv pip install -e '.[test]'
+      - run: uv pip install -e '.[test,docs]'
       - run: uv run --no-project python -m pytest -q
+      - run: uv run --no-project mkdocs build --strict
 
   asap:
     runs-on: ubuntu-latest
