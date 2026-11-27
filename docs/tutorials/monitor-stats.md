@@ -2,7 +2,7 @@
 
 > Monitoring of statistics of the generated sampling is possible using functions provided in the `hecss.monitor` module: `plot_stats` (for static plots) and `monitor_stats` (for "live" plots).
 
-The two functions are essentially the same except for the *live* aspect. They display the energy distribution in the sample relative to the target distribution (determined by the temperature). The shaded areas indicate 1,2,3$\sigma$ intervals for the distribution. The fitted distribution is a gaussian curve fitted to the sample. The the data sets presented here are examples provided in the 
+The two functions are essentially the same except for the *live* aspect. They display the energy distribution in the sample relative to the target distribution (determined by the temperature). The shaded areas indicate 1,2,3$\sigma$ intervals for the distribution. The fitted distribution is a gaussian curve fitted to the sample. The data sets presented here are examples provided in the 
 `example/VASP_3C-SiC_calculated/` directory of the source distribution. Refer to the `Setup` document for information about installation of the source distribution.
 
 ## Interpreting the statistics plot

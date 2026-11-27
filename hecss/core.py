@@ -324,7 +324,7 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     T_goal       : Target temperature in Kelvin
     N            : Number of iterations. If None (default) the generator never stops.
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-    sigma        : Range around E0 in sigmas to stop w-serach mode
+    sigma        : Range around E0 in sigmas to stop w-search mode
     eqdelta      : Max. speed of amplitude correction from step to step (0.05=5%)
     eqsigma      : Half width of linear part of amplitude correction function.
     xi           : strength of the amplitude correction term [0-1]
@@ -752,7 +752,7 @@ async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     T_goal       : Target temperature in Kelvin
     N            : Number of iterations. If None (default) the generator never stops.
     delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
-    sigma        : Range around E0 in sigmas to stop w-serach mode
+    sigma        : Range around E0 in sigmas to stop w-search mode
     eqdelta      : Max. speed of amplitude correction from step to step (0.05=5%)
     eqsigma      : Half width of linear part of amplitude correction function.
     xi           : strength of the amplitude correction term [0-1]
