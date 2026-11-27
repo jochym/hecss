@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "hecss"
 version = "0.5.29"
 description = "High Efficiency Configuration Space Sampler"
+readme = "README.md"
 authors = [
     {name = "Paweł T. Jochym", email = "pawel.jochym@ifj.edu.pl"}
 ]
@@ -50,6 +51,9 @@ plot_bands = "hecss.cli:plot_bands"
 calculate_xscale = "hecss.cli:calculate_xscale"
 reshape_sample = "hecss.cli:reshape_sample"
 
+[tool.setuptools.packages.find]
+include = ["hecss"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
@@ -58,26 +62,3 @@ markers = [
 ]
 addopts = "-m 'not asap and not vasp'"
 
-[tool.nbdev]
-nbs_path = "."
-lib_path = "hecss"
-doc_path = "_docs"
-host = "github"
-user = "jochym"
-branch = "devel"
-url = "https://github.com/jochym/hecss/"
-doc_host = "https://jochym.github.io/"
-doc_baseurl = "/hecss/"
-title = "hecss"
-monospace_docstrings = true
-recursive = true
-black_formatting = false
-readme_nb = "index.ipynb"
-allowed_metadata_keys = []
-allowed_cell_metadata_keys = []
-jupyter_hooks = true
-clean_ids = true
-clear_all = false
-put_version_in_init = true
-cell_number = true
-skip_procs = []

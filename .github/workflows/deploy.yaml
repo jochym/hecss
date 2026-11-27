@@ -1,10 +1,23 @@
-name: Deploy to GitHub Pages
+name: Documentation
+
 on:
   push:
-    branches: [ "devel" ] # [ "main", "master" ]
+    branches: [devel]
   workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps: [uses: fastai/workflows/quarto-ghp@master]
-    # steps: [uses: jochym/hecss/actions/quarto@devel]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: astral-sh/setup-uv@v5
+      - run: uv venv
+      - run: uv pip install -e '.[docs]'
+      - run: uv run --no-project mkdocs build --strict
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

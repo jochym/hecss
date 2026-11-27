@@ -7,6 +7,7 @@ here is used to build, test or document the package any more.
 - `nbdev/notebooks/` — the original notebooks: library sources, tutorials and analysis notebooks.
 - `nbdev/config/` — nbdev, Quarto, packaging and legacy CI configuration.
 - `nbdev/ci/` — the GitLab CI configuration and the custom Quarto deploy action.
+- `nbdev/envs/` — the conda environment files used by the old notebook-based CI.
 
 The library source now lives directly in `hecss/`, tests in `tests/`, and
 documentation sources in `docs/`. The notebook assertions were migrated to
