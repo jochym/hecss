@@ -20,10 +20,6 @@ work is done. Items marked "on request" are deliberately deferred.
 
 ## Infrastructure (open)
 
-- [ ] Pre-existing CLI issues found by the Seaglass review, deferred from PR
-      #7: `hecss_sampler --nodfset` sets a local `sentinel` that is never
-      used (DFSET raw files are still written), and `-p/--pbar` is a flag
-      defaulting to True so progress bars cannot be disabled.
 - [ ] The GitHub `asap` job passes only by skipping: the PyPI `asap3` there has
       no OpenKIM models. Decide whether to add a conda/OpenKIM setup step for
       real integration coverage; local `uv` runs do exercise these tests.
@@ -52,6 +48,11 @@ work is done. Items marked "on request" are deliberately deferred.
       to `cryst` and covered by a signature regression test.
 - [x] Unused imports removed and import blocks sorted; `ruff check --select
       F401,F811,I .` is clean, with `archive/` excluded by configuration.
+- [x] Pre-existing CLI issues from the Seaglass review fixed: `--nodfset` no
+      longer writes DFSET data, `--no-pbar` disables the progress bar, and
+      `-n -s` still saves the amplitude-correction history via `xsl_writer`.
+- [x] Bare `maxburn` in the width-search error message replaced with
+      `self.maxburn`, with a regression test.
 
 ## Merge and release
 

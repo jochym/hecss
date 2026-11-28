@@ -13,6 +13,7 @@ from hecss.cli import (
     plot_stats,
     reshape_sample,
     run_cli_cmd,
+    xsl_writer,
 )
 
 COMMANDS = (hecss_sampler, plot_stats, plot_bands, calculate_xscale, reshape_sample)
@@ -72,6 +73,16 @@ def test_sampler_cli_disables_dfset_and_progress(monkeypatch, tmp_path):
     assert result.exit_code == 0, (result.output, result.exception)
     assert captured["pbar"] is False
     assert captured["sentinel"] is None
+
+
+def test_xsl_writer_saves_scale_without_dfset(tmp_path):
+    corrections = [np.ones((1, 3))]
+    assert xsl_writer(
+        None, [], workdir=str(tmp_path), dfset="DFSET.dat",
+        scale="scale.dat", xsl=corrections,
+    ) is False
+    assert (tmp_path / "scale.dat").exists()
+    assert not list(tmp_path.glob("*.raw"))
 
 
 def test_run_cli_cmd(capsys):

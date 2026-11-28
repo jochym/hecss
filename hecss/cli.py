@@ -2,7 +2,7 @@
 
 
 __all__ = ['hecss_sampler', 'plot_stats', 'plot_bands', 'calculate_xscale',
-           'reshape_sample', 'run_cli_cmd', 'dfset_writer']
+           'reshape_sample', 'run_cli_cmd', 'dfset_writer', 'xsl_writer']
 
 import ast
 import os
@@ -36,6 +36,26 @@ def run_cli_cmd(cmd, args, prt_result=False):
         if run.exit_code!=0:
             traceback.print_tb(run.exc_info[-1])        
 
+def _save_xsl(workdir, scale, xsl, sl):
+    if scale and xsl:
+        with open(Path(workdir).joinpath(scale), 'at') as sf:
+            for xs in xsl:
+                savetxt(sf, xs, fmt='%8.5f',
+                        header=f'{xs.shape}, {len(sl)}, {len(xsl)}')
+        xsl.clear()
+
+
+def xsl_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
+    """Append amplitude corrections to the scale file without writing DFSET data.
+
+    Used as the sampler sentinel when ``--nodfset`` is combined with
+    ``--scale``. `s`, `sl` and `dfset` are unused; they match the sentinel
+    callback signature. Always returns `False` to keep sampling going.
+    """
+    _save_xsl(workdir, scale, xsl, sl)
+    return False
+
+
 def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
     Write one sample to the DFSET file in `workdir`.
@@ -48,11 +68,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
     '''
     wd = Path(workdir)
     write_dfset(f'{wd.joinpath(dfset)}.raw', s)
-    if scale and xsl:
-        with open(wd.joinpath(scale), 'at') as sf:
-            for xs in xsl:
-                savetxt(sf, xs, fmt='%8.5f', header=f'{xs.shape}, {len(sl)}, {len(xsl)}')
-        xsl.clear()
+    _save_xsl(workdir, scale, xsl, sl)
     # Important! Return False to keep iteration going
     return False
 
@@ -138,9 +154,10 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         print(f'The {calc} calculator is not supported.')
         return
     
-    if nodfset :
-        sentinel = None
-    else :
+    if nodfset:
+        # Scale history is still written when -s is requested.
+        sentinel = xsl_writer if scale else None
+    else:
         sentinel = dfset_writer
     
     xsl = None
