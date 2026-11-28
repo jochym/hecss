@@ -61,6 +61,13 @@ work is done. Items marked "on request" are deliberately deferred.
       with the parallel sampler kept as a seed, ALAMODE failure guard, stable
       `ewma`, and no shell in the VASP command runner.
 
+## Completed after 0.6.1 (unreleased)
+
+- [x] Next audit batch: uniform weights for identical energies, `N<1` returns
+      no samples, working `modify` hook, required `-o` for post-processing
+      commands, portable ALAMODE tool defaults, and a warning (not an error)
+      when a DFSET file is appended at a different temperature.
+
 ## Merge and release
 
 - [x] PR #7 opened: `back-to-std` -> `devel`, after reviewer sign-off.

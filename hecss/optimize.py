@@ -69,7 +69,11 @@ def get_sample_weights(data, T, sigma_scale=1.0, border=False, debug=False):
         cdf[-1]=1
     
     w = cdf[1:]-cdf[:-1]
-    w /= w.sum()
+    s = w.sum()
+    if s == 0 or not np.isfinite(s) or not np.isfinite(w).all():
+        w = np.ones(len(d))/len(d)
+    else:
+        w /= s
     if debug:
         plt.stairs(w/bw, bb, fill=False, lw=1, label='Weighted samples')
         x = np.linspace(mu-data_range, mu+data_range, 100)

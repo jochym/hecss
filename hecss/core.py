@@ -295,7 +295,7 @@ def estimate_width_scale(self: HECSS, n=1, Tmin=0, Tmax=600,
 @patch
 def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
-             modify=None, modify_args=None, symprec=1e-5,
+             modify=None, modify_args=(), symprec=1e-5,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, ):
     '''
@@ -330,7 +330,7 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     modify       : pass your own pre-processing function to modify the structure 
                    before calculation. The function must return a  (e, f) tuple
                    with energy of the structure (e, scalar) and forces (f, array).
-    modify_args  : dictionary of extra arguments to pass to modify function
+    modify_args  : tuple of extra positional arguments for modify function
     symprec      : symmetry detection treshold for spglib functions
     directory    : (only for VASP calculator) directory for calculations and generated samples. 
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated 
@@ -460,7 +460,7 @@ def _sampler_ser(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 
         try :
             if modify is not None:
-                e_star, f_star = modify(cr, self.cryst, 's', *modify_args)
+                e_star, f_star = modify(cr, self.cryst, 's', *(modify_args or ()))
             else:
                 e_star = cr.get_potential_energy()
                 f_star = cr.get_forces()
@@ -596,7 +596,7 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
     * modify       : pass your own pre-processing function to modify the structure 
                    before calculation. The function must return a  (e, f) tuple
                    with energy of the structure (e, scalar) and forces (f, array).
-    * modify_args  : dictionary of extra arguments to pass to modify function
+    * modify_args  : tuple of extra positional arguments passed to `modify`
     * symprec      : symmetry detection treshold for spglib functions
     * directory    : (only for VASP calculator) directory for calculations and generated samples. 
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated 
@@ -639,6 +639,8 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
 
     if not np.isfinite(T) or T <= 0:
         raise ValueError(f'Temperature must be finite and positive: T={T}')
+    if N is not None and N < 1:
+        return []
 
     self._pbar = None
     if self.pbar:
@@ -725,7 +727,7 @@ def generate(self: HECSS, S, T=None, sigma_scale=1.0, border=False, probTH=0.25,
 @patch
 async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
-             modify=None, modify_args=None, symprec=1e-5,
+             modify=None, modify_args=(), symprec=1e-5,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, ):
     '''
@@ -760,7 +762,7 @@ async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
     modify       : pass your own pre-processing function to modify the structure 
                    before calculation. The function must return a  (e, f) tuple
                    with energy of the structure (e, scalar) and forces (f, array).
-    modify_args  : dictionary of extra arguments to pass to modify function
+    modify_args  : tuple of extra positional arguments for modify function
     symprec      : symmetry detection treshold for spglib functions
     directory    : (only for VASP calculator) directory for calculations and generated samples. 
                    If left as None, the `calc/{T_goal:.1f}K/` will be used and the generated 
@@ -890,7 +892,7 @@ async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 
         try :
             if modify is not None:
-                e_star, f_star = modify(cr, self.cryst, 's', *modify_args)
+                e_star, f_star = modify(cr, self.cryst, 's', *(modify_args or ()))
             else:
                 e_star = cr.get_potential_energy()
                 f_star = cr.get_forces()
@@ -984,7 +986,7 @@ async def __sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
 @patch
 def _sampler_aio(self: HECSS, T_goal, N=None, delta_sample=0.01, sigma=2,
              eqdelta=0.05, eqsigma=0.2, xi=1, chi=1,
-             modify=None, modify_args=None, symprec=1e-5,
+             modify=None, modify_args=(), symprec=1e-5,
              width_list=None, dofmu_list=None, xscale_list=None,
              verb=True, nwork=None):
     '''

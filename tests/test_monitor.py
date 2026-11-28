@@ -14,6 +14,12 @@ def test_kpath_defaults_agree():
         assert inspect.signature(func).parameters["kpath"].default == "cryst"
 
 
+def test_alamode_tool_defaults_are_portable():
+    params = inspect.signature(run_alamode).parameters
+    for name in ("make_gen", "alm", "anphon"):
+        assert "/home/" not in str(params[name].default)
+
+
 def test_moving_average():
     values = np.arange(10.0)
     result = moving_average(values, 3)

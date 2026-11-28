@@ -58,6 +58,20 @@ def test_sample_rejects_zero_temperature():
         emt_sampler().sample(0, 1)
 
 
+def test_zero_samples_skips_sampling_and_sentinel():
+    sampler = emt_sampler()
+    called = []
+    assert sampler.sample(300, 0, sentinel=lambda *a, **k: called.append(1)) == []
+    assert not called
+
+
+def test_modify_hook_with_default_args():
+    def modify(cr, base, s, *args):
+        return 0.0, cr.get_forces()
+
+    assert len(emt_sampler().sample(300, 1, modify=modify)) == 1
+
+
 def test_nwork_reports_serial_sampling(capsys):
     sampler = emt_sampler()
     assert len(sampler.sample(300, 2, nwork=2)) == 2

@@ -40,3 +40,13 @@ def test_make_sampling_preserves_all_configurations(samples):
 def test_make_sampling_short_input_is_unchanged(samples):
     short = samples[:1]
     assert make_sampling(short, 300.0) is short
+
+
+def test_make_sampling_with_identical_energies():
+    data = [
+        (i, i, np.zeros((4, 3)), np.zeros((4, 3)), 0.1)
+        for i in range(3)
+    ]
+    result = make_sampling(data, 300.0)
+    assert result
+    assert np.isfinite([s[-1] for s in result]).all()

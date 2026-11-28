@@ -106,9 +106,7 @@ remaining columns are the bands. `lbl` defaults to the file name."""
 
 def run_alamode(d='phon', prefix='cryst', kpath='cryst', dfset='DFSET', sc='../sc/CONTCAR',
                 o=1, n=0, c2=10, c3=6, born=None, charge=None, skip_fit=False,
-                make_gen='/home/jochym/Projects/alamode-tools/devel/make-gen.py',
-                alm='/home/jochym/public/bin/alm',
-                anphon='/home/jochym/public/bin/anphon'):
+                make_gen='make-gen.py', alm='alm', anphon='anphon'):
     """Run the external ALAMODE tools for a DFSET file.
 
 `d` is the working directory, `prefix` the base name of the generated input
@@ -119,8 +117,8 @@ and `charge` enable Born effective charges. With `skip_fit=True` only the
 phonon calculation is run.
 
 `make_gen`, `alm` and `anphon` are paths to the external executables. Their
-defaults point to one particular installation; pass the paths of your own
-ALAMODE installation when running elsewhere.
+defaults are tool names resolved through `PATH`; pass explicit paths when the
+tools are not on `PATH`.
 
 Returns `(success, fit, phon, alm, anphon)`; the four process results are
 `None` when the corresponding step was skipped."""

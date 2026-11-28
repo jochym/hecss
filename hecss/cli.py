@@ -219,6 +219,21 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         print(f'Correct your workdir or move {workdir/f"T_{temp:.1f}K"} to a different location.')
         return
 
+    if not nodfset:
+        df_path = workdir / dfset
+        if df_path.exists():
+            old_t = None
+            for line in df_path.read_text().splitlines():
+                if line.startswith('## T='):
+                    try:
+                        old_t = float(line[5:])
+                    except ValueError:
+                        pass
+                    break
+            if old_t is not None and not math.isclose(old_t, temp, abs_tol=1e-6):
+                print(f'WARNING: {df_path} already contains data for T={old_t:.1f} K; '
+                      f'appending data for T={temp:.1f} K.')
+
     print('Sampling configurations')
     samples = sampler.sample(temp, nsamples,
                              width_list=wl, 
@@ -230,6 +245,9 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
                                              },
                              xscale_list=xsl,
                              symprec=symprec)
+    if not samples:
+        print('No samples generated (N<1).')
+        return
     # generate distribution centered at mean energy
     T_m = 2*array([s[-1] for s in samples]).mean()/3/un.kB
     print(f'Generating distribution centered at: {T_m:.3f} K')
@@ -241,15 +259,16 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
     
     if not nodfset:
         wd = Path(workdir)
-        for s in distr:
-            write_dfset(f'{wd.joinpath(dfset)}', s)
-        
+        for i, s in enumerate(distr):
+            write_dfset(f'{wd.joinpath(dfset)}', s,
+                        comment=f'T={temp:.1f}' if i == 0 else '')
+
     return
 
 @click.command()
 @click.argument('supercell', type=click.Path(exists=True))
 @click.argument('scale', type=click.Path(exists=True))
-@click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
+@click.option('-o', '--output', type=click.Path(), required=True, help='Write output to the file.')
 @click.option('-s', '--skip', default=0, type=int, help='Skip this number of samples at the beginning')
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
@@ -272,7 +291,7 @@ def calculate_xscale(supercell, scale, output, skip):
 @click.option('-w', is_flag=True, default=True, help='Force non-zero weights for samples above probability treshold. (default: True)')
 @click.option('-b', is_flag=True, default=False, help='Border samples account for the rest of domain')
 @click.option('-c', '--check', type=click.Path(), default="", help='Check and skip unconverged samples in calc directory.')
-@click.option('-o', '--output', type=click.Path(), default="", help='Write output to the file.')
+@click.option('-o', '--output', type=click.Path(), required=True, help='Write output to the file.')
 @click.option('-d', is_flag=True, default=False, help='Plot debug plots')
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 def reshape_sample(dfset, t, nmul, prob, w, check, b, output, d):
