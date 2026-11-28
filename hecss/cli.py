@@ -223,13 +223,13 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         df_path = workdir / dfset
         if df_path.exists():
             old_t = None
-            for line in df_path.read_text().splitlines():
-                if line.startswith('## T='):
-                    try:
-                        old_t = float(line[5:])
-                    except ValueError:
-                        pass
-                    break
+            with df_path.open() as df:
+                for line in df:
+                    if line.startswith('## T='):
+                        try:
+                            old_t = float(line[5:])
+                        except ValueError:
+                            pass
             if old_t is not None and not math.isclose(old_t, temp, abs_tol=1e-6):
                 print(f'WARNING: {df_path} already contains data for T={old_t:.1f} K; '
                       f'appending data for T={temp:.1f} K.')

@@ -194,8 +194,10 @@ def test_postprocessing_requires_output(tmp_path):
     assert "Missing option" in result.output
 
 
-def _fake_sampler_cli(monkeypatch):
+def _fake_sampler_cli(monkeypatch, samples=None):
     from hecss import cli
+
+    samples = [] if samples is None else samples
 
     class FakeVasp:
         name = "vasp"
@@ -214,10 +216,10 @@ def _fake_sampler_cli(monkeypatch):
             pass
 
         def sample(self, *args, **kwargs):
-            return []
+            return samples
 
         def generate(self, *args, **kwargs):
-            return []
+            return samples
 
     monkeypatch.setattr(cli, "Vasp", FakeVasp)
     monkeypatch.setattr(cli, "HECSS", FakeSampler)
@@ -252,3 +254,22 @@ def test_dfset_temperature_mismatch_is_only_a_warning(monkeypatch, tmp_path):
     )
     assert result.exit_code == 0
     assert "already contains data for T=300.0 K" in result.output
+
+
+def test_dfset_header_is_written(monkeypatch, tmp_path):
+    sample = (0, 0, np.zeros((1, 3)), np.zeros((1, 3)), 0.1)
+    cli = _fake_sampler_cli(monkeypatch, [sample])
+    comments = []
+    monkeypatch.setattr(
+        cli, "write_dfset",
+        lambda fn, c, comment="": comments.append(str(comment)),
+    )
+    structure = tmp_path / "CONTCAR"
+    structure.write_text("dummy")
+    result = CliRunner().invoke(
+        cli.hecss_sampler,
+        ["-W", str(tmp_path), "-w", "1.0", "-e", "0",
+         "-S", "recommended", str(structure)],
+    )
+    assert result.exit_code == 0
+    assert "T=300.0" in comments
