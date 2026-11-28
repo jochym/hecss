@@ -68,8 +68,8 @@ work is done. Items marked "on request" are deliberately deferred.
       strict build succeeds and the local KaTeX assets are present.
 - [ ] After merge: verify the `devel` docs deployment builds with the
       vendored KaTeX, static highlighting and no missing local assets.
-- [ ] Release 0.6.1: tag and publish to Test PyPI with the manual
-      `release.yaml` workflow after explicit review.
+- [x] Released 0.6.1: tag `v0.6.1` and Test PyPI upload via the manual
+      `release.yaml` workflow after explicit approval.
 
 ## Standing decisions
 
