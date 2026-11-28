@@ -28,8 +28,8 @@ def test_make_sampling(samples):
 
 
 def test_make_sampling_preserves_all_configurations(samples):
-    # A tiny N with nonzero_w=True clamps every small weight to one, so all
-    # input configurations must survive exactly once (energy-sorted output).
+    # N=1 with nonzero_w=True clamps every small weight to one, inflating the
+    # output to all input configurations (which are energy-sorted).
     result = make_sampling(
         samples, 300.0, probTH=0, Nmul=1 / len(samples), nonzero_w=True
     )

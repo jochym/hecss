@@ -66,24 +66,28 @@ def test_samples_can_be_appended(sampler):
 
 def test_mean_energy_matches_target(model):
     """Restore the historical ASAP temperature regression from 11_core.ipynb."""
+    rng_state = np.random.get_state()
     np.random.seed(42)
-    cryst = bulk("SiC", crystalstructure="zincblende", a=4.38120844, cubic=True)
-    cryst = cryst.repeat((2, 2, 2))
-    cryst.calc = create_asap_calculator(model)
-    sampler = HECSS(
-        cryst,
-        lambda: create_asap_calculator(model),
-        width=1.05,
-        pbar=False,
-    )
-    temperature, n_samples = 300, 100
-    samples = sampler.sample(temperature, n_samples)
-    assert len(samples) == n_samples
+    try:
+        cryst = bulk("SiC", crystalstructure="zincblende", a=4.38120844, cubic=True)
+        cryst = cryst.repeat((2, 2, 2))
+        cryst.calc = create_asap_calculator(model)
+        sampler = HECSS(
+            cryst,
+            lambda: create_asap_calculator(model),
+            width=1.05,
+            pbar=False,
+        )
+        temperature, n_samples = 300, 100
+        samples = sampler.sample(temperature, n_samples)
+        assert len(samples) == n_samples
 
-    mean = np.mean([s[-1] for s in samples])
-    target = 3 * temperature * un.kB / 2
-    sigma = np.sqrt(3 / 2) * un.kB * temperature / np.sqrt(len(cryst))
-    assert abs(mean - target) < 2 * sigma
+        mean = np.mean([s[-1] for s in samples])
+        target = 3 * temperature * un.kB / 2
+        sigma = np.sqrt(3 / 2) * un.kB * temperature / np.sqrt(len(cryst))
+        assert abs(mean - target) < 2 * sigma
+    finally:
+        np.random.set_state(rng_state)
 
 
 def test_estimate_width_scale(model, tmp_path):

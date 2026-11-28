@@ -3,7 +3,8 @@
 These replace the notebook checks formerly marked ``#| vasp``. They are
 skipped unless VASP is installed; run them with ``pytest -m vasp`` in the
 dedicated VASP environment. Set ``HECSS_VASP_COMMAND`` if VASP is invoked
-through a wrapper instead of the plain ``vasp`` executable.
+through a wrapper instead of the plain ``vasp`` executable. The command is
+split on whitespace, so an executable path containing spaces is not supported.
 """
 
 import os
