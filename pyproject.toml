@@ -4,8 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hecss"
-version = "0.5.29"
+version = "0.6.0"
 description = "High Efficiency Configuration Space Sampler"
+readme = "README.md"
 authors = [
     {name = "Paweł T. Jochym", email = "pawel.jochym@ifj.edu.pl"}
 ]
@@ -15,10 +16,10 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 ]
 dependencies = [
@@ -32,7 +33,16 @@ dependencies = [
     "matplotlib",
     "ipython",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+test = ["pytest>=7", "asap3"]
+docs = ["mkdocs-material>=9", "mkdocstrings[python]>=0.24"]
+dev = ["pytest>=7", "asap3", "build", "twine", "mkdocs-material>=9", "mkdocstrings[python]>=0.24"]
+
+[project.urls]
+Repository = "https://github.com/jochym/hecss/"
+Documentation = "https://jochym.github.io/hecss/"
 
 [project.scripts]
 hecss_sampler = "hecss.cli:hecss_sampler"
@@ -41,26 +51,17 @@ plot_bands = "hecss.cli:plot_bands"
 calculate_xscale = "hecss.cli:calculate_xscale"
 reshape_sample = "hecss.cli:reshape_sample"
 
-[tool.nbdev]
-nbs_path = "."
-lib_path = "hecss"
-doc_path = "_docs"
-host = "github"
-user = "jochym"
-branch = "devel"
-url = "https://github.com/jochym/hecss/"
-doc_host = "https://jochym.github.io/"
-doc_baseurl = "/hecss/"
-title = "hecss"
-monospace_docstrings = true
-recursive = true
-black_formatting = false
-readme_nb = "index.ipynb"
-allowed_metadata_keys = []
-allowed_cell_metadata_keys = []
-jupyter_hooks = true
-clean_ids = true
-clear_all = false
-put_version_in_init = true
-cell_number = true
-skip_procs = []
+[tool.setuptools.packages.find]
+include = ["hecss"]
+
+[tool.ruff]
+extend-exclude = ["archive"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "asap: requires ASAP3 and OpenKIM models",
+    "vasp: requires a VASP executable in the dedicated environment",
+]
+addopts = "-m 'not asap and not vasp'"
+
