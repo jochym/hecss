@@ -31,6 +31,14 @@ def test_sample_can_be_extended():
     assert second[0][0] == 3
 
 
+def test_w_search_maxburn_message(capsys):
+    cryst = bulk("Cu", cubic=True)
+    cryst.calc = EMT()
+    sampler = HECSS(cryst, EMT, width=1.0, maxburn=0, pbar=False)
+    assert sampler.sample(300, 1, sigma=0) == []
+    assert "reached maxburn (0)" in capsys.readouterr().out
+
+
 def test_generate_delegates_to_make_sampling(samples):
     result = emt_sampler().generate(samples, T=300, N=10, probTH=0, nonzero_w=False)
     assert 0 < len(result) <= len(samples)

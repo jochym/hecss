@@ -20,6 +20,10 @@ work is done. Items marked "on request" are deliberately deferred.
 
 ## Infrastructure (open)
 
+- [ ] Pre-existing CLI issues found by the Seaglass review, deferred from PR
+      #7: `hecss_sampler --nodfset` sets a local `sentinel` that is never
+      used (DFSET raw files are still written), and `-p/--pbar` is a flag
+      defaulting to True so progress bars cannot be disabled.
 - [ ] The GitHub `asap` job passes only by skipping: the PyPI `asap3` there has
       no OpenKIM models. Decide whether to add a conda/OpenKIM setup step for
       real integration coverage; local `uv` runs do exercise these tests.
