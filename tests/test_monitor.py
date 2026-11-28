@@ -3,7 +3,9 @@
 import inspect
 
 import numpy as np
+import pytest
 
+from hecss import monitor
 from hecss.monitor import build_bnd_lst, ewma, moving_average, plot_stats, run_alamode
 
 
@@ -28,3 +30,33 @@ def test_ewma():
 
 def test_plot_stats(samples):
     plot_stats(samples, T=300, sqrN=True, show=False)
+
+
+def test_ewma_matches_recursive_filter():
+    values = np.array([1.0, 2.0, 3.0, 0.5])
+    alpha = 2 / (3 + 1)
+    expected = np.empty(len(values))
+    y = values[0]
+    for i, x in enumerate(values):
+        if i:
+            y = alpha * x + (1 - alpha) * y
+        expected[i] = y
+    assert np.allclose(ewma(values, 3), expected)
+
+
+def test_ewma_long_run_is_finite():
+    assert np.isfinite(ewma(np.ones(10000), 10)).all()
+
+
+def test_build_bnd_lst_stops_on_failed_fit(monkeypatch, tmp_path):
+    monkeypatch.setattr(monitor, 'get_dfset_len', lambda fn: 1)
+    monkeypatch.setattr(
+        monitor, 'run_alamode', lambda **kwargs: (False, None, None, None, None)
+    )
+    loaded = []
+    monkeypatch.setattr(monitor, 'loadtxt', lambda *a, **k: loaded.append(a))
+
+    with pytest.raises(RuntimeError, match='ALAMODE failed'):
+        build_bnd_lst(directory=str(tmp_path))
+
+    assert not loaded

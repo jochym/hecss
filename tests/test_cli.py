@@ -1,5 +1,7 @@
 """Smoke tests for the console entry points."""
 
+import shlex
+
 import numpy as np
 import pytest
 from ase.build import bulk
@@ -88,3 +90,84 @@ def test_xsl_writer_saves_scale_without_dfset(tmp_path):
 def test_run_cli_cmd(capsys):
     run_cli_cmd(hecss_sampler, ["--version"])
     assert hecss.__version__ in capsys.readouterr().out
+
+
+def test_sampler_rejects_zero_temperature(tmp_path):
+    structure = tmp_path / "CONTCAR"
+    structure.write_text("dummy")
+    result = CliRunner().invoke(
+        hecss_sampler, ["-W", str(tmp_path), "-T", "0", str(structure)]
+    )
+    assert result.exit_code == 0
+    assert "Invalid temperature" in result.output
+
+
+def test_sampler_quotes_label_in_command(monkeypatch, tmp_path):
+    from hecss import cli
+
+    captured = {}
+
+    class FakeVasp:
+        name = "vasp"
+
+        def __init__(self, **kwargs):
+            self.atoms = bulk("Cu")
+
+        def get_potential_energy(self):
+            return 0.0
+
+        def set(self, **kwargs):
+            if "command" in kwargs:
+                captured["command"] = kwargs["command"]
+
+    class FakeSampler:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def sample(self, *args, **kwargs):
+            return [(0, 0, np.zeros((1, 3)), np.zeros((1, 3)), 0.1)]
+
+        def generate(self, *args, **kwargs):
+            return []
+
+    monkeypatch.setattr(cli, "Vasp", FakeVasp)
+    monkeypatch.setattr(cli, "HECSS", FakeSampler)
+    structure = tmp_path / "CONTCAR"
+    structure.write_text("dummy")
+    label = "x; echo pwned"
+    result = CliRunner().invoke(
+        cli.hecss_sampler,
+        ["-W", str(tmp_path), "-e", "0", "-n", "-S", "recommended", "-l", label, str(structure)],
+    )
+    assert result.exit_code == 0
+    assert shlex.split(captured["command"])[-1] == label
+
+
+def test_arun_uses_exec_not_shell(monkeypatch):
+    import asyncio
+
+    from ase.calculators.vasp import Vasp
+
+    from hecss import parallel  # noqa: F401 - applying the patch
+
+    calls = []
+
+    class Proc:
+        returncode = 0
+
+        async def communicate(self):
+            return (b"", b"")
+
+    async def fake_exec(*args, **kwargs):
+        calls.append("exec")
+        return Proc()
+
+    async def fake_shell(*args, **kwargs):
+        calls.append("shell")
+        return Proc()
+
+    monkeypatch.setattr(parallel.asyncio, "create_subprocess_exec", fake_exec)
+    monkeypatch.setattr(parallel.asyncio, "create_subprocess_shell", fake_shell)
+
+    assert asyncio.run(Vasp()._arun(command="run-calc label")) == 0
+    assert calls == ["exec"]

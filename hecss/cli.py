@@ -5,7 +5,9 @@ __all__ = ['hecss_sampler', 'plot_stats', 'plot_bands', 'calculate_xscale',
            'reshape_sample', 'run_cli_cmd', 'dfset_writer', 'xsl_writer']
 
 import ast
+import math
 import os
+import shlex
 import traceback
 from pathlib import Path
 
@@ -94,7 +96,7 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-N', '--nsamples', default=10, type=int, help="Number of samples to be generated")
 @click.option('-e', '--neta', default=2, type=int, help="Number of samples for width scale estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
-@click.option('-k', '--nwork', default=None, type=int, help="Number of parallel workers to run (0=unlimited)")
+@click.option('-k', '--nwork', default=None, type=int, help="Parallel workers for width estimation only (0=unlimited); sampling runs serially")
 @click.option('-p', '--pbar/--no-pbar', default=True,
               help="Show or hide the progress bar (shown by default)")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
@@ -110,6 +112,10 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
             Usually this is a CONTCAR file for a supercell.
     '''
     
+    if not math.isfinite(temp) or temp <= 0:
+        print(f'Invalid temperature {temp}. Use a finite value above 0 K.')
+        return
+
     print(f'HECSS ({hecss.__version__})\n'
           f'Supercell:      {fname}\n'
           f'Temperature:    {temp}K\n'
@@ -126,7 +132,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
         cryst.calc = calculator
         calculator.set(directory=workdir)
         command = Path(command)
-        calculator.set(command=f'{command.absolute()} {label}')
+        calculator.set(command=f'{shlex.quote(str(command.absolute()))} {shlex.quote(str(label))}')
         calculator.set(nsw=0)
         if setups :
             if setups=='guess':

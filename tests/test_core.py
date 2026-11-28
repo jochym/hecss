@@ -1,6 +1,7 @@
 """Tests for the HECSS sampler, using ASE's EMT calculator instead of an external code."""
 
 import numpy as np
+import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
@@ -43,3 +44,67 @@ def test_generate_delegates_to_make_sampling(samples):
     result = emt_sampler().generate(samples, T=300, N=10, probTH=0, nonzero_w=False)
     assert 0 < len(result) <= len(samples)
     assert [s[-1] for s in result] == sorted(s[-1] for s in result)
+
+
+def test_invalid_temperature_ranges_are_rejected():
+    sampler = emt_sampler()
+    for tmin, tmax in ((0, 0), (-10, 300), (600, 300), (float('nan'), 300)):
+        with pytest.raises(ValueError):
+            sampler.estimate_width_scale(1, Tmin=tmin, Tmax=tmax)
+
+
+def test_sample_rejects_zero_temperature():
+    with pytest.raises(ValueError):
+        emt_sampler().sample(0, 1)
+
+
+def test_nwork_reports_serial_sampling(capsys):
+    sampler = emt_sampler()
+    assert len(sampler.sample(300, 2, nwork=2)) == 2
+    assert 'width estimation only' in capsys.readouterr().out
+
+
+def test_async_width_estimation_uses_tmin(monkeypatch, tmp_path):
+    calls = []
+
+    class FakeDist:
+        @staticmethod
+        def rvs(loc, scale):
+            calls.append((loc, scale))
+            return 300.0
+
+    class FakeVasp:
+        name = 'vasp'
+        command = ''
+
+        def __init__(self):
+            self.atoms = bulk('Cu', cubic=True)
+
+        def asdict(self):
+            return {}
+
+        def fromdict(self, d):
+            pass
+
+        def set(self, **kwargs):
+            if 'command' in kwargs:
+                self.command = kwargs['command']
+
+        def get_potential_energy(self):
+            return 1.0
+
+        def get_forces(self):
+            return np.zeros((len(self.atoms), 3))
+
+    async def noop(self, atoms):
+        return 0
+
+    setattr(FakeVasp, '__calculate_aio', noop)
+    monkeypatch.setattr('hecss.core.stats.uniform', FakeDist())
+
+    cryst = bulk('Cu', cubic=True)
+    cryst.calc = EMT()
+    sampler = HECSS(cryst, FakeVasp(), width=1.0, directory=str(tmp_path), pbar=False)
+    sampler.estimate_width_scale(1, Tmin=100, Tmax=600, nwork=1)
+
+    assert calls == [(100, 500)]

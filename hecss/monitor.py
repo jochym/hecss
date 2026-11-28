@@ -32,6 +32,7 @@ from matplotlib.pyplot import (
     ylabel,
     ylim,
 )
+import numpy as np
 from numpy import (
     abs,
     arange,
@@ -47,6 +48,7 @@ from numpy import (
     sqrt,
 )
 from scipy import stats
+from scipy.signal import lfilter
 from spglib import get_symmetry_dataset
 
 from hecss.util import get_cell_data, get_dfset_len, load_dfset
@@ -193,8 +195,10 @@ dictionary mapping the sample count to the band array."""
     for n in range(1,N+1):
         if verbose :
             print(f'Using first {n:3} samples', end='\n')
-        run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, sc=sc,
-                    o=order, n=n, c2=cutoff, born=born, charge=charge)
+        r = run_alamode(d=directory, prefix=prefix, dfset=dfset, kpath=kpath, sc=sc,
+                        o=order, n=n, c2=cutoff, born=born, charge=charge)
+        if not r[0]:
+            raise RuntimeError(f'ALAMODE failed for {n} samples in {directory}')
         bl[n]=loadtxt(f'{directory}/{prefix}.bands').T
     if verbose :
         print()
@@ -283,8 +287,10 @@ it loops until interrupted."""
     clear_output(wait=True)
 
     N = get_dfset_len(f'{directory}/{dfset}')
-    run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, sc=sc,
-                o=order, n=N, c2=cutoff, born=born, charge=charge)
+    r = run_alamode(d=directory, dfset=dfset, prefix=prefix, kpath=kpath, sc=sc,
+                    o=order, n=N, c2=cutoff, born=born, charge=charge)
+    if not r[0]:
+        raise RuntimeError(f'ALAMODE failed for {N} samples in {directory}')
     bnd_lst[N] = loadtxt(f'{directory}/{prefix}.bands').T
     prev_N = N
 
@@ -454,20 +460,13 @@ def ewma(data, window):
 `data` is a one-dimensional array and `window` controls the smoothing
 through `alpha = 2 / (window + 1)`. The result has the same length as
 `data`."""
+    data = np.asarray(data)
+    if data.size == 0:
+        return data.copy()
     alpha = 2 /(window + 1.0)
     alpha_rev = 1-alpha
-    n = data.shape[0]
-
-    pows = alpha_rev**(arange(n+1))
-
-    scale_arr = 1/pows[:-1]
-    offset = data[0]*pows[1:]
-    pw0 = alpha*alpha_rev**(n-1)
-
-    mult = data*pw0*scale_arr
-    cumsums = mult.cumsum()
-    out = offset + cumsums*scale_arr[::-1]
-    return out
+    zi = [alpha_rev*data[0]]
+    return lfilter([alpha], [1, -alpha_rev], data, zi=zi)[0]
 
 def plot_hist(v, el, n, l='', alpha=0.2, normal=True, df=3):
     """Plot a normalised histogram of `v` with a fitted distribution.

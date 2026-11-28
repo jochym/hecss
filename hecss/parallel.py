@@ -5,6 +5,7 @@
 __all__ = []
 
 import asyncio
+import shlex
 from concurrent.futures import ThreadPoolExecutor
 
 from ase.calculators import calculator
@@ -46,8 +47,8 @@ async def _arun(self: Vasp, command=None, out=None, directory=None):
     if directory is None:
         directory = self.directory
 
-    proc = await asyncio.create_subprocess_shell(
-            command,
+    proc = await asyncio.create_subprocess_exec(
+            *shlex.split(command),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             cwd=directory

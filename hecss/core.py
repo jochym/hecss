@@ -234,6 +234,9 @@ def estimate_width_scale(self: HECSS, n=1, Tmin=0, Tmax=600,
     correction matrix with the shape of the atomic positions.
     '''
     
+    if not (np.isfinite(Tmin) and np.isfinite(Tmax) and 0 <= Tmin < Tmax):
+        raise ValueError(f'Invalid temperature range: Tmin={Tmin}, Tmax={Tmax}')
+
     if self.Ep0 is None:
         self.Ep0 = self.cryst.get_potential_energy()
     E0 = self.Ep0
@@ -578,8 +581,8 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
     * sentinel     : callback `sentinel(sample, samples, **sentinel_args)`;
                      returning True stops the run early.
     * sentinel_args: keyword arguments passed to the sentinel callback.
-    * nwork        : number of parallel workers. Only supported for VASP;
-                     None selects the serial sampler.
+    * nwork        : reserved for future parallel sampling. It does not
+                     affect sampling; -k only controls width estimation.
     * delta_sample : Prior width adaptation rate. The default is sufficient in most cases.
     * sigma        : Range around E0 in sigmas to stop w-search mode
     * eqdelta      : Max. speed of amplitude correction from step to step (0.05=5%)
@@ -634,9 +637,16 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
     # if self.pbar is not None and self.pbar is not False:
     #     self.pbar.reset(N)
 
+    if not np.isfinite(T) or T <= 0:
+        raise ValueError(f'Temperature must be finite and positive: T={T}')
+
     self._pbar = None
     if self.pbar:
         self._pbar = tqdm(total=N)
+
+    if nwork is not None:
+        print('Parallel sampling is not available yet; sampling runs serially. '
+              '-k affects width estimation only.')
 
     if self.eta is None:
         width, sigma, xscale = self.estimate_width_scale(2, T, pbar=self._pbar)
@@ -650,14 +660,8 @@ def sample(self: HECSS, T, N, sentinel=None, sentinel_args={}, nwork=None, **kwa
     if T in self.samplers:
         generator = self.samplers[T]
     else :
-        # Execute async/parallel version if possible
-        try :
-            # Try parallel version first
-            # Raises NotImplementedError if called for serial work 
-            # (i.e. nwork==None) or unsupported calculator
-            generator = self._sampler_aio(T, **kwargs, nwork=nwork)
-        except NotImplementedError:
-            generator = self._sampler_ser(T, **kwargs)
+        # The async sampler is kept as a seed for future parallel sampling.
+        generator = self._sampler_ser(T, **kwargs)
         self.samplers[T] = generator
 
     for smpl in generator:
@@ -1075,7 +1079,7 @@ async def __estimate_width_scale_aio(self: HECSS, n=1, Tmin=0, Tmax=600,
                        pbc=True, 
                       )
         
-        T = stats.uniform.rvs(0, Tmax) # Kelvin
+        T = stats.uniform.rvs(Tmin, Tmax-Tmin) # Kelvin
         if not T:
             continue
         w = self.w_scale * np.sqrt(T)
