@@ -54,6 +54,13 @@ work is done. Items marked "on request" are deliberately deferred.
 - [x] Bare `maxburn` in the width-search error message replaced with
       `self.maxburn`, with a regression test.
 
+## Completed in 0.6.1
+
+- [x] High-priority audit fixes: finite positive temperatures (including
+      `T=0`), correct `Tmin` in parallel width estimation, honest `-k` help
+      with the parallel sampler kept as a seed, ALAMODE failure guard, stable
+      `ewma`, and no shell in the VASP command runner.
+
 ## Merge and release
 
 - [x] PR #7 opened: `back-to-std` -> `devel`, after reviewer sign-off.
@@ -61,8 +68,8 @@ work is done. Items marked "on request" are deliberately deferred.
       strict build succeeds and the local KaTeX assets are present.
 - [ ] After merge: verify the `devel` docs deployment builds with the
       vendored KaTeX, static highlighting and no missing local assets.
-- [ ] Agree the release version/tag (`v0.6.0` still points at `ec2d520`) and
-      publish manually only after explicit review.
+- [ ] Release 0.6.1: tag and publish to Test PyPI with the manual
+      `release.yaml` workflow after explicit review.
 
 ## Standing decisions
 
