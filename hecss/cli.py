@@ -79,7 +79,8 @@ def dfset_writer(s, sl, workdir='', dfset='', scale='', xsl=None):
 @click.option('-e', '--neta', default=2, type=int, help="Number of samples for width scale estimation")
 @click.option('-c', '--command', default='./run-calc', help="Command to run calculator")
 @click.option('-k', '--nwork', default=None, type=int, help="Number of parallel workers to run (0=unlimited)")
-@click.option('-p', '--pbar', is_flag=True, default=True, help="Do not show progress bar")
+@click.option('-p', '--pbar/--no-pbar', default=True,
+              help="Show or hide the progress bar (shown by default)")
 @click.version_option(hecss.__version__, '-V', '--version', message=_version_message)
 @click.help_option('-h', '--help')
 def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc, setups, nodfset, dfset, nsamples, neta, command, nwork, pbar):
@@ -198,7 +199,7 @@ def hecss_sampler(fname, workdir, label, temp, width, ampl, scale, symprec, calc
     print('Sampling configurations')
     samples = sampler.sample(temp, nsamples,
                              width_list=wl, 
-                             sentinel=dfset_writer,
+                             sentinel=sentinel,
                              sentinel_args={'workdir': f'{workdir}/T_{temp:.1f}K/',
                                               'dfset': dfset,
                                               'scale': scale,
